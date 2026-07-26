@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Restore complete Lean environment
+      - name: Restore post-build Lean environment
         id: cache
         uses: actions/cache/restore@v4
         with:
@@ -29,7 +29,7 @@ jobs:
             lake-manifest.json
             .lake/packages
             .lake/build
-          key: mqg-lean-v2-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+          key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Install elan
         run: |
           if [ ! -x "$HOME/.elan/bin/elan" ]; then
@@ -41,16 +41,6 @@ jobs:
         run: |
           lake update > /tmp/lake-update.log 2>&1
           lake exe cache get > /tmp/cache-get.log 2>&1
-      - name: Save complete Lean environment
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ~/.elan
-            lake-manifest.json
-            .lake/packages
-            .lake/build
-          key: mqg-lean-v2-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Build
         id: lean
         run: |
@@ -77,6 +67,16 @@ jobs:
             fi
           } > /tmp/lean-comment.md
           cat /tmp/lean-comment.md
+      - name: Save post-build Lean environment
+        if: always() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.elan
+            lake-manifest.json
+            .lake/packages
+            .lake/build
+          key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Publish sticky diagnostics to draft PR
         if: always()
         env:
