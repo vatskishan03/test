@@ -46,16 +46,16 @@ lemma allEqual_relabelColoring6 (v : Fin 6) (ι : Fin 6 → Fin 4) :
 
 /-- The explicit six-vertex perfect-matching polynomial is equivariant under
 swapping vertex zero with any vertex. -/
-set_option maxHeartbeats 2000000 in
 lemma pmSumN_relabelWeight6 (v : Fin 6) (W : WeightsN 6 4 ℂ)
     (ι : Fin 6 → Fin 4) :
     pmSumN 6 4 (relabelWeight6 v W) ι =
       pmSumN 6 4 W (relabelColoring6 v ι) := by
-  fin_cases v <;>
-    simp [relabelWeight6, relabelColoring6, swapZero6, orientedWeight6,
-      pmSumN, pmSumList, pmSumListAux, vertices, Equiv.swap_apply_def,
-      MonochromaticQuantumGraph.mkEdge] <;>
-    ring_nf
+  set_option maxHeartbeats 2000000 in
+    fin_cases v <;>
+      simp [relabelWeight6, relabelColoring6, swapZero6, orientedWeight6,
+        pmSumN, pmSumList, pmSumListAux, vertices, Equiv.swap_apply_def,
+        MonochromaticQuantumGraph.mkEdge] <;>
+      ring_nf
 
 lemma eqSystem_relabelWeight6 (v : Fin 6) (W : WeightsN 6 4 ℂ)
     (hW : EqSystemN 6 4 W) :
