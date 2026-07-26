@@ -1,4 +1,5 @@
 import MQGN6Audit.AxisPointwise
+import Mathlib.Algebra.Module.Submodule.Union
 
 open Function
 open scoped BigOperators
@@ -43,8 +44,11 @@ theorem exists_fixed_axis_map
       (∑ i, x i * ∏ u, y u i) = 0)
     (c : Fin 4) :
     ∃ u : Fin 5, A u ≠ 0 ∧ ∀ x i, i ≠ c → A u x i = 0 := by
+  classical
   by_contra hnone
-  push_neg at hnone
+  have hnot : ∀ u, A u ≠ 0 → ¬ (∀ x i, i ≠ c → A u x i = 0) := by
+    intro u hu haxis
+    exact hnone ⟨u, hu, haxis⟩
   let U := {u : Fin 5 // A u ≠ 0}
   let p : Sum U (Fin 4) → Submodule ℂ Vec4
     | Sum.inl u => offAxisKernel (A u.1) c
@@ -55,7 +59,7 @@ theorem exists_fixed_axis_map
     | inr i => exact coordinateKernel_ne_top i
     | inl u =>
         intro htop
-        apply hnone u.1 u.2
+        apply hnot u.1 u.2
         intro x i hic
         have hx : x ∈ offAxisKernel (A u.1) c := by rw [htop]; simp
         exact hx i hic
@@ -63,13 +67,10 @@ theorem exists_fixed_axis_map
   have hxc : ∀ i, x i ≠ 0 := by
     intro i hzero
     exact hx (Sum.inr i) hzero
-  have hpoint : ∃ u : Fin 5, axisAt c (A u x) :=
-    exists_axis_pointwise (fun u => A u x) x hxc (hdiag x) c
-  obtain ⟨u, huaxis⟩ := hpoint
+  obtain ⟨u, huaxis⟩ := exists_axis_pointwise (fun u => A u x) x hxc (hdiag x) c
   have huA : A u ≠ 0 := by
     intro hu0
-    have hz : A u x c = 0 := by simp [hu0]
-    exact huaxis.1 hz
+    exact huaxis.1 (by simp [hu0])
   let us : U := ⟨u, huA⟩
   apply hx (Sum.inl us)
   intro i hic
