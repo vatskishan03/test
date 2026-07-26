@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 concurrency:
   group: mqg-n6-d4-${{ github.ref }}
   cancel-in-progress: true
@@ -19,7 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Restore Lean and Lake cache
-        uses: actions/cache@v4
+        id: cache
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.elan
@@ -36,16 +41,53 @@ jobs:
         run: |
           lake update > /tmp/lake-update.log 2>&1
           lake exe cache get > /tmp/cache-get.log 2>&1
+      - name: Save dependency cache before proof checking
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.elan
+            .lake/packages
+            .lake/build
+          key: mqg-lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Build
+        id: lean
         run: |
           set +e
           lake build > /tmp/lean-build.log 2>&1
           status=$?
-          if [ "$status" -ne 0 ]; then
-            grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 180 || true
-            echo '--- final context ---'
-            tail -n 80 /tmp/lean-build.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          {
+            echo '<!-- lean-ci-diagnostics -->'
+            if [ "$status" -eq 0 ]; then
+              echo '## Lean audit: passing'
+              echo
+              echo '```text'
+              tail -n 30 /tmp/lean-build.log
+              echo '```'
+            else
+              echo '## Lean audit: compiler diagnostics'
+              echo
+              echo '```text'
+              grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 160 || true
+              echo '--- final context ---'
+              tail -n 100 /tmp/lean-build.log
+              echo '```'
+            fi
+          } > /tmp/lean-comment.md
+          cat /tmp/lean-comment.md
+      - name: Publish sticky diagnostics to draft PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh api repos/${{ github.repository }}/issues/1/comments --paginate --jq '.[] | select(.body | startswith("<!-- lean-ci-diagnostics -->")) | .id' | head -n1)
+          body=$(cat /tmp/lean-comment.md)
+          if [ -n "$existing" ]; then
+            gh api --method PATCH repos/${{ github.repository }}/issues/comments/$existing -f body="$body" >/dev/null
           else
-            tail -n 40 /tmp/lean-build.log
+            gh api --method POST repos/${{ github.repository }}/issues/1/comments -f body="$body" >/dev/null
           fi
-          exit $status
+      - name: Fail if Lean failed
+        if: steps.lean.outputs.status != '0'
+        run: exit 1
