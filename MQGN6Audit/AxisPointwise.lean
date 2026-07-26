@@ -34,7 +34,7 @@ lemma adjust4_at_other (a : Vec4) {c j d : Fin 4} (hdc : d ≠ c) (hdj : d ≠ j
 lemma dot4_adjust4 (a : Vec4) {c j : Fin 4} (hjc : j ≠ c) (haj : a j ≠ 0) :
     dot4 a (adjust4 a c j) = 0 := by
   fin_cases c <;> fin_cases j <;>
-    simp_all [dot4, adjust4] <;> field_simp <;> ring
+    simp_all [dot4, adjust4, Fin.sum_univ_succ]
 
 /-- `goodAt a c d` means that the hyperplane perpendicular to `a` contains a vector whose
 `c`-coordinate is one and whose `d`-coordinate is zero. -/
