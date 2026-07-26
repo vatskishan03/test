@@ -46,14 +46,16 @@ lemma allEqual_relabelColoring6 (v : Fin 6) (ι : Fin 6 → Fin 4) :
 
 /-- The explicit six-vertex perfect-matching polynomial is equivariant under
 swapping vertex zero with any vertex. -/
+set_option maxHeartbeats 2000000 in
 lemma pmSumN_relabelWeight6 (v : Fin 6) (W : WeightsN 6 4 ℂ)
     (ι : Fin 6 → Fin 4) :
     pmSumN 6 4 (relabelWeight6 v W) ι =
       pmSumN 6 4 W (relabelColoring6 v ι) := by
   fin_cases v <;>
     simp [relabelWeight6, relabelColoring6, swapZero6, orientedWeight6,
-      pmSumN, pmSumList, pmSumListAux, vertices, Equiv.swap_apply_def] <;>
-    ring
+      pmSumN, pmSumList, pmSumListAux, vertices, Equiv.swap_apply_def,
+      MonochromaticQuantumGraph.mkEdge] <;>
+    ring_nf
 
 lemma eqSystem_relabelWeight6 (v : Fin 6) (W : WeightsN 6 4 ℂ)
     (hW : EqSystemN 6 4 W) :
@@ -77,11 +79,12 @@ lemma swappedNeighbor6_ne (v : Fin 6) (u : Fin 5) : swappedNeighbor6 v u ≠ v :
     (u : Fin 5) (i j : Fin 4) :
     relabelWeight6 v W (mkEdge 0 u.succ i j) =
       orientedWeight6 W v (swappedNeighbor6 v u) i j := by
-  simp [relabelWeight6, swappedNeighbor6, swapZero6]
+  simp [relabelWeight6, swappedNeighbor6, swapZero6,
+    MonochromaticQuantumGraph.mkEdge]
 
 /-- An edge `v—u` is an axis witness for color `c` when it is nonzero in output
 color `c` and has no output in any other color. -/
-def AxisWitness6 (W : WeightsN 6 4 ℂ) (v c u : Fin 6) : Prop :=
+def AxisWitness6 (W : WeightsN 6 4 ℂ) (v : Fin 6) (c : Fin 4) (u : Fin 6) : Prop :=
   u ≠ v ∧
     (∃ i : Fin 4, orientedWeight6 W v u i c ≠ 0) ∧
     ∀ i j, j ≠ c → orientedWeight6 W v u i j = 0
@@ -105,7 +108,7 @@ lemma axisWitness6_color_unique
     (hc : AxisWitness6 W v c u) (hd : AxisWitness6 W v d u) : c = d := by
   by_contra hcd
   obtain ⟨i, hi⟩ := hd.2.1
-  exact hi (hc.2.2 i d hcd.symm)
+  exact hi (hc.2.2 i d (Ne.symm hcd))
 
 /-- At every vertex, the four colors admit four distinct witness neighbours. -/
 theorem exists_axis_witness_injection6
@@ -114,8 +117,11 @@ theorem exists_axis_witness_injection6
       ∀ c, AxisWitness6 W v c (f c) := by
   choose f hf using fun c => local_axis_weights6_at W hW v c
   refine ⟨f, ?_, hf⟩
-  intro c d hcd
-  exact axisWitness6_color_unique (hf c) (hcd ▸ hf d)
+  intro c d hfd
+  have hd : AxisWitness6 W v d (f c) := by
+    rw [hfd]
+    exact hf d
+  exact axisWitness6_color_unique (hf c) hd
 
 end
 
