@@ -6,3 +6,4 @@ import MQGN6Audit.Contraction
 import MQGN6Audit.LocalAxis
 import MQGN6Audit.VertexAxis
 import MQGN6Audit.PerfectMatchings6
+import MQGN6Audit.SupportReduction
