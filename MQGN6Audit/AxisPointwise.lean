@@ -33,8 +33,27 @@ lemma adjust4_at_other (a : Vec4) {c j d : Fin 4} (hdc : d ≠ c) (hdj : d ≠ j
 
 lemma dot4_adjust4 (a : Vec4) {c j : Fin 4} (hjc : j ≠ c) (haj : a j ≠ 0) :
     dot4 a (adjust4 a c j) = 0 := by
-  fin_cases c <;> fin_cases j <;>
-    simp_all [dot4, adjust4, Fin.sum_univ_succ]
+  classical
+  unfold dot4 adjust4
+  calc
+    (∑ i, a i * (if i = c then 1 else if i = j then -(a c / a j) else 0)) =
+        ∑ i, ((if i = c then a i else 0) +
+          (if i = j then -(a i * (a c / a j)) else 0)) := by
+      apply Finset.sum_congr rfl
+      intro i _
+      by_cases hic : i = c
+      · subst i
+        simp [hjc.symm]
+      · by_cases hij : i = j
+        · subst i
+          simp [hic]
+        · simp [hic, hij]
+    _ = a c + -(a j * (a c / a j)) := by
+      rw [Finset.sum_add_distrib]
+      simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
+    _ = 0 := by
+      field_simp
+      ring
 
 /-- `goodAt a c d` means that the hyperplane perpendicular to `a` contains a vector whose
 `c`-coordinate is one and whose `d`-coordinate is zero. -/
@@ -85,7 +104,22 @@ lemma bad_color_unique {a : Vec4} {c d e : Fin 4}
   exact had (he.2 d hdc hde)
 
 lemma exists_color_ne_two (c d : Fin 4) : ∃ r : Fin 4, r ≠ c ∧ r ≠ d := by
-  fin_cases c <;> fin_cases d <;> native_decide
+  classical
+  by_contra h
+  push_neg at h
+  have hsub : Finset.univ ⊆ ({c, d} : Finset (Fin 4)) := by
+    intro r _
+    by_cases hrc : r = c
+    · simp [hrc]
+    · have hrd : r = d := h r hrc
+      simp [hrd]
+  have hcard := Finset.card_le_card hsub
+  have hpair : ({c, d} : Finset (Fin 4)).card ≤ 2 := by
+    simpa using Finset.card_insert_le c ({d} : Finset (Fin 4))
+  have hfour : 4 ≤ ({c, d} : Finset (Fin 4)).card := by
+    simpa using hcard
+  have : 4 ≤ 2 := hfour.trans hpair
+  omega
 
 /-- Pointwise axis forcing for a diagonal 4-color tensor with five incident hyperplanes. -/
 theorem exists_axis_pointwise
