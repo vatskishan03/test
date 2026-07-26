@@ -52,8 +52,8 @@ lemma dot4_adjust4 (a : Vec4) {c j : Fin 4} (hjc : j ≠ c) (haj : a j ≠ 0) :
       rw [Finset.sum_add_distrib]
       simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
     _ = 0 := by
-      field_simp
-      ring
+      rw [mul_div_cancel₀ (a c) haj]
+      simp
 
 /-- `goodAt a c d` means that the hyperplane perpendicular to `a` contains a vector whose
 `c`-coordinate is one and whose `d`-coordinate is zero. -/
@@ -119,7 +119,8 @@ lemma exists_color_ne_two (c d : Fin 4) : ∃ r : Fin 4, r ≠ c ∧ r ≠ d := 
   have hfour : 4 ≤ ({c, d} : Finset (Fin 4)).card := by
     simpa using hcard
   have : 4 ≤ 2 := hfour.trans hpair
-  omega
+  exact (Nat.not_succ_le_zero 1)
+    (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ this))
 
 /-- Pointwise axis forcing for a diagonal 4-color tensor with five incident hyperplanes. -/
 theorem exists_axis_pointwise
