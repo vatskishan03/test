@@ -1,9 +1,6 @@
 name: Lean n6 d4 audit
 
 on:
-  push:
-    branches:
-      - research/n6-d4-lean-audit-20260727
   pull_request:
     branches:
       - main
@@ -14,42 +11,46 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: mqg-n6-d4-${{ github.ref }}
+  group: mqg-n6-d4-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Restore Lean and Lake cache
+      - name: Restore complete Lean environment
         id: cache
         uses: actions/cache/restore@v4
         with:
           path: |
             ~/.elan
+            lake-manifest.json
             .lake/packages
             .lake/build
-          key: mqg-lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+          key: mqg-lean-v2-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Install elan
         run: |
           if [ ! -x "$HOME/.elan/bin/elan" ]; then
             curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
           fi
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Resolve dependencies
+      - name: Resolve dependencies on cache miss
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           lake update > /tmp/lake-update.log 2>&1
           lake exe cache get > /tmp/cache-get.log 2>&1
-      - name: Save dependency cache before proof checking
+      - name: Save complete Lean environment
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: |
             ~/.elan
+            lake-manifest.json
             .lake/packages
             .lake/build
-          key: mqg-lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+          key: mqg-lean-v2-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Build
         id: lean
         run: |
