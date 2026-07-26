@@ -24,10 +24,11 @@ theorem exists_injective_of_at_most_one_bad
           apply Finset.eq_singleton_iff_unique_mem.mpr
           exact ⟨hd, fun x hx => Finset.card_le_one.1 hs x hx d hd⟩
         subst s
-        simp only [Finset.card_singleton, Finset.biUnion_singleton]
         obtain ⟨u, hu⟩ := hex d
         have hut : u ∈ t d := by simp [t, hu]
-        exact Finset.card_pos.mpr ⟨u, hut⟩
+        have hub : u ∈ ({d} : Finset D).biUnion t :=
+          Finset.mem_biUnion.mpr ⟨d, by simp, hut⟩
+        simpa using Finset.card_pos.mpr ⟨u, hub⟩
     · have hs2 : 1 < s.card := Nat.lt_of_not_ge hs
       have hUnion : s.biUnion t = Finset.univ := by
         ext u
@@ -37,10 +38,10 @@ theorem exists_injective_of_at_most_one_bad
         push_neg at hnone
         have hnd : ¬ good d u := by
           intro hdu
-          exact hnone d hd ⟨by simp [t, hdu]⟩
+          exact (hnone d hd) (by simp [t, hdu])
         have hne : ¬ good e u := by
           intro heu
-          exact hnone e he ⟨by simp [t, heu]⟩
+          exact (hnone e he) (by simp [t, heu])
         exact hde (hbad u d e hnd hne)
       rw [hUnion, Finset.card_univ]
       exact (Finset.card_le_univ s).trans hcard
