@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - research/n6-d4-lean-audit-20260727
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
