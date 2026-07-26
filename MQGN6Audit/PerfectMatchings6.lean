@@ -63,12 +63,12 @@ def pmTerm6 (W : WeightsN 6 4 ℂ) (ι : Fin 6 → Fin 4) (m : Fin 15) : ℂ :=
 
 /-- The recursive perfect-matching sum on six vertices is exactly the sum of the
 fifteen tabulated monomials. -/
-set_option maxHeartbeats 1000000 in
 lemma pmSumN6_eq_sum_pmTerm6 (W : WeightsN 6 4 ℂ) (ι : Fin 6 → Fin 4) :
     pmSumN 6 4 W ι = ∑ m : Fin 15, pmTerm6 W ι m := by
-  simp [pmSumN, pmSumList, pmSumListAux, vertices, pmTerm6, matchingEdges6,
-    Fin.sum_univ_succ]
-  ring
+  set_option maxHeartbeats 1000000 in
+    simp [pmSumN, pmSumList, pmSumListAux, vertices, pmTerm6, matchingEdges6,
+      Fin.sum_univ_succ, Fin.prod_univ_three] <;>
+    ring
 
 lemma matchingEdges6_contains_vertex (m : Fin 15) (v : Fin 6) :
     ∃ k : Fin 3,
