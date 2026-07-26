@@ -6,6 +6,8 @@ open scoped BigOperators
 
 namespace MQGN6Audit
 
+noncomputable section
+
 abbrev Vec4 := Fin 4 → ℂ
 
 def dot4 (a b : Vec4) : ℂ := ∑ i, a i * b i
@@ -31,19 +33,8 @@ lemma adjust4_at_other (a : Vec4) {c j d : Fin 4} (hdc : d ≠ c) (hdj : d ≠ j
 
 lemma dot4_adjust4 (a : Vec4) {c j : Fin 4} (hjc : j ≠ c) (haj : a j ≠ 0) :
     dot4 a (adjust4 a c j) = 0 := by
-  classical
-  unfold dot4
-  rw [Finset.sum_eq_add_sum_diff_singleton (Finset.mem_univ c)]
-  have hjmem : j ∈ Finset.univ.erase c := by simp [hjc]
-  rw [Finset.sum_eq_add_sum_diff_singleton hjmem]
-  have hrest : ∑ x ∈ (Finset.univ.erase c).erase j, a x * adjust4 a c j x = 0 := by
-    apply Finset.sum_eq_zero
-    intro x hx
-    rw [Finset.mem_erase, Finset.mem_erase] at hx
-    simp [adjust4, hx.2.1, hx.1]
-  rw [hrest, add_zero]
-  simp [adjust4, hjc, haj]
-  field_simp
+  fin_cases c <;> fin_cases j <;>
+    simp_all [dot4, adjust4] <;> field_simp <;> ring
 
 /-- `goodAt a c d` means that the hyperplane perpendicular to `a` contains a vector whose
 `c`-coordinate is one and whose `d`-coordinate is zero. -/
@@ -54,7 +45,7 @@ lemma exists_annihilator_center_one {a : Vec4} {c : Fin 4} (haxis : ¬ axisAt c 
     ∃ y : Vec4, dot4 a y = 0 ∧ y c = 1 := by
   by_cases hac : a c = 0
   · refine ⟨basis4 c, ?_, by simp [basis4]⟩
-    simpa [dot4_basis4, hac]
+    simpa [hac] using dot4_basis4 a c
   · have hex : ∃ j, j ≠ c ∧ a j ≠ 0 := by
       by_contra h
       push_neg at h
@@ -69,7 +60,7 @@ lemma not_goodAt_structure {a : Vec4} {c d : Fin 4} (hdc : d ≠ c)
   · intro hac
     apply hbad
     refine ⟨basis4 c, ?_, by simp [basis4], ?_⟩
-    · simpa [dot4_basis4, hac]
+    · simpa [hac] using dot4_basis4 a c
     · simp [basis4, hdc]
   · intro j hjc hjd
     by_contra haj
@@ -105,6 +96,7 @@ theorem exists_axis_pointwise
       (∑ i, x i * ∏ u, y u i) = 0)
     (c : Fin 4) :
     ∃ u : Fin 5, axisAt c (a u) := by
+  classical
   by_contra hnone
   push_neg at hnone
   have hfree : ∀ u, ∃ y : Vec4, dot4 (a u) y = 0 ∧ y c = 1 :=
@@ -123,7 +115,6 @@ theorem exists_axis_pointwise
       exact hs.2 r hrc hrd
     have hz := hdiag y horth
     have heval : (∑ i, x i * ∏ u, y u i) = x r := by
-      classical
       rw [Finset.sum_eq_single r]
       · simp [y, basis4]
       · intro b _ hbr
@@ -162,7 +153,6 @@ theorem exists_axis_pointwise
     · rw [show y u = y0 u by simp [y, Function.extend_apply', hu]]
       exact (hy0 u).2
   have heval : (∑ i, x i * ∏ u, y u i) = x c := by
-    classical
     rw [Finset.sum_eq_single c]
     · simp [hyc]
     · intro d _ hdc
@@ -177,5 +167,7 @@ theorem exists_axis_pointwise
   have hz := hdiag y hyorth
   rw [heval] at hz
   exact hx c hz
+
+end
 
 end MQGN6Audit
