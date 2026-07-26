@@ -90,9 +90,11 @@ lemma target_matching_oriented_ne_zero
   change W (mkEdge e.1 e.2 c c) ≠ 0 at hnon
   change e.1 < e.2 at hlt
   rcases hk with ⟨h1, h2⟩ | ⟨h2, h1⟩
-  · rw [← h1, ← h2]
+  · subst v
+    rw [← h2]
     simpa [orientedWeight6, hlt] using hnon
-  · rw [← h2, ← h1]
+  · subst v
+    rw [← h1]
     simpa [orientedWeight6, hlt, hlt.not_gt] using hnon
 
 /-- If the witness neighbour of color `d` is the partner of vertex `v` in the
