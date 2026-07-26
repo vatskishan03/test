@@ -11,8 +11,15 @@ noncomputable section
 def coordinateKernel (i : Fin 4) : Submodule ℂ Vec4 where
   carrier := {x | x i = 0}
   zero_mem' := rfl
-  add_mem' := by intro x y hx hy; simp [hx, hy]
-  smul_mem' := by intro r x hx; simp [hx]
+  add_mem' := by
+    intro x y hx hy
+    change x i = 0 at hx
+    change y i = 0 at hy
+    simp [hx, hy]
+  smul_mem' := by
+    intro r x hx
+    change x i = 0 at hx
+    simp [hx]
 
 @[simp] lemma mem_coordinateKernel {i : Fin 4} {x : Vec4} :
     x ∈ coordinateKernel i ↔ x i = 0 := Iff.rfl
@@ -61,7 +68,7 @@ theorem exists_fixed_axis_map
         intro htop
         apply hnot u.1 u.2
         intro x i hic
-        have hx : x ∈ offAxisKernel (A u.1) c := by rw [htop]; simp
+        have hx : x ∈ p (Sum.inl u) := by rw [htop]; simp
         exact hx i hic
   obtain ⟨x, hx⟩ := Submodule.exists_forall_notMem_of_forall_ne_top p hp
   have hxc : ∀ i, x i ≠ 0 := by
