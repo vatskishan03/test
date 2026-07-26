@@ -41,5 +41,11 @@ jobs:
           set +e
           lake build > /tmp/lean-build.log 2>&1
           status=$?
-          tail -n 220 /tmp/lean-build.log
+          if [ "$status" -ne 0 ]; then
+            grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 180 || true
+            echo '--- final context ---'
+            tail -n 80 /tmp/lean-build.log
+          else
+            tail -n 40 /tmp/lean-build.log
+          fi
           exit $status
