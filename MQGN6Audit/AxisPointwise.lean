@@ -1,5 +1,5 @@
 import MQGN6Audit.Hall
-import Mathlib.Algebra.Module.Submodule.Union
+import Mathlib
 
 open Function
 open scoped BigOperators
