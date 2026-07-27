@@ -13,8 +13,6 @@ import MQGN6Audit.VertexRelabelScratch
 import MQGN6Audit.VertexRelabel
 import MQGN6Audit.TargetOrbits6
 import MQGN6Audit.FiniteDefinitions6
-import MQGN6Audit.UniqueDagCheck6
 import MQGN6Audit.TerminalFinite6
 import MQGN6Audit.TerminalSoundness6
 import MQGN6Audit.CartesianTerminal6
-import MQGN6Audit.IdenticalTarget6
