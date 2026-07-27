@@ -140,6 +140,128 @@ theorem sortNetworkPerm4_eq_sortedTarget6
   exact Tuple.comp_sort_eq_comp_iff_monotone.mpr
     (sortNetworkPerm4_monotone target)
 
+/-- A direct evaluator for the same four-entry sort.  Unlike the permutation
+network above, this form avoids constructing and composing permutations in
+closed finite computations. -/
+def directSort4 {α : Type*} [LinearOrder α] (f : Fin 4 → α) : Fin 4 → α :=
+  let a0 := min (f 0) (f 1)
+  let a1 := max (f 0) (f 1)
+  let a2 := min (f 2) (f 3)
+  let a3 := max (f 2) (f 3)
+  let b0 := min a0 a2
+  let b2 := max a0 a2
+  let b1 := min a1 a3
+  let b3 := max a1 a3
+  ![b0, min b1 b2, max b1 b2, b3]
+
+private def pairBag4 {α : Type*} (a b : α) : Multiset α := {a} + {b}
+
+private theorem pairBag4_min_max {α : Type*} [LinearOrder α] (a b : α) :
+    pairBag4 (min a b) (max a b) = pairBag4 a b := by
+  rcases le_total a b with h | h
+  · simp [pairBag4, min_eq_left h, max_eq_right h]
+  · simp [pairBag4, min_eq_right h, max_eq_left h, add_comm]
+
+private theorem coe_four_outer_middle4 {α : Type*} (a b c d : α) :
+    (↑[a, b, c, d] : Multiset α) = pairBag4 a d + pairBag4 b c := by
+  unfold pairBag4
+  simp only [← Multiset.cons_coe, Multiset.coe_nil, ← Multiset.singleton_add]
+  abel
+
+private theorem coe_four_adjacent4 {α : Type*} (a b c d : α) :
+    (↑[a, b, c, d] : Multiset α) = pairBag4 a b + pairBag4 c d := by
+  unfold pairBag4
+  simp only [← Multiset.cons_coe, Multiset.coe_nil, ← Multiset.singleton_add]
+  abel
+
+private theorem pairBag4_cross {α : Type*} (a b c d : α) :
+    pairBag4 a b + pairBag4 c d = pairBag4 a c + pairBag4 b d := by
+  unfold pairBag4
+  abel
+
+private theorem pairBag4_cross' {α : Type*} (a b c d : α) :
+    pairBag4 a b + pairBag4 c d = pairBag4 a d + pairBag4 c b := by
+  unfold pairBag4
+  abel
+
+theorem directSort4_monotone {α : Type*} [LinearOrder α] (f : Fin 4 → α) :
+    Monotone (directSort4 f) := by
+  let a0 := min (f 0) (f 1)
+  let a1 := max (f 0) (f 1)
+  let a2 := min (f 2) (f 3)
+  let a3 := max (f 2) (f 3)
+  let b0 := min a0 a2
+  let b2 := max a0 a2
+  let b1 := min a1 a3
+  let b3 := max a1 a3
+  change Monotone ![b0, min b1 b2, max b1 b2, b3]
+  have ha01 : a0 ≤ a1 := min_le_max
+  have ha23 : a2 ≤ a3 := min_le_max
+  have hb02 : b0 ≤ b2 := min_le_max
+  have hb13 : b1 ≤ b3 := min_le_max
+  have hb0a0 : b0 ≤ a0 := min_le_left _ _
+  have hb0a2 : b0 ≤ a2 := min_le_right _ _
+  have ha1b3 : a1 ≤ b3 := le_max_left _ _
+  have ha3b3 : a3 ≤ b3 := le_max_right _ _
+  have hb0b1 : b0 ≤ b1 :=
+    le_min (hb0a0.trans ha01) (hb0a2.trans ha23)
+  have hb2b3 : b2 ≤ b3 :=
+    max_le (ha01.trans ha1b3) (ha23.trans ha3b3)
+  have h01 : b0 ≤ min b1 b2 := le_min hb0b1 hb02
+  have h12 : min b1 b2 ≤ max b1 b2 := min_le_max
+  have h23 : max b1 b2 ≤ b3 := max_le hb13 hb2b3
+  apply Fin.monotone_iff_le_succ.mpr
+  intro i
+  fin_cases i
+  · exact h01
+  · exact h12
+  · exact h23
+
+theorem directSort4_perm {α : Type*} [LinearOrder α] (f : Fin 4 → α) :
+    List.Perm (List.ofFn (directSort4 f)) (List.ofFn f) := by
+  let a0 := min (f 0) (f 1)
+  let a1 := max (f 0) (f 1)
+  let a2 := min (f 2) (f 3)
+  let a3 := max (f 2) (f 3)
+  let b0 := min a0 a2
+  let b2 := max a0 a2
+  let b1 := min a1 a3
+  let b3 := max a1 a3
+  rw [← Multiset.coe_eq_coe]
+  calc
+    (List.ofFn (directSort4 f) : Multiset α) =
+        pairBag4 b0 b3 + pairBag4 (min b1 b2) (max b1 b2) := by
+          change (↑[b0, min b1 b2, max b1 b2, b3] : Multiset α) =
+            pairBag4 b0 b3 + pairBag4 (min b1 b2) (max b1 b2)
+          exact coe_four_outer_middle4 _ _ _ _
+    _ = pairBag4 b0 b3 + pairBag4 b1 b2 := by
+      rw [pairBag4_min_max]
+    _ = pairBag4 b0 b2 + pairBag4 b1 b3 := by
+      exact pairBag4_cross' _ _ _ _
+    _ = pairBag4 a0 a2 + pairBag4 a1 a3 := by
+      rw [pairBag4_min_max, pairBag4_min_max]
+    _ = pairBag4 a0 a1 + pairBag4 a2 a3 := by
+      exact pairBag4_cross _ _ _ _
+    _ = pairBag4 (f 0) (f 1) + pairBag4 (f 2) (f 3) := by
+      rw [pairBag4_min_max, pairBag4_min_max]
+    _ = (List.ofFn f : Multiset α) := by
+      change pairBag4 (f 0) (f 1) + pairBag4 (f 2) (f 3) =
+        (↑[f 0, f 1, f 2, f 3] : Multiset α)
+      exact (coe_four_adjacent4 _ _ _ _).symm
+
+theorem directSort4_eq_tupleSort {α : Type*} [LinearOrder α] (f : Fin 4 → α) :
+    directSort4 f = f ∘ Tuple.sort f := by
+  apply List.ofFn_injective
+  exact
+    ((directSort4_perm f).trans ((Tuple.sort f).ofFn_comp_perm f).symm).eq_of_pairwise'
+      (directSort4_monotone f).sortedLE_ofFn.pairwise
+      (Tuple.monotone_sort f).sortedLE_ofFn.pairwise
+
+/-- The direct evaluator computes exactly the pre-existing sorted target tuple. -/
+theorem directSort4_eq_sortedTarget6 (target : Fin 4 → Fin 15) :
+    directSort4 target = sortedTarget6 target :=
+  directSort4_eq_tupleSort target
+
 end
 
 end MQGN6Audit
