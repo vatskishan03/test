@@ -20,7 +20,11 @@ theorem case13TerminalShard00ValidPossible6 :
       rawDagNodeValidPossible6
         (uniqueDagCase6 13) (feasibleTargetRep6 13) id := by
   intro id hid
-  simp [case13TerminalShard00Possible6, case13TerminalShard0Possible6] at hid
+  have hshard :
+      case13TerminalShard00Possible6 = {0, 3, 6, 10, 14, 18, 33, 43, 54} := by
+    decide +kernel
+  rw [hshard] at hid
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hid
   rcases hid with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact case13Terminal0ValidPossible6
   · exact case13Terminal3ValidPossible6
