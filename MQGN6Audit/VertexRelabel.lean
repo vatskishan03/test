@@ -105,11 +105,22 @@ lemma pmTerm6_relabelVertices6
     (q : Fin 6 → Fin 4) (m : Fin 15) :
     pmTerm6 (relabelVertices6 π W) q m =
       pmTerm6 W (relabelVertexColoring6 π q) (matchingAction6 π m) := by
-  unfold pmTerm6
-  rw [← (matchingSlotEquiv6 π m).prod_comp]
-  apply Fintype.prod_congr
-  intro k
-  exact relabelVertices6_matching_factor π W q m k
+  let F : Fin 3 → ℂ := fun k =>
+    let e := matchingEdges6 m k
+    relabelVertices6 π W (mkEdge e.1 e.2 (q e.1) (q e.2))
+  let G : Fin 3 → ℂ := fun k =>
+    let e := matchingEdges6 (matchingAction6 π m) k
+    W (mkEdge e.1 e.2
+      (relabelVertexColoring6 π q e.1)
+      (relabelVertexColoring6 π q e.2))
+  change (∏ k, F k) = ∏ k, G k
+  calc
+    (∏ k, F k) = ∏ k, G (matchingSlotEquiv6 π m k) := by
+      apply Fintype.prod_congr
+      intro k
+      simpa [F, G, matchingSlotEquiv6] using
+        relabelVertices6_matching_factor π W q m k
+    _ = ∏ k, G k := (matchingSlotEquiv6 π m).prod_comp G
 
 lemma pmSumN_relabelVertices6
     (π : Equiv.Perm (Fin 6)) (W : WeightsN 6 4 ℂ)
