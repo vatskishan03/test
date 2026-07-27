@@ -1,4 +1,4 @@
-import MQGN6Audit.UniqueDagCheck6
+import MQGN6Audit.TargetOrbits6
 
 /-!
 # The all-identical target orbit
@@ -64,7 +64,7 @@ lemma identical_witness_ne_mate
     simp [htarget, identicalTargetRep6, identicalMatching6]
   have hcd := D.compatible d v c
   have : c = d := hcd (by simpa [hdtarget] using h)
-  exact hdc this
+  exact hdc this.symm
 
 def OtherNeighbor6 (v : Fin 6) :=
   {u : Fin 6 // u ≠ v ∧ u ≠ matchingMate6 identicalMatching6 v}
@@ -240,14 +240,20 @@ lemma forbiddenCover6_card_le
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W)
     (htarget : D.target = identicalTargetRep6) :
     (forbiddenCover6 D.plan.witness).card ≤ 36 := by
+  unfold forbiddenCover6
   calc
-    (forbiddenCover6 D.plan.witness).card ≤
-        monoBlockAssignments6.card +
-          (shareCoveredUnion6 D.plan.witness).card +
-          (disjointCoveredUnion6 D.plan.witness).card := by
-      unfold forbiddenCover6
-      omega
+    ((monoBlockAssignments6 ∪ shareCoveredUnion6 D.plan.witness) ∪
+        disjointCoveredUnion6 D.plan.witness).card ≤
+      (monoBlockAssignments6 ∪ shareCoveredUnion6 D.plan.witness).card +
+        (disjointCoveredUnion6 D.plan.witness).card := Finset.card_union_le
+    _ ≤ (monoBlockAssignments6.card +
+        (shareCoveredUnion6 D.plan.witness).card) +
+        (disjointCoveredUnion6 D.plan.witness).card :=
+      Nat.add_le_add_right Finset.card_union_le _
     _ ≤ 4 + 24 + 8 := by
+      have hs := shareCoveredUnion6_card_le D htarget
+      have hd := disjointCoveredUnion6_card_le D htarget
+      rw [monoBlockAssignments6_card]
       omega
     _ = 36 := by decide
 
