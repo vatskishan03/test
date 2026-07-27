@@ -12,6 +12,9 @@ theorem case13Terminal245UniquePossible6 :
     ∀ n : Fin 15, n ≠ 12 →
       245 ∉ matchingReachStructural6 (uniqueDagCase6 13) 1258 n := by
   intro n hne
-  fin_cases n <;> decide +kernel
+  fin_cases n
+  all_goals first
+    | exact (hne rfl).elim
+    | decide +kernel
 
 end MQGN6Audit
