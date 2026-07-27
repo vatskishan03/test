@@ -45,17 +45,13 @@ jobs:
         id: lean
         run: |
           set +e
-          : > /tmp/lean-build.log
-          status=0
-          for f in \
-            MQGN6Audit/TerminalFinite6.lean \
-            MQGN6Audit/TerminalSoundness6.lean \
-            MQGN6Audit/CartesianTerminal6.lean \
-            MQGN6Audit/IdenticalTarget6.lean
-          do
-            echo "===== $f =====" >> /tmp/lean-build.log
-            lake env lean "$f" >> /tmp/lean-build.log 2>&1 || status=1
-          done
+          lake build \
+            MQGN6Audit.TerminalFinite6 \
+            MQGN6Audit.TerminalSoundness6 \
+            MQGN6Audit.CartesianTerminal6 \
+            MQGN6Audit.IdenticalTarget6 \
+            > /tmp/lean-build.log 2>&1
+          status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           {
             echo '<!-- lean-ci-diagnostics -->'
@@ -69,7 +65,7 @@ jobs:
               echo '## Lean audit: compiler diagnostics'
               echo
               echo '```text'
-              grep -n -E '=====|error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 260 || true
+              grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 260 || true
               echo '--- final context ---'
               tail -n 180 /tmp/lean-build.log
               echo '```'
