@@ -1,0 +1,11 @@
+import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Terminal245ForcedBase
+
+namespace MQGN6Audit
+
+set_option maxRecDepth 1000000 in
+set_option maxHeartbeats 10000000 in
+theorem case13Terminal245ForcedK2Possible6 :
+    case13Terminal245ForcedAtPossible6 2 := by
+  decide +kernel
+
+end MQGN6Audit
