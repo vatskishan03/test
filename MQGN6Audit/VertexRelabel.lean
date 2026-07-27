@@ -35,20 +35,146 @@ def matchingSlotAction6 (π : Equiv.Perm (Fin 6))
       (fun n => decide
         (matchingEdges6 (matchingAction6 π m) n = permutedMatchingEdge6 π m k))).getD 0
 
+private lemma matchingMate6_matchingEdges6_fst
+    (m : Fin 15) (k : Fin 3) :
+    matchingMate6 m (matchingEdges6 m k).1 = (matchingEdges6 m k).2 := by
+  fin_cases m <;> fin_cases k <;> rfl
+
+private lemma matchingEdges6_exists_orderedMate
+    (m : Fin 15) (v : Fin 6) :
+    ∃ k : Fin 3,
+      matchingEdges6 m k = orderedPair6 v (matchingMate6 m v) := by
+  obtain ⟨k, hk⟩ := matchingEdges6_contains_vertex m v
+  have hlt := matchingEdges6_lt m k
+  refine ⟨k, ?_⟩
+  rcases hk with ⟨hfst, hsnd⟩ | ⟨hsnd, hfst⟩
+  · subst v
+    rw [← hsnd]
+    simp [orderedPair6, hlt]
+  · subst v
+    rw [← hfst]
+    simp [orderedPair6, hlt.not_gt]
+
+private lemma matchingEdges6_action_contains
+    (π : Equiv.Perm (Fin 6)) (m : Fin 15) (k : Fin 3) :
+    ∃ k' : Fin 3,
+      matchingEdges6 (matchingAction6 π m) k' =
+        permutedMatchingEdge6 π m k := by
+  let e := matchingEdges6 m k
+  have hmate :
+      matchingMate6 (matchingAction6 π m) (π e.1) = π e.2 := by
+    rw [matchingAction6_spec]
+    simp [permutedMate6, e, matchingMate6_matchingEdges6_fst]
+  obtain ⟨k', hk'⟩ :=
+    matchingEdges6_exists_orderedMate (matchingAction6 π m) (π e.1)
+  refine ⟨k', ?_⟩
+  rw [hk', hmate]
+  rfl
+
+private lemma findEdgeSlot6_spec
+    (m : Fin 15) (edge : Fin 6 × Fin 6)
+    (hex : ∃ k : Fin 3, matchingEdges6 m k = edge) :
+    matchingEdges6 m
+        (((List.ofFn fun n : Fin 3 => n).find?
+          (fun n => decide (matchingEdges6 m n = edge))).getD 0) = edge := by
+  let p : Fin 3 → Bool := fun n => decide (matchingEdges6 m n = edge)
+  generalize hfind :
+      (List.ofFn fun n : Fin 3 => n).find? p = o
+  cases o with
+  | none =>
+      have hnone :
+          ∀ x ∈ (List.ofFn fun n : Fin 3 => n), ¬p x :=
+        List.find?_eq_none.mp hfind
+      obtain ⟨k, hk⟩ := hex
+      have hmem : k ∈ (List.ofFn fun n : Fin 3 => n) :=
+        List.mem_ofFn.mpr ⟨k, rfl⟩
+      have hnot := hnone k hmem
+      simp [p, hk] at hnot
+  | some n =>
+      have hp : p n := List.find?_some hfind
+      have hedge : matchingEdges6 m n = edge := by
+        simpa [p] using hp
+      simpa [hfind] using hedge
+
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 theorem matchingSlotAction6_spec :
     ∀ (π : Equiv.Perm (Fin 6)) (m : Fin 15) (k : Fin 3),
       matchingEdges6 (matchingAction6 π m) (matchingSlotAction6 π m k) =
         permutedMatchingEdge6 π m k := by
-  native_decide
+  intro π m k
+  apply findEdgeSlot6_spec
+  exact matchingEdges6_action_contains π m k
+
+private lemma orderedPair6_left_mem
+    {u v x y : Fin 6}
+    (h : orderedPair6 u v = orderedPair6 x y) :
+    u = x ∨ u = y := by
+  unfold orderedPair6 at h
+  split at h <;> split at h <;> simp_all
+
+set_option maxHeartbeats 2000000 in
+set_option maxRecDepth 100000 in
+private lemma matchingEdges6_injective (m : Fin 15) :
+    Function.Injective (matchingEdges6 m) := by
+  intro k l h
+  fin_cases m <;> fin_cases k <;> fin_cases l <;>
+    simp_all [matchingEdges6]
+
+private lemma permutedMatchingEdge6_injective
+    (π : Equiv.Perm (Fin 6)) (m : Fin 15) :
+    Function.Injective (permutedMatchingEdge6 π m) := by
+  intro k l h
+  have hmem :
+      π (matchingEdges6 m k).1 = π (matchingEdges6 m l).1 ∨
+      π (matchingEdges6 m k).1 = π (matchingEdges6 m l).2 :=
+    orderedPair6_left_mem h
+  have hkMate := matchingMate6_matchingEdges6_fst m k
+  have hlMate := matchingMate6_matchingEdges6_fst m l
+  rcases hmem with hsame | hswap
+  · apply matchingEdges6_injective m
+    apply Prod.ext (π.injective hsame)
+    calc
+      (matchingEdges6 m k).2 =
+          matchingMate6 m (matchingEdges6 m k).1 := hkMate.symm
+      _ = matchingMate6 m (matchingEdges6 m l).1 := by
+        rw [π.injective hsame]
+      _ = (matchingEdges6 m l).2 := hlMate
+  · have hswap' :
+        (matchingEdges6 m k).1 = (matchingEdges6 m l).2 :=
+      π.injective hswap
+    have hother :
+        (matchingEdges6 m k).2 = (matchingEdges6 m l).1 := by
+      calc
+        (matchingEdges6 m k).2 =
+            matchingMate6 m (matchingEdges6 m k).1 := hkMate.symm
+        _ = matchingMate6 m (matchingEdges6 m l).2 := by rw [hswap']
+        _ = matchingMate6 m
+            (matchingMate6 m (matchingEdges6 m l).1) := by rw [hlMate]
+        _ = (matchingEdges6 m l).1 :=
+          matchingMate6_involutive m (matchingEdges6 m l).1
+    have hcycle :
+        (matchingEdges6 m k).1 < (matchingEdges6 m k).1 := by
+      calc
+        (matchingEdges6 m k).1 < (matchingEdges6 m k).2 :=
+          matchingEdges6_lt m k
+        _ = (matchingEdges6 m l).1 := hother
+        _ < (matchingEdges6 m l).2 := matchingEdges6_lt m l
+        _ = (matchingEdges6 m k).1 := hswap'.symm
+    exact (lt_irrefl _ hcycle).elim
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
 theorem matchingSlotAction6_bijective :
     ∀ (π : Equiv.Perm (Fin 6)) (m : Fin 15),
       Function.Bijective (matchingSlotAction6 π m) := by
-  native_decide
+  intro π m
+  have hinj : Function.Injective (matchingSlotAction6 π m) := by
+    intro k l hkl
+    apply permutedMatchingEdge6_injective π m
+    rw [← matchingSlotAction6_spec π m k,
+      ← matchingSlotAction6_spec π m l, hkl]
+  exact (Fintype.bijective_iff_injective_and_card _).2 ⟨hinj, rfl⟩
 
 /-- The three edge slots are permuted bijectively. -/
 def matchingSlotEquiv6 (π : Equiv.Perm (Fin 6)) (m : Fin 15) : Fin 3 ≃ Fin 3 :=
