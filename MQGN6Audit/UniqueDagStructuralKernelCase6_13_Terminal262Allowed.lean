@@ -14,7 +14,7 @@ namespace MQGN6Audit
 theorem case13Terminal262AllowedPossible6 :
     ∀ v : Fin 6,
       terminalForcesCodeStructural6 (uniqueDagCase6 13) 262 v fun code =>
-        codeAllowsMatchingAtFast6 code v (decodeDagColoringFast6 262) 14 := by
+        codeAllowsMatchingAtFast6 code v (decodeDagColoringFast6 17) 12 := by
   intro v
   fin_cases v
   · exact case13Terminal262AllowedV0Possible6
