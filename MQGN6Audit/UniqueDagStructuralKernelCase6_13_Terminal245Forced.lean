@@ -1,4 +1,6 @@
-import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Base
+import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Terminal245ForcedK0
+import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Terminal245ForcedK1
+import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Terminal245ForcedK2
 
 /-!
 # Forced-edge checks for case-13 terminal 245
@@ -6,8 +8,6 @@ import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Base
 
 namespace MQGN6Audit
 
-set_option maxRecDepth 1000000 in
-set_option maxHeartbeats 10000000 in
 theorem case13Terminal245ForcedPossible6 :
     ∀ k : Fin 3,
       let e := matchingEdges6 12 k
@@ -25,6 +25,10 @@ theorem case13Terminal245ForcedPossible6 :
               decodeLocalPlanFast6 code
                 ((decodeDagColoringFast6 1258) e.1) = e.1)) := by
   intro k
-  fin_cases k <;> decide +kernel
+  change case13Terminal245ForcedAtPossible6 k
+  fin_cases k
+  · exact case13Terminal245ForcedK0Possible6
+  · exact case13Terminal245ForcedK1Possible6
+  · exact case13Terminal245ForcedK2Possible6
 
 end MQGN6Audit
