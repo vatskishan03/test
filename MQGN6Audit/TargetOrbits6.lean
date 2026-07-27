@@ -220,7 +220,7 @@ private theorem targetOrbitCasesOfPackedNat6
 /- ### Sharded kernel replay -/
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 100000000 in
+set_option maxHeartbeats 10000000 in
 theorem orbitPackedCertificate6Balanced_entriesValid :
     ∀ a b : Fin 15, ∀ c d : Fin 15,
       a ≤ b → b ≤ c → c ≤ d →

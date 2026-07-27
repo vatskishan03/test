@@ -3,7 +3,7 @@ import MQGN6Audit.UniqueDagCompatiblePlanKernelBase6
 namespace MQGN6Audit
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 1000000000 in
+set_option maxHeartbeats 10000000 in
 theorem compatiblePlanCodeTuple_memFast6_ci11 :
     ∀ v p0 p1 p2 p3,
       LocalPlanCompatible6 (feasibleTargetRep6 11) v

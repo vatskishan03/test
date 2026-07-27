@@ -102,7 +102,7 @@ def HasUniqueForcedMatching6 (target : Fin 4 → Fin 15)
     ∀ n : Fin 15, MatchingAllowed6 plan q n → n = m
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 100000000 in
+set_option maxHeartbeats 10000000 in
 /-- The six listed infeasible target orbits fail already at one vertex. -/
 theorem infeasibleTargetRep6_no_local_plan :
     ∀ i : Fin 6, ∃ v : Fin 6,

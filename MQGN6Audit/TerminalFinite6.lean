@@ -167,7 +167,7 @@ def ExplicitTerminalCertificateValid6 (sid : Fin 29) : Prop :=
         TerminalKillValid6 (survivorTarget6 sid) sid q K
 
 set_option maxRecDepth 1000000 in
-set_option maxHeartbeats 1000000000 in
+set_option maxHeartbeats 10000000 in
 theorem explicitTerminalCertificatesValid6 :
     ∀ sid : Fin 29, ExplicitTerminalCertificateValid6 sid := by
   native_decide
