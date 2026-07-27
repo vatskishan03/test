@@ -14,7 +14,7 @@ theorem case13Terminal262ValidPossible6 :
     rawDagNodeValidPossible6
       (uniqueDagCase6 13) (feasibleTargetRep6 13) 262 := by
   change uniqueTerminalStructuralValid6
-    (uniqueDagCase6 13) (feasibleTargetRep6 13) 262 262 14
+    (uniqueDagCase6 13) (feasibleTargetRep6 13) 262 17 12
   exact ⟨by decide +kernel, by decide +kernel,
     case13Terminal262AllowedPossible6,
     case13Terminal262ForcedPossible6,
