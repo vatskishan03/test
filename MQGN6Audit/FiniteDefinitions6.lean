@@ -65,9 +65,12 @@ def survivorTarget6 (sid : Fin 29) : Fin 4 → Fin 15 :=
   else if sid.val < 18 then feasibleTargetRep6 12
   else feasibleTargetRep6 13
 
-/-- Local witness plans used in the finite enumeration. -/
+/-- Local witness plans used in the finite enumeration.  The first condition
+records that every witness is an actual neighbour of `v`; this is part of
+`AxisWitness6` and was also enforced by both independent C++ enumerators. -/
 def LocalPlanCompatible6 (target : Fin 4 → Fin 15) (v : Fin 6)
     (p : Fin 4 → Fin 6) : Prop :=
+  (∀ c, p c ≠ v) ∧
   Function.Injective p ∧
     ∀ c d, p d = matchingMate6 (target c) v → d = c
 
