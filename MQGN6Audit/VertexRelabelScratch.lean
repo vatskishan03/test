@@ -10,8 +10,9 @@ def permutedMate6 (π : Equiv.Perm (Fin 6)) (m : Fin 15) (v : Fin 6) : Fin 6 :=
 
 /-- Locate the transported matching in the fifteen-element table. -/
 def matchingAction6 (π : Equiv.Perm (Fin 6)) (m : Fin 15) : Fin 15 :=
+  let transported : List (Fin 6) := List.ofFn (permutedMate6 π m)
   ((List.ofFn fun n : Fin 15 => n).find?
-      (fun n => decide (∀ v, matchingMate6 n v = permutedMate6 π m v))).getD 0
+      (fun n => decide (List.ofFn (matchingMate6 n) = transported))).getD 0
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
