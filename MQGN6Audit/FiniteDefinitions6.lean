@@ -101,12 +101,32 @@ def HasUniqueForcedMatching6 (target : Fin 4 → Fin 15)
     MatchingAllowed6 plan q m ∧
     ∀ n : Fin 15, MatchingAllowed6 plan q n → n = m
 
-/-- The six listed infeasible target orbits fail already at one vertex. -/
 set_option maxRecDepth 100000 in
+set_option maxHeartbeats 100000000 in
+/-- The six listed infeasible target orbits fail already at one vertex. -/
 theorem infeasibleTargetRep6_no_local_plan :
     ∀ i : Fin 6, ∃ v : Fin 6,
       ¬ ∃ p : Fin 4 → Fin 6,
         LocalPlanCompatible6 (infeasibleTargetRep6 i) v p := by
-  native_decide
+  intro i
+  fin_cases i
+  · refine ⟨2, ?_⟩
+    simp only [LocalPlanCompatible6]
+    decide +kernel
+  · refine ⟨3, ?_⟩
+    simp only [LocalPlanCompatible6]
+    decide +kernel
+  · refine ⟨0, ?_⟩
+    simp only [LocalPlanCompatible6]
+    decide +kernel
+  · refine ⟨0, ?_⟩
+    simp only [LocalPlanCompatible6]
+    decide +kernel
+  · refine ⟨0, ?_⟩
+    simp only [LocalPlanCompatible6]
+    decide +kernel
+  · refine ⟨0, ?_⟩
+    simp only [LocalPlanCompatible6]
+    decide +kernel
 
 end MQGN6Audit
