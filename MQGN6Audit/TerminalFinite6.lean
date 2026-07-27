@@ -1,11 +1,11 @@
-import MQGN6Audit.FiniteClassification6
+import MQGN6Audit.FiniteDefinitions6
 
 /-!
 # Finite terminal certificates
 
 For twenty-eight of the twenty-nine terminal masks, a broad entry is first
 forced to zero by a unique forbidden monomial whose other factors are already
-forced nonzero.  A final forbidden coloring then has one forced nonzero
+forced nonzero. A final forbidden coloring then has one forced nonzero
 matching while every competitor contains one of those derived-zero entries.
 The theorem in this file asks Lean to rediscover those finite certificates from
 the masks themselves.
@@ -25,12 +25,6 @@ set_option maxRecDepth 100000 in
 theorem physicalEdgeIndex6_spec :
     ∀ u v : Fin 6, u < v → physicalEdge6 (physicalEdgeIndex6 u v) = (u, v) := by
   native_decide
-
-/-- The target orbit associated with each terminal template. -/
-def survivorTarget6 (sid : Fin 29) : Fin 4 → Fin 15 :=
-  if sid.val < 2 then feasibleTargetRep6 6
-  else if sid.val < 18 then feasibleTargetRep6 12
-  else feasibleTargetRep6 13
 
 /-- Bit-level membership in a terminal mask. -/
 def MaskAllowsEntry6 (sid : Fin 29) (e : Fin 15) (a b : Fin 4) : Prop :=
