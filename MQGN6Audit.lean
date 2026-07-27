@@ -8,3 +8,5 @@ import MQGN6Audit.VertexAxis
 import MQGN6Audit.PerfectMatchings6
 import MQGN6Audit.SupportReduction
 import MQGN6Audit.ColorRelabel
+import MQGN6Audit.UniqueObstruction
+import MQGN6Audit.VertexRelabelScratch
