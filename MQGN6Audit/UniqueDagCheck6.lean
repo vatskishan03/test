@@ -49,6 +49,7 @@ def uniqueDagEvalId6 {ci : Fin 14} (C : UniqueDagCase6)
 def UniqueDagLeafValid6 (ci : Fin 14) (choice : FeasiblePlanChoice6 ci) : Prop :=
   let C := uniqueDagCase6 ci
   let plan := planOfChoice6 choice
+  C.target = feasibleTargetRep6 ci ∧
   match uniqueDagNodeAt6 C (uniqueDagEvalId6 C choice) with
   | .unique z m =>
       let q := decodeDagColoring6 z
@@ -56,7 +57,9 @@ def UniqueDagLeafValid6 (ci : Fin 14) (choice : FeasiblePlanChoice6 ci) : Prop :
       MatchingForced6 plan (feasibleTargetRep6 ci) q m ∧
       MatchingAllowed6 plan q m ∧
       ∀ n : Fin 15, MatchingAllowed6 plan q n → n = m
-  | .survivor sid => PlanHasSurvivorTemplate6 plan sid
+  | .survivor sid =>
+      survivorTarget6 sid = feasibleTargetRep6 ci ∧
+      PlanHasSurvivorTemplate6 plan sid
   | .branch _ => False
 
 set_option maxRecDepth 1000000 in
@@ -71,17 +74,21 @@ larger direct search. -/
 theorem feasibleTemplateClassification6_fromDag :
     ∀ ci : Fin 14, ∀ choice : FeasiblePlanChoice6 ci,
       HasUniqueForcedMatching6 (feasibleTargetRep6 ci) (planOfChoice6 choice) ∨
-      ∃ sid : Fin 29, PlanHasSurvivorTemplate6 (planOfChoice6 choice) sid := by
+      ∃ sid : Fin 29,
+        survivorTarget6 sid = feasibleTargetRep6 ci ∧
+        PlanHasSurvivorTemplate6 (planOfChoice6 choice) sid := by
   intro ci choice
   have h := uniqueDagLeafValid6 ci choice
   unfold UniqueDagLeafValid6 at h
   generalize hn : uniqueDagNodeAt6 (uniqueDagCase6 ci)
       (uniqueDagEvalId6 (uniqueDagCase6 ci) choice) = node at h
+  have hleaf := h.2
   cases node with
   | unique z m =>
       left
-      exact ⟨decodeDagColoring6 z, m, h.1, h.2.1, h.2.2.1, h.2.2.2⟩
-  | survivor sid => exact Or.inr ⟨sid, h⟩
-  | branch children => exact False.elim h
+      exact ⟨decodeDagColoring6 z, m, hleaf.1, hleaf.2.1,
+        hleaf.2.2.1, hleaf.2.2.2⟩
+  | survivor sid => exact Or.inr ⟨sid, hleaf.1, hleaf.2⟩
+  | branch children => exact False.elim hleaf
 
 end MQGN6Audit
