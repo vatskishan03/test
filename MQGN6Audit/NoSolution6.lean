@@ -23,9 +23,11 @@ one feasible target-orbit classifier. -/
 def feasibleChoiceOfData6 {W : WeightsN 6 4 ℂ}
     (D : AxisTargetData6 W) (ci : Fin 14)
     (htarget : D.target = feasibleTargetRep6 ci) : FeasiblePlanChoice6 ci :=
-  fun v => ⟨D.plan.witness v, D.plan.injective v, by
-    intro c d h
-    exact D.compatible c v d (by simpa [htarget] using h)⟩
+  fun v => ⟨D.plan.witness v,
+    fun c => (D.plan.axis v c).1,
+    D.plan.injective v, by
+      intro c d h
+      exact D.compatible c v d (by simpa [htarget] using h)⟩
 
 @[simp] lemma planOf_feasibleChoiceOfData6
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W) (ci : Fin 14)
@@ -37,9 +39,11 @@ lemma false_of_infeasibleTargetData6
     (htarget : D.target = infeasibleTargetRep6 ci) : False := by
   obtain ⟨v, hv⟩ := infeasibleTargetRep6_no_local_plan ci
   apply hv
-  refine ⟨D.plan.witness v, D.plan.injective v, ?_⟩
-  intro c d h
-  exact D.compatible c v d (by simpa [htarget] using h)
+  refine ⟨D.plan.witness v, ?_, D.plan.injective v, ?_⟩
+  · intro c
+    exact (D.plan.axis v c).1
+  · intro c d h
+    exact D.compatible c v d (by simpa [htarget] using h)
 
 lemma false_of_feasibleTargetData6
     {W : WeightsN 6 4 ℂ} (hW : EqSystemN 6 4 W)
