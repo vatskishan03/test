@@ -6,7 +6,7 @@ set_option maxRecDepth 1000000 in
 set_option maxHeartbeats 10000000 in
 theorem case13Terminal262AllowedV1Possible6 :
     terminalForcesCodeStructural6 (uniqueDagCase6 13) 262 1 fun code =>
-      codeAllowsMatchingAtFast6 code 1 (decodeDagColoringFast6 262) 14 := by
+      codeAllowsMatchingAtFast6 code 1 (decodeDagColoringFast6 17) 12 := by
   decide +kernel
 
 end MQGN6Audit
