@@ -14,6 +14,7 @@ import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Terminal54
 
 namespace MQGN6Audit
 
+set_option maxRecDepth 1000000 in
 theorem case13TerminalShard00ValidPossible6 :
     ∀ id ∈ case13TerminalShard00Possible6,
       rawDagNodeValidPossible6
