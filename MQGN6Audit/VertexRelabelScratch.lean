@@ -8,11 +8,29 @@ open MonochromaticQuantumGraph
 def permutedMate6 (π : Equiv.Perm (Fin 6)) (m : Fin 15) (v : Fin 6) : Fin 6 :=
   π (matchingMate6 m (π.symm v))
 
-/-- Locate the transported matching in the fifteen-element table. -/
+/-- Direct index table for a perfect matching, keyed by the mate of vertex zero
+and then by the mate of the least remaining vertex. -/
+def matchingIndex6 : Fin 6 → Fin 6 → Fin 15 := ![
+  ![0, 0, 0, 0, 0, 0],
+  ![0, 0, 0, 0, 1, 2],
+  ![0, 0, 0, 3, 4, 5],
+  ![0, 0, 6, 0, 7, 8],
+  ![0, 0, 9, 10, 0, 11],
+  ![0, 0, 12, 13, 14, 0]
+]
+
+/-- Locate the transported matching in the fifteen-element table in constant
+time.  The certification theorems below establish that this is exactly the
+transported partner map. -/
 def matchingAction6 (π : Equiv.Perm (Fin 6)) (m : Fin 15) : Fin 15 :=
-  let transported : List (Fin 6) := List.ofFn (permutedMate6 π m)
-  ((List.ofFn fun n : Fin 15 => n).find?
-      (fun n => decide (List.ofFn (matchingMate6 n) = transported))).getD 0
+  let transported := permutedMate6 π m
+  let mateZero := transported 0
+  let nextMate := if mateZero = 1 then transported 2 else transported 1
+  matchingIndex6 mateZero nextMate
+
+local instance (priority := 2000) directPermFintypeScratch6 :
+    Fintype (Equiv.Perm (Fin 6)) :=
+  fintypePerm
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in
