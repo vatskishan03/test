@@ -45,7 +45,7 @@ jobs:
         id: lean
         run: |
           set +e
-          lake env lean MQGN6Audit/NoSolution6.lean > /tmp/lean-build.log 2>&1
+          lake build MQGN6Audit.NoSolution6 > /tmp/lean-build.log 2>&1
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           {
