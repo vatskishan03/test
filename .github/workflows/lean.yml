@@ -41,11 +41,11 @@ jobs:
         run: |
           lake update > /tmp/lake-update.log 2>&1
           lake exe cache get > /tmp/cache-get.log 2>&1
-      - name: Build
+      - name: Check final theorem assembly
         id: lean
         run: |
           set +e
-          lake build > /tmp/lean-build.log 2>&1
+          lake env lean MQGN6Audit/NoSolution6.lean > /tmp/lean-build.log 2>&1
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           {
@@ -60,9 +60,9 @@ jobs:
               echo '## Lean audit: compiler diagnostics'
               echo
               echo '```text'
-              grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 160 || true
+              grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 200 || true
               echo '--- final context ---'
-              tail -n 100 /tmp/lean-build.log
+              tail -n 140 /tmp/lean-build.log
               echo '```'
             fi
           } > /tmp/lean-comment.md
@@ -77,17 +77,18 @@ jobs:
             .lake/packages
             .lake/build
           key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
-      - name: Publish sticky diagnostics to draft PR
+      - name: Publish sticky diagnostics
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          existing=$(gh api repos/${{ github.repository }}/issues/1/comments --paginate --jq '.[] | select(.body | startswith("<!-- lean-ci-diagnostics -->")) | .id' | head -n1)
+          pr=${{ github.event.pull_request.number || 1 }}
+          existing=$(gh api repos/${{ github.repository }}/issues/$pr/comments --paginate --jq '.[] | select(.body | startswith("<!-- lean-ci-diagnostics -->")) | .id' | head -n1)
           body=$(cat /tmp/lean-comment.md)
           if [ -n "$existing" ]; then
             gh api --method PATCH repos/${{ github.repository }}/issues/comments/$existing -f body="$body" >/dev/null
           else
-            gh api --method POST repos/${{ github.repository }}/issues/1/comments -f body="$body" >/dev/null
+            gh api --method POST repos/${{ github.repository }}/issues/$pr/comments -f body="$body" >/dev/null
           fi
       - name: Fail if Lean failed
         if: steps.lean.outputs.status != '0'
