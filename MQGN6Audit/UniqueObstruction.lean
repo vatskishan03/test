@@ -55,7 +55,8 @@ lemma mutual_axis_entry_ne_zero
     orientedWeight6 W u v d c ≠ 0 := by
   obtain ⟨i, hi⟩ := (P.axis u c).2.1
   rw [huc] at hi
-  have huv : u ≠ v := by simpa [huc] using (P.axis u c).1
+  have hvu : v ≠ u := by simpa [huc] using (P.axis u c).1
+  have huv : u ≠ v := Ne.symm hvu
   have hid : i = d := by
     by_contra hid
     have hz := (P.axis v d).2.2 c i hid
@@ -70,12 +71,17 @@ lemma canonical_forced_entry_ne_zero
     {u v : Fin 6} (huv : u < v) {a b : Fin 4}
     (hforced : PlanForcedEntry6 D.plan.witness D.target u v a b) :
     W (mkEdge u v a b) ≠ 0 := by
-  rcases hforced with ⟨c, hmate, rfl, rfl⟩ |
-      ⟨c, d, huc, hvd, rfl, rfl⟩
-  · have h := target_matching_oriented_ne_zero D.target D.target_nonzero c u
+  rcases hforced with htarget | haxis
+  · obtain ⟨c, hmate, ha, hb⟩ := htarget
+    subst a
+    subst b
+    have h := target_matching_oriented_ne_zero D.target D.target_nonzero c u
     rw [hmate] at h
     simpa [orientedWeight6, huv] using h
-  · have h := mutual_axis_entry_ne_zero D.plan huc hvd
+  · obtain ⟨c, d, huc, hvd, ha, hb⟩ := haxis
+    subst a
+    subst b
+    have h := mutual_axis_entry_ne_zero D.plan huc hvd
     simpa [orientedWeight6, huv] using h
 
 /-- Every factor of a matching is allowed by the witness template. -/
@@ -97,7 +103,8 @@ lemma pmTerm6_eq_zero_of_not_allowed
     {q : Fin 6 → Fin 4} {m : Fin 15}
     (hnot : ¬ MatchingAllowed6 P.witness q m) :
     pmTerm6 W q m = 0 := by
-  push_neg at hnot
+  classical
+  simp only [MatchingAllowed6, not_forall] at hnot
   obtain ⟨k, hk⟩ := hnot
   unfold pmTerm6
   apply Finset.prod_eq_zero (Finset.mem_univ k)
