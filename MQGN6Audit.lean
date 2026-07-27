@@ -10,3 +10,4 @@ import MQGN6Audit.SupportReduction
 import MQGN6Audit.ColorRelabel
 import MQGN6Audit.UniqueObstruction
 import MQGN6Audit.VertexRelabelScratch
+import MQGN6Audit.VertexRelabel
