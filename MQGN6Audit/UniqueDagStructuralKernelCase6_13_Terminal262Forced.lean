@@ -10,20 +10,20 @@ namespace MQGN6Audit
 
 theorem case13Terminal262ForcedPossible6 :
     ∀ k : Fin 3,
-      let e := matchingEdges6 14 k
-      ((decodeDagColoringFast6 262) e.1 =
-          (decodeDagColoringFast6 262) e.2 ∧
+      let e := matchingEdges6 12 k
+      ((decodeDagColoringFast6 17) e.1 =
+          (decodeDagColoringFast6 17) e.2 ∧
         matchingMate6
-          ((feasibleTargetRep6 13) ((decodeDagColoringFast6 262) e.1))
+          ((feasibleTargetRep6 13) ((decodeDagColoringFast6 17) e.1))
           e.1 = e.2) ∨
         ((terminalForcesCodeStructural6 (uniqueDagCase6 13) 262 e.1
             fun code =>
               decodeLocalPlanFast6 code
-                ((decodeDagColoringFast6 262) e.2) = e.2) ∧
+                ((decodeDagColoringFast6 17) e.2) = e.2) ∧
          (terminalForcesCodeStructural6 (uniqueDagCase6 13) 262 e.2
             fun code =>
               decodeLocalPlanFast6 code
-                ((decodeDagColoringFast6 262) e.1) = e.1)) := by
+                ((decodeDagColoringFast6 17) e.1) = e.1)) := by
   intro k
   change case13Terminal262ForcedAtPossible6 k
   fin_cases k
