@@ -33,7 +33,12 @@ lemma pmTerm6_relabelColors6
     (ι : Fin 6 → Fin 4) (m : Fin 15) :
     pmTerm6 (relabelColors6 σ W) ι m =
       pmTerm6 W (relabelColoringColors6 σ ι) m := by
-  simp [pmTerm6, relabelColors6, relabelColoringColors6]
+  unfold pmTerm6
+  apply Finset.prod_congr rfl
+  intro k _
+  have hlt := matchingEdges6_lt m k
+  simp [relabelColors6, relabelColoringColors6,
+    MonochromaticQuantumGraph.mkEdge, hlt]
 
 lemma pmSumN_relabelColors6
     (σ : Equiv.Perm (Fin 4)) (W : WeightsN 6 4 ℂ)
@@ -84,7 +89,10 @@ lemma target_nonzero_relabelColors6
       let e := matchingEdges6 (sortedTarget6 target c) k
       relabelColors6 (Tuple.sort target) W (mkEdge e.1 e.2 c c) ≠ 0 := by
   intro c k
-  simpa [sortedTarget6, relabelColors6] using htarget (Tuple.sort target c) k
+  have hlt := matchingEdges6_lt (sortedTarget6 target c) k
+  simpa [sortedTarget6, relabelColors6,
+    MonochromaticQuantumGraph.mkEdge, hlt] using
+    htarget (Tuple.sort target c) k
 
 structure SortedAxisTargetData6 (W : WeightsN 6 4 ℂ)
     extends AxisTargetData6 W where
