@@ -12,5 +12,5 @@ import MQGN6Audit.UniqueObstruction
 import MQGN6Audit.VertexRelabelScratch
 import MQGN6Audit.VertexRelabel
 import MQGN6Audit.TargetOrbits6
-import MQGN6Audit.FiniteClassification6
-import MQGN6Audit.TerminalFinite6
+import MQGN6Audit.FiniteDefinitions6
+import MQGN6Audit.UniqueDagCheck6
