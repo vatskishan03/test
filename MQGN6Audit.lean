@@ -14,3 +14,4 @@ import MQGN6Audit.VertexRelabel
 import MQGN6Audit.TargetOrbits6
 import MQGN6Audit.FiniteDefinitions6
 import MQGN6Audit.UniqueDagCheckFast6
+import MQGN6Audit.NoSolution6
