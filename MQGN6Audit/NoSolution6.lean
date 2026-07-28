@@ -101,7 +101,7 @@ def normalizedAxisTargetData6
       let e := matchingEdges6 (sortedTarget6 targetv c) k
       W₂ (mkEdge e.1 e.2 c c) ≠ 0 :=
     target_nonzero_relabelColors6 targetv htargetv
-  obtain ⟨P⟩ := exists_axisPlan6 W₂ hW₂
+  let P : AxisPlan6 W₂ := Classical.choice (exists_axisPlan6 W₂ hW₂)
   exact ⟨P, sortedTarget6 targetv, htarget₂,
     axisPlan_target_compatible P (sortedTarget6 targetv) htarget₂⟩
 
@@ -122,7 +122,8 @@ theorem no_solution_6_4 :
   have hW₂ : EqSystemN 6 4 W₂ := eqSystem_relabelColors6 ρ Wv hWv
   let D₂ : AxisTargetData6 W₂ :=
     normalizedAxisTargetData6 hWc S.target S.target_nonzero π
-  have hDtarget : D₂.target = sortedTarget6 targetv := rfl
+  have hDtarget : D₂.target = sortedTarget6 targetv := by
+    simp [D₂, normalizedAxisTargetData6, targetv]
   rcases horbit with hid | hinf | hfea
   · exact false_of_identicalTarget6 hW₂ D₂ (hDtarget.trans hid)
   · obtain ⟨ci, hci⟩ := hinf
