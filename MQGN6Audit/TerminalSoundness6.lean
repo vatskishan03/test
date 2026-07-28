@@ -24,14 +24,24 @@ set_option maxRecDepth 100000 in
 theorem survivorAllows_iff_maskAllows6 :
     ∀ sid : Fin 29, ∀ e : Fin 15, ∀ a b : Fin 4,
       survivorAllows6 sid e a b ↔ MaskAllowsEntry6 sid e a b := by
-  native_decide
+  intro sid e a b
+  unfold survivorAllows6 MaskAllowsEntry6
+  simp [Nat.testBit, Nat.shiftRight_eq_div_pow, Nat.one_and_eq_mod_two]
 
 set_option maxRecDepth 100000 in
 theorem singletonMaskAllows6 :
     ∀ a b x y : Fin 4,
       Nat.testBit (2 ^ (4 * a.val + b.val)) (4 * x.val + y.val) = true ↔
         x = a ∧ y = b := by
-  native_decide
+  intro a b x y
+  simp only [Nat.testBit_two_pow, decide_eq_true_eq]
+  constructor
+  · intro h
+    have hx : x.val = a.val := by omega
+    have hy : y.val = b.val := by omega
+    exact ⟨Fin.ext hx, Fin.ext hy⟩
+  · rintro ⟨rfl, rfl⟩
+    rfl
 
 lemma planAllowed_iff_maskAllowed6
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W)
