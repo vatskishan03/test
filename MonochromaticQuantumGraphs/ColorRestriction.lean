@@ -17,7 +17,7 @@ namespace MonochromaticQuantumGraphs
 open MonochromaticQuantumGraph
 
 /-- Restrict a weight system to colors selected by an embedding. -/
-def restrictWeights {N d D : Nat} {α : Type*}
+def restrictWeights {N d D : Nat} {α : Type}
     (ι : Fin d ↪ Fin D) (W : WeightsN N D α) : WeightsN N d α :=
   fun e => W (mkEdge e.u e.v (ι e.i) (ι e.j))
 
@@ -28,7 +28,7 @@ def liftColoring {N d D : Nat} (ι : Fin d ↪ Fin D)
 
 /-- Restriction and lifting agree at every recursive perfect-matching sum. -/
 theorem pmSumListAux_restrictWeights
-    {N d D : Nat} {α : Type*} [Semiring α]
+    {N d D : Nat} {α : Type} [Semiring α]
     (ι : Fin d ↪ Fin D) (W : WeightsN N D α) (q : V N → Fin d) :
     ∀ n L,
       pmSumListAux (restrictWeights ι W) q n L =
@@ -38,13 +38,17 @@ theorem pmSumListAux_restrictWeights
   | n + 2, [] => rfl
   | n + 2, [_] => rfl
   | n + 2, v :: u :: vs => by
-      simp [pmSumListAux, restrictWeights, liftColoring,
-        pmSumListAux_restrictWeights ι W q n]
+      simp only [pmSumListAux]
+      apply congrArg List.sum
+      apply List.map_congr_left
+      intro w hw
+      rw [pmSumListAux_restrictWeights ι W q n ((u :: vs).erase w)]
+      rfl
 
 /-- Restricting weights preserves the full perfect-matching amplitude after
 lifting the coloring. -/
 theorem pmSumN_restrictWeights
-    {N d D : Nat} {α : Type*} [Semiring α]
+    {N d D : Nat} {α : Type} [Semiring α]
     (ι : Fin d ↪ Fin D) (W : WeightsN N D α) (q : V N → Fin d) :
     pmSumN N d (restrictWeights ι W) q =
       pmSumN N D W (liftColoring ι q) := by
@@ -59,20 +63,22 @@ theorem allEqual_liftColoring_iff
   apply List.IsChain.iff
   intro v w
   constructor
-  · exact ι.injective
-  · exact congrArg ι
+  · intro h
+    exact ι.injective h
+  · intro h
+    exact congrArg ι h
 
 /-- Every exact `D`-color solution restricts to an exact solution on any
 injected set of `d` colors. -/
 theorem eqSystemN_restrictColors
-    {N d D : Nat} {α : Type*} [Semiring α]
+    {N d D : Nat} {α : Type} [Semiring α]
     (ι : Fin d ↪ Fin D) (W : WeightsN N D α)
     (hW : EqSystemN N D W) :
     EqSystemN N d (restrictWeights ι W) := by
   intro q
-  rw [pmSumN_restrictWeights]
+  rw [pmSumN_restrictWeights ι W q]
   rw [hW (liftColoring ι q)]
-  rw [allEqual_liftColoring_iff]
+  rw [allEqual_liftColoring_iff ι q]
 
 /-- The initial-segment embedding `Fin d ↪ Fin D` supplied by `d ≤ D`. -/
 def finEmbeddingOfLe {d D : Nat} (h : d ≤ D) : Fin d ↪ Fin D where
@@ -80,11 +86,11 @@ def finEmbeddingOfLe {d D : Nat} (h : d ≤ D) : Fin d ↪ Fin D where
   inj' := by
     intro a b hab
     apply Fin.ext
-    exact congrArg Fin.val hab
+    simpa using congrArg (fun x : Fin D => x.val) hab
 
 /-- Restrict a solution with at least three colors to its first three colors. -/
 theorem eqSystemN_restrictFirstThree
-    {N D : Nat} {α : Type*} [Semiring α]
+    {N D : Nat} {α : Type} [Semiring α]
     (hD : 3 ≤ D) (W : WeightsN N D α)
     (hW : EqSystemN N D W) :
     EqSystemN N 3 (restrictWeights (finEmbeddingOfLe hD) W) :=
@@ -92,7 +98,7 @@ theorem eqSystemN_restrictFirstThree
 
 /-- A no-go theorem at three colors automatically rules out every `D ≥ 3`. -/
 theorem noSolution_of_noSolution_three
-    {N D : Nat} {α : Type*} [Semiring α]
+    {N D : Nat} {α : Type} [Semiring α]
     (hD : 3 ≤ D)
     (h3 : ¬ ∃ W : WeightsN N 3 α, EqSystemN N 3 W) :
     ¬ ∃ W : WeightsN N D α, EqSystemN N D W := by
@@ -103,7 +109,7 @@ theorem noSolution_of_noSolution_three
 /-- For a fixed vertex count and coefficient semiring, proving all dimensions
 `D ≥ 3` is equivalent to proving the single case `D = 3`. -/
 theorem noSolution_all_dimensions_iff_three
-    (N : Nat) (α : Type*) [Semiring α] :
+    (N : Nat) (α : Type) [Semiring α] :
     (∀ D : Nat, 3 ≤ D →
       ¬ ∃ W : WeightsN N D α, EqSystemN N D W) ↔
       ¬ ∃ W : WeightsN N 3 α, EqSystemN N 3 W := by
