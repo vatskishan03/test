@@ -16,7 +16,14 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - lean-audit-n6d4
+    env:
+      LEAN_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v4
       - name: Restore post-build Lean environment
@@ -44,8 +51,10 @@ jobs:
         id: lean
         run: |
           set +e
-          lake build MQGN6Audit.NoSolution6 > /tmp/lean-build.log 2>&1
-          status=$?
+          set -o pipefail
+          stdbuf -oL -eL lake build MQGN6Audit.NoSolution6 2>&1 | tee /tmp/lean-build.log
+          status=${PIPESTATUS[0]}
+          set +o pipefail
           echo "status=$status" >> "$GITHUB_OUTPUT"
           {
             echo '<!-- lean-ci-diagnostics -->'
