@@ -35,7 +35,10 @@ from pathlib import Path
 
 
 FIN_CARD = 105
-THEOREMS_PER_MODULE = 24
+INITIAL_THEOREMS_PER_MODULE = 24
+STEADY_THEOREMS_PER_MODULE = 8
+STEADY_START_A = 15
+STEADY_START_B = 63
 MAX_HEARTBEATS = 2_000_000
 MAX_RECURSION_DEPTH = 100_000
 
@@ -54,6 +57,14 @@ def a_theorem_name(a: int) -> str:
 
 def chunk_module_stem(a: int, start: int, end: int) -> str:
     return f"A{a:03d}B{start:03d}_{end:03d}"
+
+
+def theorem_chunk_limit(a: int, b: int) -> int:
+    if a < STEADY_START_A:
+        return INITIAL_THEOREMS_PER_MODULE
+    if a == STEADY_START_A and b < STEADY_START_B:
+        return INITIAL_THEOREMS_PER_MODULE
+    return STEADY_THEOREMS_PER_MODULE
 
 
 def module_name(stem: str) -> str:
@@ -81,8 +92,10 @@ def emit_leaf_modules(
     for a in range(FIN_CARD):
         imports_by_a[a] = []
         valid_b = list(range(a, FIN_CARD))
-        for offset in range(0, len(valid_b), THEOREMS_PER_MODULE):
-            chunk = valid_b[offset : offset + THEOREMS_PER_MODULE]
+        offset = 0
+        while offset < len(valid_b):
+            chunk_limit = theorem_chunk_limit(a, valid_b[offset])
+            chunk = valid_b[offset : offset + chunk_limit]
             start, end = chunk[0], chunk[-1]
             stem = chunk_module_stem(a, start, end)
             current_leaf_module = module_name(stem)
@@ -138,6 +151,7 @@ def emit_leaf_modules(
             write_lean(path, lines)
             paths.append(path)
             previous_leaf_module = current_leaf_module
+            offset += len(chunk)
     return paths, imports_by_a
 
 
@@ -278,7 +292,11 @@ def generate(output_directory: Path) -> dict[str, object]:
         "dispatch_modules": len(dispatch_paths),
         "final_modules": 1,
         "lean_files": len(paths),
-        "theorems_per_leaf_module_limit": THEOREMS_PER_MODULE,
+        "initial_theorems_per_leaf_module_limit":
+            INITIAL_THEOREMS_PER_MODULE,
+        "steady_theorems_per_leaf_module_limit":
+            STEADY_THEOREMS_PER_MODULE,
+        "steady_sharding_starts_at": [STEADY_START_A, STEADY_START_B],
         "c_branches_per_leaf": FIN_CARD,
         "max_heartbeats": MAX_HEARTBEATS,
         "max_rec_depth": MAX_RECURSION_DEPTH,
