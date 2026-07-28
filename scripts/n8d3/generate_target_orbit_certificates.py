@@ -31,6 +31,7 @@ from itertools import combinations_with_replacement
 import json
 from math import comb
 from pathlib import Path
+import re
 import struct
 from typing import Iterable, Sequence
 
@@ -50,6 +51,12 @@ PACKED_LIMIT = (
     VERTEX_PERMUTATION_COUNT
     * COLOR_PERMUTATION_COUNT
     * REPRESENTATIVE_COUNT
+)
+DEFAULT_GENERATED_DATA = (
+    Path(__file__).resolve().parents[2]
+    / "MonochromaticQuantumGraphs"
+    / "N8D3"
+    / "GeneratedData.lean"
 )
 
 # Frozen checked-in order from targetOrbitRep8.  The generator deliberately
@@ -121,6 +128,86 @@ TARGET_ORBIT_SIZE8: tuple[int, ...] = (
     10080,
     6720,
 )
+
+
+def parse_checked_in_tables(path: Path) -> tuple[
+    list[Matching],
+    list[tuple[int, ...]],
+    list[Triple],
+    list[int],
+]:
+    """Parse the four frozen tables from ``GeneratedData.lean``.
+
+    Generation is deliberately tied to the exact checked-in matching order and
+    representatives.  The independently reconstructed tables below must agree
+    with these parsed values before any certificate is emitted.
+    """
+    text = path.read_text()
+
+    edges_text = text.split("def matchingEdges8", 1)[1].split(
+        "/-- Partner maps", 1
+    )[0]
+    edge_values = [
+        (int(left), int(right))
+        for left, right in re.findall(r"\((\d+),\s*(\d+)\)", edges_text)
+    ]
+    if len(edge_values) != MATCHING_COUNT * 4:
+        raise AssertionError(
+            f"expected {MATCHING_COUNT * 4} edge entries, "
+            f"found {len(edge_values)}"
+        )
+    checked_matchings = [
+        tuple(edge_values[offset : offset + 4])
+        for offset in range(0, len(edge_values), 4)
+    ]
+
+    mates_text = text.split("def matchingMate8", 1)[1].split(
+        "/-- Canonical representatives", 1
+    )[0]
+    checked_mates = [
+        tuple(int(value) for value in row.split(","))
+        for row in re.findall(r"!\[([0-9,\s]+)\]", mates_text)
+        if len(row.split(",")) == VERTEX_COUNT
+    ]
+    if len(checked_mates) != MATCHING_COUNT:
+        raise AssertionError(
+            f"expected {MATCHING_COUNT} mate rows, found {len(checked_mates)}"
+        )
+
+    representatives_text = text.split("def targetOrbitRep8", 1)[1].split(
+        "/-- Orbit sizes", 1
+    )[0]
+    checked_representatives = [
+        (int(first), int(second), int(third))
+        for first, second, third in re.findall(
+            r"!\[(\d+),\s*(\d+),\s*(\d+)\]", representatives_text
+        )
+    ]
+    if len(checked_representatives) != REPRESENTATIVE_COUNT:
+        raise AssertionError(
+            f"expected {REPRESENTATIVE_COUNT} representatives, "
+            f"found {len(checked_representatives)}"
+        )
+
+    sizes_text = text.split("def targetOrbitSize8", 1)[1].split(
+        "set_option", 1
+    )[0]
+    checked_sizes = [
+        int(value)
+        for value in re.findall(r"\d+", sizes_text.split(":=", 1)[1])
+    ]
+    if len(checked_sizes) != REPRESENTATIVE_COUNT:
+        raise AssertionError(
+            f"expected {REPRESENTATIVE_COUNT} orbit sizes, "
+            f"found {len(checked_sizes)}"
+        )
+
+    return (
+        checked_matchings,
+        checked_mates,
+        checked_representatives,
+        checked_sizes,
+    )
 
 
 def perfect_matchings(vertices: tuple[int, ...]) -> list[Matching]:
@@ -218,10 +305,39 @@ def pack_certificate(vertex_code: int, color_code: int, representative: int) -> 
     return packed
 
 
-def generate_certificates() -> tuple[list[int], dict[str, object]]:
+def generate_certificates(
+    generated_data_path: Path,
+) -> tuple[list[int], dict[str, object]]:
+    (
+        checked_matchings,
+        checked_mates,
+        checked_representatives,
+        checked_sizes,
+    ) = parse_checked_in_tables(generated_data_path)
+
     matchings = perfect_matchings(tuple(range(VERTEX_COUNT)))
     if len(matchings) != MATCHING_COUNT:
         raise AssertionError(len(matchings))
+    if matchings != checked_matchings:
+        raise AssertionError(
+            "independent recursive matching order differs from matchingEdges8"
+        )
+    mates = mate_rows(matchings)
+    if mates != checked_mates:
+        raise AssertionError(
+            "independent partner maps differ from matchingMate8"
+        )
+    if tuple(checked_representatives) != TARGET_ORBIT_REP8:
+        raise AssertionError(
+            "parsed targetOrbitRep8 differs from the frozen audit constants"
+        )
+    if tuple(checked_sizes) != TARGET_ORBIT_SIZE8:
+        raise AssertionError(
+            "parsed targetOrbitSize8 differs from the frozen audit constants"
+        )
+
+    representatives = tuple(checked_representatives)
+    expected_sizes = tuple(checked_sizes)
     matching_index = {matching: index for index, matching in enumerate(matchings)}
     if len(matching_index) != MATCHING_COUNT:
         raise AssertionError("duplicate matching")
@@ -249,7 +365,7 @@ def generate_certificates() -> tuple[list[int], dict[str, object]]:
             ]
             for matching in matchings
         )
-        for representative_index, representative in enumerate(TARGET_ORBIT_REP8):
+        for representative_index, representative in enumerate(representatives):
             unsorted_source = tuple(
                 matching_action_inverse[representative[color]]
                 for color in range(COLOR_COUNT)
@@ -277,10 +393,10 @@ def generate_certificates() -> tuple[list[int], dict[str, object]]:
         )
 
     observed_sizes = tuple(owner.count(index) for index in range(REPRESENTATIVE_COUNT))
-    if observed_sizes != TARGET_ORBIT_SIZE8:
+    if observed_sizes != expected_sizes:
         raise AssertionError(
             f"orbit-size mismatch\nobserved={observed_sizes}\n"
-            f"expected={TARGET_ORBIT_SIZE8}"
+            f"expected={expected_sizes}"
         )
 
     # Check the rank formula against the independent itertools enumeration.
@@ -290,13 +406,17 @@ def generate_certificates() -> tuple[list[int], dict[str, object]]:
         if target_lex_rank(target) != expected_rank:
             raise AssertionError((target, target_lex_rank(target), expected_rank))
 
-    mates = mate_rows(matchings)
     summary: dict[str, object] = {
         "matching_count": len(matchings),
         "target_count": len(packed_rows),
-        "representative_count": len(TARGET_ORBIT_REP8),
+        "representative_count": len(representatives),
         "orbit_sizes": observed_sizes,
         "sum_orbit_sizes": sum(observed_sizes),
+        "generated_data": str(generated_data_path),
+        "generated_data_sha256": sha256(
+            generated_data_path.read_bytes()
+        ).hexdigest(),
+        "checked_in_tables_equal_independent": True,
         "duplicate_group_visits": duplicate_visits,
         "packed_min": min(packed_rows),
         "packed_max": max(packed_rows),
@@ -314,7 +434,7 @@ def generate_certificates() -> tuple[list[int], dict[str, object]]:
             bytes(value for row in mates for value in row)
         ).hexdigest(),
         "representatives_sha256": sha256(
-            bytes(value for row in TARGET_ORBIT_REP8 for value in row)
+            bytes(value for row in representatives for value in row)
         ).hexdigest(),
         "orbit_sizes_u32le_sha256": sha256(
             b"".join(struct.pack("<I", value) for value in observed_sizes)
@@ -542,6 +662,15 @@ def write_outputs(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--generated-data",
+        type=Path,
+        default=DEFAULT_GENERATED_DATA,
+        help=(
+            "checked-in GeneratedData.lean to parse and cross-check "
+            f"(default: {DEFAULT_GENERATED_DATA})"
+        ),
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         required=True,
@@ -565,7 +694,9 @@ def main() -> None:
             f"{arguments.output_dir}"
         )
 
-    packed_rows, generation_summary = generate_certificates()
+    packed_rows, generation_summary = generate_certificates(
+        arguments.generated_data
+    )
     output_summary = write_outputs(
         arguments.output_dir,
         packed_rows,
