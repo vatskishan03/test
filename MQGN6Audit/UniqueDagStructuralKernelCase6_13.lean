@@ -23,6 +23,8 @@ import MQGN6Audit.UniqueDagStructuralKernelCase6_13_Shard34
 
 namespace MQGN6Audit
 
+set_option maxRecDepth 1000000
+
 theorem case13TerminalShard0ValidPossible6 :
     ∀ id ∈ case13TerminalShard0Possible6,
       rawDagNodeValidPossible6
@@ -30,12 +32,15 @@ theorem case13TerminalShard0ValidPossible6 :
   intro id hid
   rw [case13TerminalShard0_partitionPossible6] at hid
   simp only [Finset.mem_union] at hid
-  rcases hid with h00 | h01 | h02 | h03 | h04
-  · exact case13TerminalShard00ValidPossible6 id h00
-  · exact case13TerminalShard01ValidPossible6 id h01
-  · exact case13TerminalShard02ValidPossible6 id h02
-  · exact case13TerminalShard03ValidPossible6 id h03
-  · exact case13TerminalShard04ValidPossible6 id h04
+  exact hid.elim
+    (fun h0123 => h0123.elim
+      (fun h012 => h012.elim
+        (fun h01 => h01.elim
+          (case13TerminalShard00ValidPossible6 id)
+          (case13TerminalShard01ValidPossible6 id))
+        (case13TerminalShard02ValidPossible6 id))
+      (case13TerminalShard03ValidPossible6 id))
+    (case13TerminalShard04ValidPossible6 id)
 
 theorem case13TerminalShard1ValidPossible6 :
     ∀ id ∈ case13TerminalShard1Possible6,
@@ -44,11 +49,13 @@ theorem case13TerminalShard1ValidPossible6 :
   intro id hid
   rw [case13TerminalShard1_partitionPossible6] at hid
   simp only [Finset.mem_union] at hid
-  rcases hid with h10 | h11 | h12 | h13
-  · exact case13TerminalShard10ValidPossible6 id h10
-  · exact case13TerminalShard11ValidPossible6 id h11
-  · exact case13TerminalShard12ValidPossible6 id h12
-  · exact case13TerminalShard13ValidPossible6 id h13
+  exact hid.elim
+    (fun h101112 => h101112.elim
+      (fun h1011 => h1011.elim
+        (case13TerminalShard10ValidPossible6 id)
+        (case13TerminalShard11ValidPossible6 id))
+      (case13TerminalShard12ValidPossible6 id))
+    (case13TerminalShard13ValidPossible6 id)
 
 theorem case13TerminalShard2ValidPossible6 :
     ∀ id ∈ case13TerminalShard2Possible6,
@@ -57,11 +64,13 @@ theorem case13TerminalShard2ValidPossible6 :
   intro id hid
   rw [case13TerminalShard2_partitionPossible6] at hid
   simp only [Finset.mem_union] at hid
-  rcases hid with h20 | h21 | h22 | h23
-  · exact case13TerminalShard20ValidPossible6 id h20
-  · exact case13TerminalShard21ValidPossible6 id h21
-  · exact case13TerminalShard22ValidPossible6 id h22
-  · exact case13TerminalShard23ValidPossible6 id h23
+  exact hid.elim
+    (fun h202122 => h202122.elim
+      (fun h2021 => h2021.elim
+        (case13TerminalShard20ValidPossible6 id)
+        (case13TerminalShard21ValidPossible6 id))
+      (case13TerminalShard22ValidPossible6 id))
+    (case13TerminalShard23ValidPossible6 id)
 
 theorem case13TerminalShard3ValidPossible6 :
     ∀ id ∈ case13TerminalShard3Possible6,
@@ -70,12 +79,15 @@ theorem case13TerminalShard3ValidPossible6 :
   intro id hid
   rw [case13TerminalShard3_partitionPossible6] at hid
   simp only [Finset.mem_union] at hid
-  rcases hid with h30 | h31 | h32 | h33 | h34
-  · exact case13TerminalShard30ValidPossible6 id h30
-  · exact case13TerminalShard31ValidPossible6 id h31
-  · exact case13TerminalShard32ValidPossible6 id h32
-  · exact case13TerminalShard33ValidPossible6 id h33
-  · exact case13TerminalShard34ValidPossible6 id h34
+  exact hid.elim
+    (fun h3033 => h3033.elim
+      (fun h3032 => h3032.elim
+        (fun h3031 => h3031.elim
+          (case13TerminalShard30ValidPossible6 id)
+          (case13TerminalShard31ValidPossible6 id))
+        (case13TerminalShard32ValidPossible6 id))
+      (case13TerminalShard33ValidPossible6 id))
+    (case13TerminalShard34ValidPossible6 id)
 
 theorem rawDagCase13StructuralValidPossible6 :
     RawDagCaseStructuralValidPossible6 13 := by
@@ -86,11 +98,13 @@ theorem rawDagCase13StructuralValidPossible6 :
     case13TerminalShard0Possible6 ∪ case13TerminalShard1Possible6 ∪
       case13TerminalShard2Possible6 ∪ case13TerminalShard3Possible6 at hid
   simp only [Finset.mem_union] at hid
-  rcases hid with h0 | h1 | h2 | h3
-  · exact case13TerminalShard0ValidPossible6 id h0
-  · exact case13TerminalShard1ValidPossible6 id h1
-  · exact case13TerminalShard2ValidPossible6 id h2
-  · exact case13TerminalShard3ValidPossible6 id h3
+  exact hid.elim
+    (fun h012 => h012.elim
+      (fun h01 => h01.elim
+        (case13TerminalShard0ValidPossible6 id)
+        (case13TerminalShard1ValidPossible6 id))
+      (case13TerminalShard2ValidPossible6 id))
+    (case13TerminalShard3ValidPossible6 id)
 
 theorem rawDagCaseValidFast6_case13_structural :
     RawDagCaseValidFast6 13 :=
