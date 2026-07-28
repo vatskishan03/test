@@ -42,7 +42,8 @@ theorem cartesianResidualFacts6 :
       ∀ n : Fin 15,
         MaskMatchingAllowed6 cartesianSid6 (cartesianResidualQ6 r) n →
           n = cartesianResidualConstant6 r ∨ n = allBroadMatching6 := by
-  native_decide
+  intro r
+  fin_cases r <;> decide
 
 set_option maxRecDepth 100000 in
 theorem cartesianFinalFacts6 :
@@ -51,7 +52,7 @@ theorem cartesianFinalFacts6 :
     ∀ n : Fin 15,
       MaskMatchingAllowed6 cartesianSid6 cartesianFinalQ6 n →
         n = allBroadMatching6 := by
-  native_decide
+  decide
 
 lemma cartesianBroadTerm_ne_zero6
     {W : WeightsN 6 4 ℂ} (hW : EqSystemN 6 4 W)
