@@ -86,6 +86,12 @@ def matchingRelabels8
   ∀ v : Fin 8,
     matchingMate8 target (π v) = π (matchingMate8 source v)
 
+instance instDecidableMatchingRelabels8
+    (π : Equiv.Perm (Fin 8)) (source target : Fin 105) :
+    Decidable (matchingRelabels8 π source target) := by
+  unfold matchingRelabels8
+  infer_instance
+
 /-- The three matching indices stored as an explicit target tuple. -/
 def targetTuple8 (a b c : Fin 105) : Fin 3 → Fin 105 :=
   ![a, b, c]
@@ -113,6 +119,12 @@ def targetOrbitCertificateValid8
     matchingRelabels8 (packedVertexPerm8 packed)
       (target (packedColorPerm8 packed color))
       (targetOrbitRep8 (packedRepresentativeCode8 packed) color)
+
+instance instDecidableTargetOrbitCertificateValid8
+    (target : Fin 3 → Fin 105) (packed : Nat) :
+    Decidable (targetOrbitCertificateValid8 target packed) := by
+  unfold targetOrbitCertificateValid8
+  infer_instance
 
 theorem targetOrbitWitness8_of_certificate
     (target : Fin 3 → Fin 105) (packed : Nat)

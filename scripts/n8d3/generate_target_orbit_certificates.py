@@ -523,17 +523,29 @@ def emit_lean_shards(
             "length": len(rows),
         }
         shards.append(shard)
-        lines = [
-            "import Mathlib",
-            "",
-            "namespace MonochromaticQuantumGraphs.N8D3",
-            "",
-            "set_option maxRecDepth 100000 in",
-            (
-                f"def orbitPackedCertificate8Shard{shard_index:03d} "
-                f"(i : Fin {len(rows)}) : Nat :="
-            ),
-        ]
+        lines: list[str] = []
+        if shard_index > 0:
+            lines.extend(
+                [
+                    (
+                        "import MonochromaticQuantumGraphs.N8D3."
+                        "TargetOrbitCertificateData8."
+                        f"Shard{shard_index - 1:03d}"
+                    ),
+                    "",
+                ]
+            )
+        lines.extend(
+            [
+                "namespace MonochromaticQuantumGraphs.N8D3",
+                "",
+                "set_option maxRecDepth 100000 in",
+                (
+                    f"def orbitPackedCertificate8Shard{shard_index:03d} "
+                    f"(i : Fin {len(rows)}) : Nat :="
+                ),
+            ]
+        )
         lines.extend(_balanced_lookup_lines(rows, "i"))
         lines.extend(
             [
@@ -546,16 +558,15 @@ def emit_lean_shards(
         path.write_text("\n".join(lines))
 
     root_lines = [
-        *(
-            f"import MonochromaticQuantumGraphs.N8D3."
-            f"TargetOrbitCertificateData8.Shard{shard['index']:03d}"
-            for shard in shards
+        (
+            "import MonochromaticQuantumGraphs.N8D3."
+            "TargetOrbitCertificateData8."
+            f"Shard{shards[-1]['index']:03d}"
         ),
         "",
         "namespace MonochromaticQuantumGraphs.N8D3",
         "",
         "/-- Packed certificate lookup by lexicographic sorted-target rank. -/",
-        "set_option maxRecDepth 100000 in",
         "def orbitPackedCertificate8 (i : Fin 198485) : Nat :=",
     ]
     root_lines.extend(_balanced_shard_dispatch_lines(shards))
