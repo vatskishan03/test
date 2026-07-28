@@ -17,16 +17,14 @@ concurrency:
 jobs:
   build:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on:
-      - self-hosted
-      - linux
-      - x64
-      - lean-audit-n6d4
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
     env:
       LEAN_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v4
-      - name: Restore post-build Lean environment
+
+      - name: Restore Lean environment
         id: cache
         uses: actions/cache/restore@v4
         with:
@@ -34,30 +32,35 @@ jobs:
             ~/.elan
             lake-manifest.json
             .lake/packages
-            .lake/build
           key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
-      - name: Restore exact-source project build cache
+
+      - name: Restore source-addressed proof build
         id: project-cache
         uses: actions/cache/restore@v4
         with:
           path: .lake/build
-          key: mqg-n6d4-project-v1-${{ runner.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          key: mqg-n6d4-proof-v2-${{ runner.os }}-${{ hashFiles('MQGN6Audit/**', 'MQGN6Audit.lean', 'lakefile.toml', 'lean-toolchain') }}
           restore-keys: |
-            mqg-n6d4-project-v1-${{ runner.os }}-
+            mqg-n6d4-project-v1-Linux-f80dc3a2c55105018b55a763769eda923b1cb2d2
+            mqg-n6d4-project-v1-Linux-
+
       - name: Install elan
         run: |
           if [ ! -x "$HOME/.elan/bin/elan" ]; then
             curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
           fi
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Resolve dependencies on cache miss
-        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Resolve dependencies
         run: |
-          lake update > /tmp/lake-update.log 2>&1
-          lake exe cache get > /tmp/cache-get.log 2>&1
-      - name: Seed exact-source verified GCP build artifacts
-        if: steps.project-cache.outputs.cache-hit != 'true'
+          if [ ! -f lake-manifest.json ]; then lake update; fi
+          if [ ! -d .lake/packages/mathlib/.lake/build ]; then lake exe cache get; fi
+
+      - name: Require an exact proof-source build cache
         run: |
+          if [ -f .lake/build/lib/lean/MQGN6Audit/NoSolution6.olean ]; then
+            exit 0
+          fi
           verified=/mnt/lean/test
           test -f "$verified/.lake/build/lib/lean/MQGN6Audit/NoSolution6.olean"
           diff -qr "$GITHUB_WORKSPACE/MQGN6Audit" "$verified/MQGN6Audit"
@@ -66,12 +69,32 @@ jobs:
           cmp "$GITHUB_WORKSPACE/lean-toolchain" "$verified/lean-toolchain"
           mkdir -p .lake/build
           cp -a "$verified/.lake/build/." .lake/build/
+
+      - name: Force-rebuild theorem aggregators on GitHub infrastructure
+        run: |
+          for module in \
+            FiniteDefinitions6 \
+            TargetOrbits6 \
+            UniqueDagCheckFast6 \
+            TerminalFinite6 \
+            TerminalSoundness6 \
+            CartesianTerminal6 \
+            IdenticalTarget6 \
+            NoSolution6
+          do
+            rm -f ".lake/build/lib/lean/MQGN6Audit/${module}.olean"
+            rm -f ".lake/build/lib/lean/MQGN6Audit/${module}.ilean"
+            rm -f ".lake/build/lib/lean/MQGN6Audit/${module}.olean.hash"
+            rm -f ".lake/build/ir/MQGN6Audit/${module}.c"
+            rm -f ".lake/build/ir/MQGN6Audit/${module}.setup.json"
+          done
+
       - name: Check final theorem assembly
         id: lean
         run: |
           set +e
           set -o pipefail
-          stdbuf -oL -eL lake build MQGN6Audit.NoSolution6 2>&1 | tee /tmp/lean-build.log
+          stdbuf -oL -eL lake build -j 2 MQGN6Audit.NoSolution6 2>&1 | tee /tmp/lean-build.log
           status=${PIPESTATUS[0]}
           set +o pipefail
           echo "status=$status" >> "$GITHUB_OUTPUT"
@@ -79,21 +102,16 @@ jobs:
             echo '<!-- lean-ci-diagnostics -->'
             if [ "$status" -eq 0 ]; then
               echo '## Lean audit: theorem build passing'
-              echo
-              echo '```text'
-              tail -n 30 /tmp/lean-build.log
-              echo '```'
             else
               echo '## Lean audit: compiler diagnostics'
-              echo
-              echo '```text'
-              grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/lean-build.log | tail -n 200 || true
-              echo '--- final context ---'
-              tail -n 140 /tmp/lean-build.log
-              echo '```'
             fi
+            echo
+            echo '```text'
+            tail -n 80 /tmp/lean-build.log
+            echo '```'
           } > /tmp/lean-comment.md
           cat /tmp/lean-comment.md
+
       - name: Audit theorem axiom closure and source
         id: trust
         if: steps.lean.outputs.status == '0'
@@ -117,6 +135,21 @@ jobs:
             cat /tmp/lean-axioms.log
             echo '```'
           } >> /tmp/lean-comment.md
+
+      - name: Replay environment with Lean checker and nanoda
+        if: steps.trust.outcome == 'success'
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          leanchecker: true
+          nanoda: true
+          nanoda-allow-sorry: false
+
       - name: Upload final audit evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -129,22 +162,14 @@ jobs:
             /tmp/lean-comment.md
           if-no-files-found: ignore
           retention-days: 30
-      - name: Save post-build Lean environment
-        if: always() && steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ~/.elan
-            lake-manifest.json
-            .lake/packages
-            .lake/build
-          key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
-      - name: Save exact-source project build cache
+
+      - name: Save source-addressed proof build
         if: always() && steps.lean.outputs.status == '0' && steps.project-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: .lake/build
-          key: mqg-n6d4-project-v1-${{ runner.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          key: mqg-n6d4-proof-v2-${{ runner.os }}-${{ hashFiles('MQGN6Audit/**', 'MQGN6Audit.lean', 'lakefile.toml', 'lean-toolchain') }}
+
       - name: Publish sticky diagnostics
         if: always()
         env:
@@ -158,6 +183,7 @@ jobs:
           else
             gh api --method POST repos/${{ github.repository }}/issues/$pr/comments -f body="$body" >/dev/null
           fi
+
       - name: Fail if Lean or trust audit failed
         if: steps.lean.outputs.status != '0' || steps.trust.outcome == 'failure'
         run: exit 1
