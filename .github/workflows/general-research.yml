@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
   group: mqg-general-${{ github.event.pull_request.number || github.ref }}
@@ -37,8 +38,30 @@ jobs:
           if [ ! -f lake-manifest.json ]; then lake update; fi
           lake exe cache get
       - name: Build general research library
-        run: lake build MonochromaticQuantumGraphs
+        id: lean
+        run: |
+          set +e
+          set -o pipefail
+          lake build MonochromaticQuantumGraphs 2>&1 | tee /tmp/general-build.log
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          {
+            echo '<!-- general-research-diagnostics -->'
+            if [ "$status" -eq 0 ]; then
+              echo '## General research build: passing'
+            else
+              echo '## General research build: compiler diagnostics'
+            fi
+            echo
+            echo '```text'
+            grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/general-build.log | tail -n 160 || true
+            echo '--- final context ---'
+            tail -n 160 /tmp/general-build.log
+            echo '```'
+          } > /tmp/general-comment.md
+          exit "$status"
       - name: Audit new theorem axioms
+        if: steps.lean.outputs.status == '0'
         run: |
           cat > /tmp/GeneralAxiomAudit.lean <<'EOF'
           import MonochromaticQuantumGraphs
@@ -49,3 +72,29 @@ jobs:
           if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/general-axioms.log; then
             exit 1
           fi
+      - name: Upload general research diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: general-research-${{ github.run_id }}
+          path: |
+            /tmp/general-build.log
+            /tmp/general-axioms.log
+            /tmp/general-comment.md
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Publish sticky diagnostics
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments --paginate --jq '.[] | select(.body | startswith("<!-- general-research-diagnostics -->")) | .id' | head -n1)
+          body=$(cat /tmp/general-comment.md 2>/dev/null || printf '%s\n' '<!-- general-research-diagnostics -->' 'No compiler diagnostic was produced.')
+          if [ -n "$existing" ]; then
+            gh api --method PATCH repos/${{ github.repository }}/issues/comments/$existing -f body="$body" >/dev/null
+          else
+            gh api --method POST repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments -f body="$body" >/dev/null
+          fi
+      - name: Fail if Lean failed
+        if: steps.lean.outputs.status != '0'
+        run: exit 1
