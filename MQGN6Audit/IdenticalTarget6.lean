@@ -61,7 +61,8 @@ lemma identical_witness_ne_mate
   intro h
   obtain ⟨d, hdc⟩ := exists_ne c
   have hdtarget : D.target d = identicalMatching6 := by
-    simp [htarget, identicalTargetRep6, identicalMatching6]
+    rw [htarget]
+    fin_cases d <;> rfl
   have hcd := D.compatible d v c
   have : c = d := hcd (by simpa [hdtarget] using h)
   exact hdc this.symm
@@ -69,10 +70,16 @@ lemma identical_witness_ne_mate
 def OtherNeighbor6 (v : Fin 6) :=
   {u : Fin 6 // u ≠ v ∧ u ≠ matchingMate6 identicalMatching6 v}
 
+instance instFintypeOtherNeighbor6 (v : Fin 6) : Fintype (OtherNeighbor6 v) :=
+  Fintype.ofInjective (fun u : OtherNeighbor6 v => u.1) Subtype.val_injective
+
 set_option maxRecDepth 100000 in
 theorem card_otherNeighbor6 :
     ∀ v : Fin 6, Fintype.card (OtherNeighbor6 v) = 4 := by
-  native_decide
+  intro v
+  unfold OtherNeighbor6
+  rw [Fintype.card_subtype]
+  fin_cases v <;> decide
 
 lemma exists_witness_color_nontarget
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W)
@@ -134,21 +141,32 @@ theorem oneShare_rep_nontarget6 :
     ∀ s : Fin 6, ∀ b : Fin 3, b ≠ oneShareFreeBlock6 s →
       matchingMate6 (oneShareMatching6 s) (blockRep6 b) ≠
         matchingMate6 identicalMatching6 (blockRep6 b) := by
-  native_decide
+  intro s b hb
+  fin_cases s <;> fin_cases b <;>
+    simp_all [oneShareFreeBlock6, oneShareMatching6, blockRep6,
+      identicalMatching6, matchingMate6]
 
 set_option maxRecDepth 100000 in
 theorem disjoint_rep_nontarget6 :
     ∀ s : Fin 8, ∀ b : Fin 3,
       matchingMate6 (disjointMatching6 s) (blockRep6 b) ≠
         matchingMate6 identicalMatching6 (blockRep6 b) := by
-  native_decide
+  intro s b
+  fin_cases s <;> fin_cases b <;> decide
 
 set_option maxRecDepth 100000 in
 theorem matching6_trichotomy_identical :
     ∀ m : Fin 15, m = identicalMatching6 ∨
       (∃ s : Fin 6, m = oneShareMatching6 s) ∨
       ∃ s : Fin 8, m = disjointMatching6 s := by
-  native_decide
+  intro m
+  fin_cases m <;> decide
+
+instance instDecidableMatchingAllowed6Identical
+    (plan : Fin 6 → Fin 4 → Fin 6) (q : Fin 6 → Fin 4) (m : Fin 15) :
+    Decidable (MatchingAllowed6 plan q m) := by
+  unfold MatchingAllowed6 PlanAllowedEntry6
+  infer_instance
 
 def blockCovered6 (plan : Fin 6 → Fin 4 → Fin 6) (m : Fin 15) :
     Finset BlockAssignment6 :=
@@ -166,8 +184,14 @@ lemma blockCovered_share_card_le_four
     funext b
     by_cases hb : b = oneShareFreeBlock6 s
     · simpa [f, hb] using heq
-    · have ht := (Finset.mem_filter.mp t.2).2
-      have ht' := (Finset.mem_filter.mp t'.2).2
+    · have htmem :
+          t.1 ∈ blockCovered6 D.plan.witness (oneShareMatching6 s) := by
+          simpa [S] using t.2
+      have ht'mem :
+          t'.1 ∈ blockCovered6 D.plan.witness (oneShareMatching6 s) := by
+          simpa [S] using t'.2
+      have ht := (Finset.mem_filter.mp htmem).2
+      have ht' := (Finset.mem_filter.mp ht'mem).2
       have hv := matchingAllowed_nontarget_vertex_unique D htarget ht ht'
         (blockRep6 b) (oneShare_rep_nontarget6 s b hb)
       simpa [blockColoring6] using hv
@@ -183,8 +207,14 @@ lemma blockCovered_disjoint_card_le_one
     intro t t'
     apply Subtype.ext
     funext b
-    have ht := (Finset.mem_filter.mp t.2).2
-    have ht' := (Finset.mem_filter.mp t'.2).2
+    have htmem :
+        t.1 ∈ blockCovered6 D.plan.witness (disjointMatching6 s) := by
+      simpa [S] using t.2
+    have ht'mem :
+        t'.1 ∈ blockCovered6 D.plan.witness (disjointMatching6 s) := by
+      simpa [S] using t'.2
+    have ht := (Finset.mem_filter.mp htmem).2
+    have ht' := (Finset.mem_filter.mp ht'mem).2
     have hv := matchingAllowed_nontarget_vertex_unique D htarget ht ht'
       (blockRep6 b) (disjoint_rep_nontarget6 s b)
     simpa [blockColoring6] using hv⟩
@@ -203,7 +233,7 @@ def monoBlockAssignments6 : Finset BlockAssignment6 :=
 
 set_option maxRecDepth 100000 in
 theorem monoBlockAssignments6_card : monoBlockAssignments6.card = 4 := by
-  native_decide
+  decide
 
 lemma shareCoveredUnion6_card_le
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W)
@@ -245,11 +275,12 @@ lemma forbiddenCover6_card_le
     ((monoBlockAssignments6 ∪ shareCoveredUnion6 D.plan.witness) ∪
         disjointCoveredUnion6 D.plan.witness).card ≤
       (monoBlockAssignments6 ∪ shareCoveredUnion6 D.plan.witness).card +
-        (disjointCoveredUnion6 D.plan.witness).card := Finset.card_union_le
+        (disjointCoveredUnion6 D.plan.witness).card :=
+      Finset.card_union_le _ _
     _ ≤ (monoBlockAssignments6.card +
         (shareCoveredUnion6 D.plan.witness).card) +
         (disjointCoveredUnion6 D.plan.witness).card :=
-      Nat.add_le_add_right Finset.card_union_le _
+      Nat.add_le_add_right (Finset.card_union_le _ _) _
     _ ≤ 4 + 24 + 8 := by
       have hs := shareCoveredUnion6_card_le D htarget
       have hd := disjointCoveredUnion6_card_le D htarget
@@ -259,7 +290,7 @@ lemma forbiddenCover6_card_le
 
 lemma blockAssignment_univ_card :
     (Finset.univ : Finset BlockAssignment6).card = 64 := by
-  native_decide
+  decide
 
 lemma exists_uncovered_blockAssignment6
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W)
@@ -276,12 +307,15 @@ lemma blockMatchingForced_identical6
     {W : WeightsN 6 4 ℂ} (D : AxisTargetData6 W)
     (htarget : D.target = identicalTargetRep6) (t : BlockAssignment6) :
     MatchingForced6 D.plan.witness D.target (blockColoring6 t) identicalMatching6 := by
+  have hidentical (c : Fin 4) : D.target c = identicalMatching6 := by
+    rw [htarget]
+    fin_cases c <;> rfl
   intro k
   left
   let e := matchingEdges6 identicalMatching6 k
   refine ⟨blockColoring6 t e.1, ?_, rfl, ?_⟩
-  · fin_cases k <;> simp [e, identicalMatching6, matchingEdges6, htarget,
-      identicalTargetRep6, blockColoring6, targetBlock6, matchingMate6]
+  · rw [hidentical]
+    fin_cases k <;> rfl
   · fin_cases k <;> rfl
 
 /-- Exact contradiction for the all-identical selected-target orbit. -/
@@ -311,11 +345,17 @@ theorem false_of_identicalTarget6
     apply Finset.mem_union_right
     apply Finset.mem_biUnion.mpr
     refine ⟨s, Finset.mem_univ _, ?_⟩
+    change t ∈ Finset.univ.filter
+      (fun t : BlockAssignment6 =>
+        MatchingAllowed6 D.plan.witness (blockColoring6 t) (oneShareMatching6 s))
     exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hnallowed⟩
   · rcases hdisjoint with ⟨s, rfl⟩
     apply Finset.mem_union_right
     apply Finset.mem_biUnion.mpr
     refine ⟨s, Finset.mem_univ _, ?_⟩
+    change t ∈ Finset.univ.filter
+      (fun t : BlockAssignment6 =>
+        MatchingAllowed6 D.plan.witness (blockColoring6 t) (disjointMatching6 s))
     exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hnallowed⟩
 
 end
