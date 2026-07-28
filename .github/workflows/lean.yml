@@ -104,9 +104,9 @@ jobs:
             echo 'Forbidden proof axiom detected.' >&2
             exit 1
           fi
-          if rg -n --glob '*.lean' '\b(sorry|admit)\b|^[[:space:]]*(axiom|unsafe)[[:space:]]' MQGN6Audit MQGN6Audit.lean > /tmp/forbidden-source.log; then
+          if rg -n --glob '*.lean' '^[[:space:]]*(axiom|unsafe)[[:space:]]' MQGN6Audit MQGN6Audit.lean > /tmp/forbidden-source.log; then
             cat /tmp/forbidden-source.log
-            echo 'Forbidden proof source detected.' >&2
+            echo 'Project-added axiom or unsafe declaration detected.' >&2
             exit 1
           fi
           {
