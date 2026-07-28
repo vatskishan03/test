@@ -77,8 +77,15 @@ theorem eqSystemN_restrictColors
     EqSystemN N d (restrictWeights ι W) := by
   intro q
   rw [pmSumN_restrictWeights ι W q]
-  rw [hW (liftColoring ι q)]
-  rw [allEqual_liftColoring_iff ι q]
+  have hEq := hW (liftColoring ι q)
+  by_cases hq : allEqual q
+  · have hLift : allEqual (liftColoring ι q) :=
+      (allEqual_liftColoring_iff ι q).2 hq
+    simpa [hq, hLift] using hEq
+  · have hLift : ¬ allEqual (liftColoring ι q) := by
+      intro h
+      exact hq ((allEqual_liftColoring_iff ι q).1 h)
+    simpa [hq, hLift] using hEq
 
 /-- The initial-segment embedding `Fin d ↪ Fin D` supplied by `d ≤ D`. -/
 def finEmbeddingOfLe {d D : Nat} (h : d ≤ D) : Fin d ↪ Fin D where
