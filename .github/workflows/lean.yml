@@ -42,6 +42,8 @@ jobs:
         with:
           path: .lake/build
           key: mqg-n6d4-project-v1-${{ runner.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          restore-keys: |
+            mqg-n6d4-project-v1-${{ runner.os }}-
       - name: Install elan
         run: |
           if [ ! -x "$HOME/.elan/bin/elan" ]; then
@@ -76,7 +78,7 @@ jobs:
           {
             echo '<!-- lean-ci-diagnostics -->'
             if [ "$status" -eq 0 ]; then
-              echo '## Lean audit: passing'
+              echo '## Lean audit: theorem build passing'
               echo
               echo '```text'
               tail -n 30 /tmp/lean-build.log
@@ -92,6 +94,41 @@ jobs:
             fi
           } > /tmp/lean-comment.md
           cat /tmp/lean-comment.md
+      - name: Audit theorem axiom closure and source
+        id: trust
+        if: steps.lean.outputs.status == '0'
+        run: |
+          set -o pipefail
+          lake env lean AxiomAudit.lean 2>&1 | tee /tmp/lean-axioms.log
+          if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/lean-axioms.log; then
+            echo 'Forbidden proof axiom detected.' >&2
+            exit 1
+          fi
+          if rg -n --glob '*.lean' '\b(sorry|admit)\b|^[[:space:]]*(axiom|unsafe)[[:space:]]' MQGN6Audit MQGN6Audit.lean > /tmp/forbidden-source.log; then
+            cat /tmp/forbidden-source.log
+            echo 'Forbidden proof source detected.' >&2
+            exit 1
+          fi
+          {
+            echo
+            echo '### Axiom closure'
+            echo
+            echo '```text'
+            cat /tmp/lean-axioms.log
+            echo '```'
+          } >> /tmp/lean-comment.md
+      - name: Upload final audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mqg-n6-d4-proof-audit-${{ github.run_id }}
+          path: |
+            /tmp/lean-build.log
+            /tmp/lean-axioms.log
+            /tmp/forbidden-source.log
+            /tmp/lean-comment.md
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Save post-build Lean environment
         if: always() && steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
@@ -121,6 +158,6 @@ jobs:
           else
             gh api --method POST repos/${{ github.repository }}/issues/$pr/comments -f body="$body" >/dev/null
           fi
-      - name: Fail if Lean failed
-        if: steps.lean.outputs.status != '0'
+      - name: Fail if Lean or trust audit failed
+        if: steps.lean.outputs.status != '0' || steps.trust.outcome == 'failure'
         run: exit 1
