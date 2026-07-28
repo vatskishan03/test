@@ -1,0 +1,51 @@
+name: General reduction and N8 D3 research
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mqg-general-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore Lean dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.elan
+            lake-manifest.json
+            .lake/packages
+          key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+      - name: Install elan
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          fi
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        run: |
+          if [ ! -f lake-manifest.json ]; then lake update; fi
+          lake exe cache get
+      - name: Build general research library
+        run: lake build MonochromaticQuantumGraphs
+      - name: Audit new theorem axioms
+        run: |
+          cat > /tmp/GeneralAxiomAudit.lean <<'EOF'
+          import MonochromaticQuantumGraphs
+          #print axioms MonochromaticQuantumGraphs.eqSystemN_restrictColors
+          #print axioms MonochromaticQuantumGraphs.noSolution_all_dimensions_iff_three
+          EOF
+          lake env lean /tmp/GeneralAxiomAudit.lean | tee /tmp/general-axioms.log
+          if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/general-axioms.log; then
+            exit 1
+          fi
