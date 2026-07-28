@@ -1,1 +1,2 @@
 import MonochromaticQuantumGraphs.ColorRestriction
+import MonochromaticQuantumGraphs.N8D3.GeneratedData
