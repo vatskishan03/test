@@ -10,7 +10,8 @@ terms other than bounded
 
 leaf checks.  Every leaf fixes ``(a,b)`` and checks all 105 possible values of
 ``c``; an implication makes the ``c < b`` branches propositionally trivial.
-Dispatch modules use ``omega`` only on the impossible ``b < a`` branches.
+Dispatch modules simplify the explicit contradiction in ``hab`` on the
+impossible ``b < a`` branches.
 
 The import graph is serial and deterministic:
 
@@ -167,7 +168,7 @@ def emit_a_dispatch_modules(
         ]
         for b in range(FIN_CARD):
             if b < a:
-                lines.append("  · omega")
+                lines.append("  · simp at hab")
             else:
                 lines.append(
                     f"  · exact {leaf_theorem_name(a, b)} c hbc"
