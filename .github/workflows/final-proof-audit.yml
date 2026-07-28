@@ -1,0 +1,106 @@
+name: Final n6 d4 proof audit
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: final-n6-d4-proof-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore Lean environment
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.elan
+            lake-manifest.json
+            .lake/packages
+            .lake/build
+          key: mqg-final-proof-v1-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+
+      - name: Install elan
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          fi
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          lake update
+          lake exe cache get
+
+      - name: Focused theorem build
+        run: |
+          set -o pipefail
+          lake build MQGN6Audit.NoSolution6 2>&1 | tee /tmp/focused-build.log
+
+      - name: Full repository build
+        run: |
+          set -o pipefail
+          lake build 2>&1 | tee /tmp/full-build.log
+
+      - name: Source trust scan
+        run: |
+          set -o pipefail
+          rg -n --glob '*.lean' '\b(sorry|admit|axiom|unsafe)\b' MQGN6Audit MQGN6Audit.lean \
+            | tee /tmp/forbidden-source-tokens.log || true
+          if rg -n --glob '*.lean' '\b(sorry|admit|axiom|unsafe)\b' MQGN6Audit MQGN6Audit.lean \
+            | grep -v 'Smoke.lean' \
+            | grep -v 'doc comment'; then
+            echo 'Forbidden proof token found in proof sources.' >&2
+            exit 1
+          fi
+
+      - name: Kernel axiom audit
+        run: |
+          cat > /tmp/MQGN6FinalAxiomAudit.lean <<'EOF'
+          import MQGN6Audit.NoSolution6
+          #print axioms MQGN6Audit.no_solution_6_4
+          EOF
+          lake env lean /tmp/MQGN6FinalAxiomAudit.lean 2>&1 | tee /tmp/axiom-audit.log
+          if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/axiom-audit.log; then
+            echo 'Unacceptable axiom/shortcut detected.' >&2
+            exit 1
+          fi
+
+      - name: Working-tree and patch hygiene
+        run: |
+          git diff --check
+          git status --short | tee /tmp/git-status.log
+
+      - name: Save Lean environment
+        if: always() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.elan
+            lake-manifest.json
+            .lake/packages
+            .lake/build
+          key: mqg-final-proof-v1-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+
+      - name: Upload proof-audit logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-n6-d4-proof-audit-${{ github.sha }}
+          path: |
+            /tmp/focused-build.log
+            /tmp/full-build.log
+            /tmp/forbidden-source-tokens.log
+            /tmp/axiom-audit.log
+            /tmp/git-status.log
