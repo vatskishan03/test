@@ -131,6 +131,17 @@ theorem no_solution_6_4 :
   · obtain ⟨ci, hci⟩ := hfea
     exact false_of_feasibleTargetData6 hW₂ D₂ ci (hDtarget.trans hci)
 
+/-- The verified affirmative answer in the exact shape of FormalConjectures'
+`MonochromaticQuantumGraph.eqSystem6_no_solution_d4` declaration. -/
+theorem eqSystem6_no_solution_d4 :
+    answer(True) ↔
+      ¬ ∃ W : WeightsN 6 4 ℂ, EqSystemN 6 4 W := by
+  constructor
+  · intro _
+    exact no_solution_6_4
+  · intro _
+    trivial
+
 end
 
 end MQGN6Audit
