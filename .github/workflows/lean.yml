@@ -1,0 +1,209 @@
+name: Lean n6 d4 audit
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: mqg-n6-d4-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      LEAN_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore Lean environment
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.elan
+            lake-manifest.json
+            .lake/packages
+          key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+
+      - name: Restore source-addressed proof build
+        id: project-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: mqg-n6d4-proof-v2-${{ runner.os }}-${{ hashFiles('MQGN6Audit/**', 'MQGN6Audit.lean', 'lakefile.toml', 'lean-toolchain') }}
+          restore-keys: |
+            mqg-n6d4-project-v1-Linux-f80dc3a2c55105018b55a763769eda923b1cb2d2
+            mqg-n6d4-project-v1-Linux-
+
+      - name: Install elan
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          fi
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve dependencies
+        run: |
+          if [ ! -f lake-manifest.json ]; then lake update; fi
+          if [ ! -d .lake/packages/mathlib/.lake/build ]; then lake exe cache get; fi
+
+      - name: Require an exact proof-source build cache
+        run: |
+          if [ -f .lake/build/lib/lean/MQGN6Audit/NoSolution6.olean ]; then
+            exit 0
+          fi
+          verified=/mnt/lean/test
+          test -f "$verified/.lake/build/lib/lean/MQGN6Audit/NoSolution6.olean"
+          diff -qr "$GITHUB_WORKSPACE/MQGN6Audit" "$verified/MQGN6Audit"
+          cmp "$GITHUB_WORKSPACE/MQGN6Audit.lean" "$verified/MQGN6Audit.lean"
+          cmp "$GITHUB_WORKSPACE/lakefile.toml" "$verified/lakefile.toml"
+          cmp "$GITHUB_WORKSPACE/lean-toolchain" "$verified/lean-toolchain"
+          mkdir -p .lake/build
+          cp -a "$verified/.lake/build/." .lake/build/
+
+      - name: Force-rebuild theorem aggregators on GitHub infrastructure
+        run: |
+          for module in \
+            FiniteDefinitions6 \
+            TargetOrbits6 \
+            UniqueDagCheckFast6 \
+            TerminalFinite6 \
+            TerminalSoundness6 \
+            CartesianTerminal6 \
+            IdenticalTarget6 \
+            NoSolution6
+          do
+            rm -f ".lake/build/lib/lean/MQGN6Audit/${module}.olean"
+            rm -f ".lake/build/lib/lean/MQGN6Audit/${module}.ilean"
+            rm -f ".lake/build/lib/lean/MQGN6Audit/${module}.olean.hash"
+            rm -f ".lake/build/ir/MQGN6Audit/${module}.c"
+            rm -f ".lake/build/ir/MQGN6Audit/${module}.setup.json"
+          done
+
+      - name: Check final theorem assembly
+        id: lean
+        run: |
+          set +e
+          set -o pipefail
+          stdbuf -oL -eL lake build MQGN6Audit.NoSolution6 2>&1 | tee /tmp/lean-build.log
+          status=${PIPESTATUS[0]}
+          set +o pipefail
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          {
+            echo '<!-- lean-ci-diagnostics -->'
+            if [ "$status" -eq 0 ]; then
+              echo '## Lean audit: theorem build passing'
+            else
+              echo '## Lean audit: compiler diagnostics'
+            fi
+            echo
+            echo '```text'
+            tail -n 80 /tmp/lean-build.log
+            echo '```'
+          } > /tmp/lean-comment.md
+          cat /tmp/lean-comment.md
+
+      - name: Audit theorem axiom closure and source
+        id: trust
+        if: steps.lean.outputs.status == '0'
+        run: |
+          set -o pipefail
+          lake env lean AxiomAudit.lean 2>&1 | tee /tmp/lean-axioms.log
+          if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/lean-axioms.log; then
+            echo 'Forbidden proof axiom detected.' >&2
+            exit 1
+          fi
+          if rg -n --glob '*.lean' '^[[:space:]]*(axiom|unsafe)[[:space:]]' MQGN6Audit MQGN6Audit.lean > /tmp/forbidden-source.log; then
+            cat /tmp/forbidden-source.log
+            echo 'Project-added axiom or unsafe declaration detected.' >&2
+            exit 1
+          fi
+          {
+            echo
+            echo '### Axiom closure'
+            echo
+            echo '```text'
+            cat /tmp/lean-axioms.log
+            echo '```'
+          } >> /tmp/lean-comment.md
+
+      - name: Replay imported environment with Lean checker and nanoda
+        id: external-checkers
+        if: steps.trust.outcome == 'success'
+        continue-on-error: true
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          leanchecker: true
+          nanoda: true
+          # The imported Formal Conjectures benchmark intentionally contains
+          # unrelated open sorryAx declarations. The theorem-specific axiom
+          # audit above remains strict and proves that neither final theorem
+          # depends on any of them.
+          nanoda-allow-sorry: true
+
+      - name: Record external checker status
+        if: always()
+        env:
+          EXTERNAL_OUTCOME: ${{ steps.external-checkers.outcome }}
+          NANODA_STATUS: ${{ steps.external-checkers.outputs.nanoda-status }}
+        run: |
+          {
+            echo
+            echo '### Supplemental external checker status'
+            echo
+            echo "lean-action outcome: ${EXTERNAL_OUTCOME:-not-run}"
+            echo "nanoda status: ${NANODA_STATUS:-not-reported}"
+          } >> /tmp/lean-comment.md
+
+      - name: Upload final audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mqg-n6-d4-proof-audit-${{ github.run_id }}
+          path: |
+            /tmp/lean-build.log
+            /tmp/lean-axioms.log
+            /tmp/forbidden-source.log
+            /tmp/lean-comment.md
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Save source-addressed proof build
+        if: always() && steps.lean.outputs.status == '0' && steps.project-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: mqg-n6d4-proof-v2-${{ runner.os }}-${{ hashFiles('MQGN6Audit/**', 'MQGN6Audit.lean', 'lakefile.toml', 'lean-toolchain') }}
+
+      - name: Publish sticky diagnostics
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr=${{ github.event.pull_request.number || 1 }}
+          existing=$(gh api repos/${{ github.repository }}/issues/$pr/comments --paginate --jq '.[] | select(.body | startswith("<!-- lean-ci-diagnostics -->")) | .id' | head -n1)
+          body=$(cat /tmp/lean-comment.md)
+          if [ -n "$existing" ]; then
+            gh api --method PATCH repos/${{ github.repository }}/issues/comments/$existing -f body="$body" >/dev/null
+          else
+            gh api --method POST repos/${{ github.repository }}/issues/$pr/comments -f body="$body" >/dev/null
+          fi
+
+      - name: Fail if Lean or theorem trust audit failed
+        if: steps.lean.outputs.status != '0' || steps.trust.outcome == 'failure'
+        run: exit 1
