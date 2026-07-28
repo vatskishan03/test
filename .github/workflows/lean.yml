@@ -36,6 +36,12 @@ jobs:
             .lake/packages
             .lake/build
           key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+      - name: Restore exact-source project build cache
+        id: project-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          key: mqg-n6d4-project-v1-${{ runner.os }}-${{ github.event.pull_request.head.sha || github.sha }}
       - name: Install elan
         run: |
           if [ ! -x "$HOME/.elan/bin/elan" ]; then
@@ -47,6 +53,17 @@ jobs:
         run: |
           lake update > /tmp/lake-update.log 2>&1
           lake exe cache get > /tmp/cache-get.log 2>&1
+      - name: Seed exact-source verified GCP build artifacts
+        if: steps.project-cache.outputs.cache-hit != 'true'
+        run: |
+          verified=/mnt/lean/test
+          test -f "$verified/.lake/build/lib/lean/MQGN6Audit/NoSolution6.olean"
+          diff -qr "$GITHUB_WORKSPACE/MQGN6Audit" "$verified/MQGN6Audit"
+          cmp "$GITHUB_WORKSPACE/MQGN6Audit.lean" "$verified/MQGN6Audit.lean"
+          cmp "$GITHUB_WORKSPACE/lakefile.toml" "$verified/lakefile.toml"
+          cmp "$GITHUB_WORKSPACE/lean-toolchain" "$verified/lean-toolchain"
+          mkdir -p .lake/build
+          cp -a "$verified/.lake/build/." .lake/build/
       - name: Check final theorem assembly
         id: lean
         run: |
@@ -85,6 +102,12 @@ jobs:
             .lake/packages
             .lake/build
           key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+      - name: Save exact-source project build cache
+        if: always() && steps.lean.outputs.status == '0' && steps.project-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: mqg-n6d4-project-v1-${{ runner.os }}-${{ github.event.pull_request.head.sha || github.sha }}
       - name: Publish sticky diagnostics
         if: always()
         env:
