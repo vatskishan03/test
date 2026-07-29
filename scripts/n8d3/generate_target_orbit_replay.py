@@ -13,17 +13,24 @@ leaf checks.  Every leaf fixes ``(a,b)`` and checks all 105 possible values of
 Dispatch modules simplify the explicit contradiction in ``hab`` on the
 impossible ``b < a`` branches.
 
-The import graph is serial and deterministic:
+The import graph is deterministic.  It is serial through a checked checkpoint,
+then exposes independent bounded leaves for a controlled parallel build:
 
 * the first leaf group imports ``TargetOrbitCanonicalFast8``;
-* every later leaf group imports the preceding leaf group;
-* ``A000`` imports its final local leaf group;
-* every later ``Axxx`` dispatcher imports its final local leaf group and the
-  preceding dispatcher;
-* the final assembly imports only ``A104``.
+* leaf groups through the checkpoint import the preceding leaf group;
+* every later leaf group belongs to one of seven lanes and imports the
+  preceding leaf in that lane;
+* a dispatcher before the checkpoint imports its final local leaf group;
+* a dispatcher at or after the checkpoint imports every local leaf group;
+* dispatchers through ``A035`` import the preceding dispatcher;
+* every later ``Axxx`` dispatcher belongs to one of seven lanes rooted at
+  ``A035`` and imports the preceding dispatcher in that lane;
+* a separate leaf-assembly module imports the seven lane heads;
+* the final assembly imports the seven dispatcher-lane heads.
 
-This structure prevents the generated replay layer from presenting hundreds
-of independent heavy modules to a parallel build scheduler.
+The checkpoint preserves already kernel-checked work.  After it, a resource
+supervisor can build exactly seven bounded leaf chains simultaneously, then
+build exactly seven dispatcher chains after every leaf is cached.
 """
 
 from __future__ import annotations
@@ -39,6 +46,9 @@ INITIAL_THEOREMS_PER_MODULE = 24
 STEADY_THEOREMS_PER_MODULE = 8
 STEADY_START_A = 15
 STEADY_START_B = 63
+PARALLEL_START_A = 36
+PARALLEL_START_B = 84
+PARALLEL_LANES = 7
 MAX_HEARTBEATS = 2_000_000
 MAX_RECURSION_DEPTH = 100_000
 
@@ -67,6 +77,12 @@ def theorem_chunk_limit(a: int, b: int) -> int:
     return STEADY_THEOREMS_PER_MODULE
 
 
+def is_parallel_leaf(a: int, b: int) -> bool:
+    return a > PARALLEL_START_A or (
+        a == PARALLEL_START_A and b >= PARALLEL_START_B
+    )
+
+
 def module_name(stem: str) -> str:
     return (
         "MonochromaticQuantumGraphs.N8D3."
@@ -85,10 +101,12 @@ def write_lean(path: Path, lines: list[str]) -> None:
 
 def emit_leaf_modules(
     leaf_root: Path,
-) -> tuple[list[Path], dict[int, list[str]]]:
+) -> tuple[list[Path], dict[int, list[str]], list[str]]:
     paths: list[Path] = []
     imports_by_a: dict[int, list[str]] = {}
     previous_leaf_module: str | None = None
+    parallel_lane_heads: list[str | None] = [None] * PARALLEL_LANES
+    parallel_leaf_index = 0
     for a in range(FIN_CARD):
         imports_by_a[a] = []
         valid_b = list(range(a, FIN_CARD))
@@ -101,11 +119,20 @@ def emit_leaf_modules(
             current_leaf_module = module_name(stem)
             imports_by_a[a].append(current_leaf_module)
             path = leaf_root / f"{stem}.lean"
-            import_target = (
-                "MonochromaticQuantumGraphs.N8D3.TargetOrbitCanonicalFast8"
-                if previous_leaf_module is None
-                else previous_leaf_module
-            )
+            if is_parallel_leaf(a, start):
+                lane = parallel_leaf_index % PARALLEL_LANES
+                import_target = (
+                    parallel_lane_heads[lane]
+                    or "MonochromaticQuantumGraphs.N8D3.TargetOrbitCanonicalFast8"
+                )
+                parallel_lane_heads[lane] = current_leaf_module
+                parallel_leaf_index += 1
+            else:
+                import_target = (
+                    "MonochromaticQuantumGraphs.N8D3.TargetOrbitCanonicalFast8"
+                    if previous_leaf_module is None
+                    else previous_leaf_module
+                )
             lines = [
                 f"import {import_target}",
                 "",
@@ -152,23 +179,59 @@ def emit_leaf_modules(
             paths.append(path)
             previous_leaf_module = current_leaf_module
             offset += len(chunk)
-    return paths, imports_by_a
+    assert all(head is not None for head in parallel_lane_heads)
+    return paths, imports_by_a, [
+        head for head in parallel_lane_heads if head is not None
+    ]
+
+
+def emit_parallel_leaf_root(
+    lean_root: Path,
+    parallel_lane_heads: list[str],
+) -> Path:
+    path = lean_root / "TargetOrbitReplayLeaves8.lean"
+    lines = [
+        *[f"import {head}" for head in parallel_lane_heads],
+        "",
+        "/-!",
+        "# Seven-lane bounded replay target for `(N,D) = (8,3)`",
+        "",
+        "Building this module kernel-checks every post-checkpoint certificate",
+        "leaf while exposing at most seven mutually independent compiler jobs.",
+        "It deliberately contains no theorem beyond the imported leaf proofs.",
+        "-/",
+    ]
+    write_lean(path, lines)
+    return path
 
 
 def emit_a_dispatch_modules(
     leaf_root: Path,
     imports_by_a: dict[int, list[str]],
-) -> list[Path]:
+) -> tuple[list[Path], list[str]]:
     paths: list[Path] = []
+    parallel_lane_heads: list[str | None] = [None] * PARALLEL_LANES
     for a in range(FIN_CARD):
         path = leaf_root / f"A{a:03d}.lean"
+        local_imports = (
+            imports_by_a[a]
+            if a >= PARALLEL_START_A
+            else [imports_by_a[a][-1]]
+        )
+        if a == 0:
+            dispatcher_imports: list[str] = []
+        elif a < PARALLEL_START_A:
+            dispatcher_imports = [a_module_name(a - 1)]
+        else:
+            lane = (a - PARALLEL_START_A) % PARALLEL_LANES
+            dispatcher_imports = [
+                parallel_lane_heads[lane]
+                or a_module_name(PARALLEL_START_A - 1)
+            ]
+            parallel_lane_heads[lane] = a_module_name(a)
         lines = [
-            f"import {imports_by_a[a][-1]}",
-            *(
-                [f"import {a_module_name(a - 1)}"]
-                if a > 0
-                else []
-            ),
+            *[f"import {import_name}" for import_name in local_imports],
+            *[f"import {import_name}" for import_name in dispatcher_imports],
             "",
             f"/-! # Dispatch over `b` for the fixed first index `a = {a}` -/",
             "",
@@ -190,13 +253,19 @@ def emit_a_dispatch_modules(
         lines.extend(["", "end MonochromaticQuantumGraphs.N8D3"])
         write_lean(path, lines)
         paths.append(path)
-    return paths
+    assert all(head is not None for head in parallel_lane_heads)
+    return paths, [
+        head for head in parallel_lane_heads if head is not None
+    ]
 
 
-def emit_final_module(lean_root: Path) -> Path:
+def emit_final_module(
+    lean_root: Path,
+    dispatcher_lane_heads: list[str],
+) -> Path:
     path = lean_root / "TargetOrbitCertificates8.lean"
     lines = [
-        f"import {a_module_name(FIN_CARD - 1)}",
+        *[f"import {head}" for head in dispatcher_lane_heads],
         "",
         "/-!",
         "# Kernel-checked target-orbit coverage for `(N,D) = (8,3)`",
@@ -270,10 +339,20 @@ def generate(output_directory: Path) -> dict[str, object]:
     lean_root = output_directory / "MonochromaticQuantumGraphs" / "N8D3"
     leaf_root = lean_root / "TargetOrbitCertificateReplay8"
 
-    leaf_paths, imports_by_a = emit_leaf_modules(leaf_root)
-    dispatch_paths = emit_a_dispatch_modules(leaf_root, imports_by_a)
-    final_path = emit_final_module(lean_root)
-    paths = sorted([*leaf_paths, *dispatch_paths, final_path])
+    leaf_paths, imports_by_a, parallel_lane_heads = emit_leaf_modules(leaf_root)
+    parallel_leaf_root = emit_parallel_leaf_root(
+        lean_root, parallel_lane_heads
+    )
+    dispatch_paths, dispatcher_lane_heads = emit_a_dispatch_modules(
+        leaf_root, imports_by_a
+    )
+    final_path = emit_final_module(lean_root, dispatcher_lane_heads)
+    paths = sorted([
+        *leaf_paths,
+        parallel_leaf_root,
+        *dispatch_paths,
+        final_path,
+    ])
 
     combined = sha256()
     for path in paths:
@@ -289,6 +368,7 @@ def generate(output_directory: Path) -> dict[str, object]:
         "lean_root": str(lean_root),
         "leaf_theorems": sum(FIN_CARD - a for a in range(FIN_CARD)),
         "leaf_modules": len(leaf_paths),
+        "leaf_assembly_modules": 1,
         "dispatch_modules": len(dispatch_paths),
         "final_modules": 1,
         "lean_files": len(paths),
@@ -297,6 +377,10 @@ def generate(output_directory: Path) -> dict[str, object]:
         "steady_theorems_per_leaf_module_limit":
             STEADY_THEOREMS_PER_MODULE,
         "steady_sharding_starts_at": [STEADY_START_A, STEADY_START_B],
+        "parallel_leaf_imports_start_at":
+            [PARALLEL_START_A, PARALLEL_START_B],
+        "parallel_dispatch_imports_start_at": PARALLEL_START_A,
+        "parallel_lanes": PARALLEL_LANES,
         "c_branches_per_leaf": FIN_CARD,
         "max_heartbeats": MAX_HEARTBEATS,
         "max_rec_depth": MAX_RECURSION_DEPTH,
