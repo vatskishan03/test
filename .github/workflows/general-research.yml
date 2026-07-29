@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, lean-highmem-n8d3]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
@@ -37,13 +37,33 @@ jobs:
         run: |
           if [ ! -f lake-manifest.json ]; then lake update; fi
           lake exe cache get
+      - name: Attach exact VM proof build
+        run: |
+          verified=/mnt/lean/monochromatic-quantum-graphs
+          test -d "$verified/.lake/build"
+          git -C "$verified" diff --quiet --
+          while IFS= read -r -d '' path; do
+            test -f "$verified/$path"
+            cmp "$GITHUB_WORKSPACE/$path" "$verified/$path"
+          done < <(
+            git ls-files -z \
+              MonochromaticQuantumGraphs.lean \
+              'MonochromaticQuantumGraphs/**' \
+              lakefile.toml \
+              lean-toolchain
+          )
+          mkdir -p .lake
+          test ! -e .lake/build
+          ln -s "$verified/.lake/build" .lake/build
       - name: Build general research library
         id: lean
         run: |
           set +e
-          set -o pipefail
-          lake build MonochromaticQuantumGraphs 2>&1 | tee /tmp/general-build.log
-          status=${PIPESTATUS[0]}
+          bash scripts/ci/guarded_lake_build.sh \
+            "$GITHUB_WORKSPACE" \
+            /tmp/general-build.log \
+            MonochromaticQuantumGraphs
+          status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           {
             echo '<!-- general-research-diagnostics -->'
@@ -63,14 +83,10 @@ jobs:
       - name: Audit new theorem axioms
         if: steps.lean.outputs.status == '0'
         run: |
-          cat > /tmp/GeneralAxiomAudit.lean <<'EOF'
-          import MonochromaticQuantumGraphs
-          #print axioms MonochromaticQuantumGraphs.eqSystemN_restrictColors
-          #print axioms MonochromaticQuantumGraphs.noSolution_all_dimensions_iff_three
-          #print axioms MonochromaticQuantumGraphs.N8D3.pmSumN8_eq_sum_pmTerm8
-          #print axioms MonochromaticQuantumGraphs.N8D3.exists_target_matching_triple8
-          EOF
-          lake env lean /tmp/GeneralAxiomAudit.lean | tee /tmp/general-axioms.log
+          bash scripts/ci/guarded_lake_build.sh \
+            "$GITHUB_WORKSPACE" \
+            /tmp/general-axioms.log \
+            MonochromaticQuantumGraphs.GeneralAxiomAudit
           if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/general-axioms.log; then
             exit 1
           fi
