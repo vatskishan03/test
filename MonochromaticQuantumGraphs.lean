@@ -2,3 +2,8 @@ import MonochromaticQuantumGraphs.ColorRestriction
 import MonochromaticQuantumGraphs.N8D3.GeneratedData
 import MonochromaticQuantumGraphs.N8D3.Basic
 import MonochromaticQuantumGraphs.N8D3.TargetOrbitCertificates8
+import MonochromaticQuantumGraphs.N8D3.TropicalBorderData8
+import MonochromaticQuantumGraphs.N8D3.TropicalBorderFinite8
+import MonochromaticQuantumGraphs.N8D3.TropicalBorderWeights8
+import MonochromaticQuantumGraphs.N8D3.TropicalBorderLimit8
+import MonochromaticQuantumGraphs.N8D3.TropicalBorderPolynomial8
