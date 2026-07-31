@@ -125,6 +125,9 @@ EOF
   if [[ -n "$violation" ]]; then
     printf '[supervisor] ABORT: %s\n' "$violation" |
       tee -a "$log_file" >&2
+    ps -e -o pgid=,pid=,comm=,etimes=,rss=,args= |
+      awk -v pgid="$build_group" '$1 == pgid' |
+      tee -a "$log_file" >&2
     terminate_group
     wait "$build_group" 2>/dev/null || true
     printf '[supervisor] terminated all spawned compiler processes\n' |
