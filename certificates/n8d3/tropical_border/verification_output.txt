@@ -1,0 +1,14 @@
+EXACT TROPICAL BORDER CERTIFICATE: PASS
+support entries: 144
+perfect matchings: 105
+colorings: 6561
+target PM indices: [59, 77, 12]
+target valuation sums: [4, 3, 4]
+total supported matching monomials: 77881
+selected target monomials excluded: 3
+checked inequalities: 77878
+  monochromatic competitors: 56
+  nonmonochromatic monomials: 77822
+minimum strict margin: 1
+margin distribution: {1: 61, 2: 101, 3: 809, 4: 1405, 5: 6871, 6: 11619, 7: 24114, 8: 32898}
+violations: 0
