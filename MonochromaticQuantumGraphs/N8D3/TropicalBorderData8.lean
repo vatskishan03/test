@@ -1,4 +1,4 @@
-import MonochromaticQuantumGraphs.N8D3.Basic
+import MonochromaticQuantumGraphs.N8D3.GeneratedData
 
 /-!
 # Exact data for the `(N,D) = (8,3)` tropical-border certificate
@@ -104,6 +104,9 @@ def tropicalTargetMatching8 : Fin 3 → Fin 105 := ![59, 77, 12]
 /-- Manifest target valuation rates `[4, 3, 4]`. -/
 def tropicalTargetRate8 : Fin 3 → Int := ![4, 3, 4]
 
+/-- Constant vertex coloring used by the three selected target monomials. -/
+def tropicalMonoColoring8 (c : Fin 3) : Fin 8 → Fin 3 := fun _ => c
+
 /-- Coordinate selected by a matching edge and a vertex coloring. -/
 def tropicalMatchingCoordinate8
     (q : Fin 8 → Fin 3) (m : Fin 105) (k : Fin 4) : Fin 252 :=
@@ -158,31 +161,31 @@ theorem tropicalTargetMatchingEdges8 :
 /-- All three selected target monomials lie in the canonical support. -/
 theorem tropicalTargetMatchingSupported8 :
     ∀ c : Fin 3,
-      tropicalMatchingSupported8 (monoColoring8 c)
+      tropicalMatchingSupported8 (tropicalMonoColoring8 c)
         (tropicalTargetMatching8 c) = true := by
   decide
 
 /-- The selected target valuation equals its manifest rate for each color. -/
 theorem tropicalTargetMatchingValuation8 :
     ∀ c : Fin 3,
-      tropicalMatchingValuation8 (monoColoring8 c)
+      tropicalMatchingValuation8 (tropicalMonoColoring8 c)
         (tropicalTargetMatching8 c) = tropicalTargetRate8 c := by
   decide
 
 /-- Explicit kernel replay of the target valuation sums `4, 3, 4`. -/
 theorem tropicalTargetValuationSums8 :
-    tropicalMatchingValuation8 (monoColoring8 0)
+    tropicalMatchingValuation8 (tropicalMonoColoring8 0)
         (tropicalTargetMatching8 0) = 4 ∧
-    tropicalMatchingValuation8 (monoColoring8 1)
+    tropicalMatchingValuation8 (tropicalMonoColoring8 1)
         (tropicalTargetMatching8 1) = 3 ∧
-    tropicalMatchingValuation8 (monoColoring8 2)
+    tropicalMatchingValuation8 (tropicalMonoColoring8 2)
         (tropicalTargetMatching8 2) = 4 := by
   decide
 
 /-- Each selected target is recognized by the finite exception predicate. -/
 theorem tropicalTargetSelected8 :
     ∀ c : Fin 3,
-      tropicalSelectedTarget8 (monoColoring8 c)
+      tropicalSelectedTarget8 (tropicalMonoColoring8 c)
         (tropicalTargetMatching8 c) = true := by
   decide
 

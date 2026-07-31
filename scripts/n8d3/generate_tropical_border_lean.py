@@ -93,7 +93,7 @@ def generate_data(support: list[int], manifest: dict) -> None:
     edge_rows = ["![" + ", ".join(map(str, row)) + "]" for row in edge_index_table()]
     edge_vector = "![\n  " + ",\n  ".join(edge_rows) + "\n]"
 
-    text = f'''import MonochromaticQuantumGraphs.N8D3.Basic
+    text = f'''import MonochromaticQuantumGraphs.N8D3.GeneratedData
 
 /-!
 # Exact data for the `(N,D) = (8,3)` tropical-border certificate
@@ -190,6 +190,9 @@ def tropicalTargetMatching8 : Fin 3 → Fin 105 := {target_matching_vector}
 /-- Manifest target valuation rates `[4, 3, 4]`. -/
 def tropicalTargetRate8 : Fin 3 → Int := {target_rate_vector}
 
+/-- Constant vertex coloring used by the three selected target monomials. -/
+def tropicalMonoColoring8 (c : Fin 3) : Fin 8 → Fin 3 := fun _ => c
+
 /-- Coordinate selected by a matching edge and a vertex coloring. -/
 def tropicalMatchingCoordinate8
     (q : Fin 8 → Fin 3) (m : Fin 105) (k : Fin 4) : Fin 252 :=
@@ -244,31 +247,31 @@ theorem tropicalTargetMatchingEdges8 :
 /-- All three selected target monomials lie in the canonical support. -/
 theorem tropicalTargetMatchingSupported8 :
     ∀ c : Fin 3,
-      tropicalMatchingSupported8 (monoColoring8 c)
+      tropicalMatchingSupported8 (tropicalMonoColoring8 c)
         (tropicalTargetMatching8 c) = true := by
   decide
 
 /-- The selected target valuation equals its manifest rate for each color. -/
 theorem tropicalTargetMatchingValuation8 :
     ∀ c : Fin 3,
-      tropicalMatchingValuation8 (monoColoring8 c)
+      tropicalMatchingValuation8 (tropicalMonoColoring8 c)
         (tropicalTargetMatching8 c) = tropicalTargetRate8 c := by
   decide
 
 /-- Explicit kernel replay of the target valuation sums `4, 3, 4`. -/
 theorem tropicalTargetValuationSums8 :
-    tropicalMatchingValuation8 (monoColoring8 0)
+    tropicalMatchingValuation8 (tropicalMonoColoring8 0)
         (tropicalTargetMatching8 0) = 4 ∧
-    tropicalMatchingValuation8 (monoColoring8 1)
+    tropicalMatchingValuation8 (tropicalMonoColoring8 1)
         (tropicalTargetMatching8 1) = 3 ∧
-    tropicalMatchingValuation8 (monoColoring8 2)
+    tropicalMatchingValuation8 (tropicalMonoColoring8 2)
         (tropicalTargetMatching8 2) = 4 := by
   decide
 
 /-- Each selected target is recognized by the finite exception predicate. -/
 theorem tropicalTargetSelected8 :
     ∀ c : Fin 3,
-      tropicalSelectedTarget8 (monoColoring8 c)
+      tropicalSelectedTarget8 (tropicalMonoColoring8 c)
         (tropicalTargetMatching8 c) = true := by
   decide
 
@@ -277,56 +280,74 @@ end MonochromaticQuantumGraphs.N8D3
     DATA_PATH.write_text(text)
 
 
-def shard_name(a0: int, a1: int, a2: int) -> str:
-    return f"Prefix{a0}{a1}{a2}"
+def shard_module_name(a0: int, a1: int, a2: int, a3: int, suffix: str) -> str:
+    return f"Prefix{a0}{a1}{a2}{a3}{suffix}"
 
 
-def theorem_name(a0: int, a1: int, a2: int) -> str:
-    return f"tropicalGapPrefix8_{a0}{a1}{a2}"
+def theorem_name(a0: int, a1: int, a2: int, a3: int, a4: int) -> str:
+    return f"tropicalGapPrefix8_{a0}{a1}{a2}{a3}{a4}"
 
 
 def generate_shards() -> None:
     SHARD_DIR.mkdir(parents=True, exist_ok=True)
+    for stale in SHARD_DIR.glob("Prefix*.lean"):
+        stale.unlink()
     for a0 in range(3):
         for a1 in range(3):
             for a2 in range(3):
-                module = shard_name(a0, a1, a2)
-                theorem = theorem_name(a0, a1, a2)
-                text = f'''import MonochromaticQuantumGraphs.N8D3.TropicalBorderData8
+                for a3 in range(3):
+                    for suffix, fifth_colors in (("A", (0, 1)), ("B", (2,))):
+                        declarations = []
+                        for a4 in fifth_colors:
+                            theorem = theorem_name(a0, a1, a2, a3, a4)
+                            declarations.append(f'''set_option maxRecDepth 100000 in
+set_option maxHeartbeats 1000000 in
+theorem {theorem} :
+    ∀ a5 a6 a7 : Fin 3, ∀ m : Fin 105,
+      TropicalGapAt8 ![{a0}, {a1}, {a2}, {a3}, {a4}, a5, a6, a7] m := by
+  unfold TropicalGapAt8
+  decide
+''')
+                        module = shard_module_name(a0, a1, a2, a3, suffix)
+                        colors = ",".join(map(str, fifth_colors))
+                        text = f'''import MonochromaticQuantumGraphs.N8D3.TropicalBorderData8
 
-/-! Bounded kernel replay for coloring prefix `({a0},{a1},{a2})`. -/
+/-! Independent bounded kernel replays for coloring prefix
+`({a0},{a1},{a2},{a3})` and fifth color(s) `{colors}`. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
-set_option maxRecDepth 100000 in
-theorem {theorem} :
-    ∀ a3 a4 a5 a6 a7 : Fin 3, ∀ m : Fin 105,
-      TropicalGapAt8 ![{a0}, {a1}, {a2}, a3, a4, a5, a6, a7] m := by
-  decide
+{"".join(declarations)}
 
 end MonochromaticQuantumGraphs.N8D3
 '''
-                (SHARD_DIR / f"{module}.lean").write_text(text)
+                        (SHARD_DIR / f"{module}.lean").write_text(text)
 
     imports = "\n".join(
-        f"import MonochromaticQuantumGraphs.N8D3.TropicalBorderGapShards8.{shard_name(a0, a1, a2)}"
-        for a0 in range(3) for a1 in range(3) for a2 in range(3)
+        f"import MonochromaticQuantumGraphs.N8D3.TropicalBorderGapShards8.{shard_module_name(a0, a1, a2, a3, suffix)}"
+        for a0 in range(3) for a1 in range(3) for a2 in range(3) for a3 in range(3)
+        for suffix in ("A", "B")
     )
     alternatives = "\n".join(
-        f"    | exact {theorem_name(a0, a1, a2)} a3 a4 a5 a6 a7 m"
-        for a0 in range(3) for a1 in range(3) for a2 in range(3)
+        f"  · exact {theorem_name(a0, a1, a2, a3, a4)} a5 a6 a7 m"
+        for a0 in range(3) for a1 in range(3) for a2 in range(3) for a3 in range(3)
+        for a4 in range(3)
     )
     aggregate = f'''{imports}
 
 /-!
 # Full finite tropical-gap replay for `(N,D) = (8,3)`
 
-The 27 imported shards fix the first three colors and enumerate the remaining
-`3^5 * 105 = 25,515` coloring/matching pairs. Together they cover all
+The 162 imported modules contain one or two independent bounded declarations.
+Every declaration fixes five colors and enumerates the remaining
+`3^3 * 105 = 2,835` coloring/matching pairs. Together they cover all
 `3^8 * 105 = 688,905` pairs without a monolithic kernel reduction.
 -/
 
 namespace MonochromaticQuantumGraphs.N8D3
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 1000000
 
 /-- Every competing supported matching monomial has at least unit valuation gap. -/
 theorem tropicalStrictValuationGap8
@@ -343,8 +364,9 @@ theorem tropicalStrictValuationGap8
     funext i
     fin_cases i <;> simp [a0, a1, a2, a3, a4, a5, a6, a7]
   rw [hq]
-  fin_cases a0 <;> fin_cases a1 <;> fin_cases a2
-  all_goals first
+  clear_value a0 a1 a2 a3 a4 a5 a6 a7
+  fin_cases a0 <;> fin_cases a1 <;> fin_cases a2 <;> fin_cases a3 <;>
+    fin_cases a4
 {alternatives}
 
 end MonochromaticQuantumGraphs.N8D3
