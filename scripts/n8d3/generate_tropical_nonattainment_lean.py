@@ -384,6 +384,15 @@ theorem tropicalStrictValuationGap8
     fin_cases a4
 {alternatives}
 
+/-- The unit gap is sharp: this explicit supported competitor has valuation
+exactly one below the target rate at vertex zero. -/
+theorem tropicalStrictValuationMarginOne8 :
+    tropicalMatchingSupported8 ![0, 0, 2, 2, 2, 2, 2, 2] 12 = true ∧
+    tropicalSelectedTarget8 ![0, 0, 2, 2, 2, 2, 2, 2] 12 = false ∧
+    tropicalMatchingValuation8 ![0, 0, 2, 2, 2, 2, 2, 2] 12 =
+      tropicalTargetRate8 0 - 1 := by
+  decide
+
 end MonochromaticQuantumGraphs.N8D3
 '''
     AGGREGATE_PATH.write_text(aggregate)
