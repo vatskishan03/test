@@ -16,7 +16,8 @@ theorem tropicalOverlapSourceJExponent8_replay_row166_j2 :
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row166.sourceJ)
           (tropicalBaseMatching8 2) =
       tropicalOverlapSourceJExponent8Row166 2 := by
-  decide
+  funext k
+  fin_cases k <;> decide
 
 end
 

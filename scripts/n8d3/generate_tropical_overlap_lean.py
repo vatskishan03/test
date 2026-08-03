@@ -567,7 +567,8 @@ theorem tropicalOverlapSource{side}Exponent8_replay_row{global_row}_j{matching} 
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.{source})
           (tropicalBaseMatching8 {matching}) =
       tropicalOverlapSource{side}Exponent8Row{global_row} {matching} := by
-  decide
+  funext k
+  fin_cases k <;> decide
 
 end
 
