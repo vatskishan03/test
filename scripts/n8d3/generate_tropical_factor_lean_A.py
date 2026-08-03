@@ -53,6 +53,7 @@ MONOMIAL_REPLAY_COUNT = (
     SOURCE_COUNT * 6 + QUOTIENT_COUNT * 12 + RAW_EDGE_COUNT * 4
 )
 SHIFTED_EXPONENT_REPLAY_COUNT = QUOTIENT_COUNT * 12
+FACTOR_SHIFTED_EXPONENT_REPLAY_COUNT = RAW_EDGE_COUNT * 4
 
 # These are the five exponent rows unfolded by
 # `tropicalComponentACharacter8`.  Keeping the local-coordinate shapes here
@@ -1239,7 +1240,7 @@ def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
                 f"  have h{flat_index:02d} : "
                 f"(({shift} + {term_exp} : LaurentExponent (Fin 144)) = "
                 f"{target}) := by\n"
-                "    abel"
+                "    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
             )
             flat_index += 1
     if flat_index != 12:
@@ -1257,10 +1258,23 @@ def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
       LaurentPolynomial.translate (shiftedUse k).shift
         (shiftedSources (shiftedUse k).source)) =
       intermediate := by
+  have htranslate_zsmul
+      (shift : LaurentExponent (Fin 144)) (n : ℤ)
+      (p : LaurentPolynomial (Fin 144)) :
+      LaurentPolynomial.translate shift (n • p) =
+        n • LaurentPolynomial.translate shift p :=
+    (LaurentPolynomial.translateLinear shift).map_smul n p
+  have htranslate_neg
+      (shift : LaurentExponent (Fin 144))
+      (p : LaurentPolynomial (Fin 144)) :
+      LaurentPolynomial.translate shift (-p) =
+        -LaurentPolynomial.translate shift p :=
+    (LaurentPolynomial.translateLinear shift).map_neg p
 {chr(10).join(have_lines)}
   simp [shiftedUse, shiftedSources, {source_simp}, intermediate,
     Fin.sum_univ_succ,
-    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_add, htranslate_zsmul, htranslate_neg,
+    LaurentPolynomial.translate_single,
     {h_names}] <;> abel
 ''' + internal_end("Quotient", quotient_id) + FOOTER
 
@@ -1506,7 +1520,7 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
         h_lines.append(
             f"  have h{term_index:02d} : shift + {term_expressions[term_index]} = {target} := by\n"
             "    unfold shift\n"
-            "    abel"
+            "    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
         )
     monomials = ", ".join(f"monomial{i:02d}" for i in range(4))
     use_defs = ", ".join(f"use{i:02d}" for i in range(4))
@@ -1991,6 +2005,9 @@ def validate_generated_layout(
         )
 
     checked_shifted_exponents = 0
+    pointwise_exponent_replay = (
+        "(ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
+    )
     for quotient_id in range(QUOTIENT_COUNT):
         shifted_path = Path(f"Quotient/Q{quotient_id:03d}/ShiftedEq.lean")
         shifted_text = contents[shifted_path]
@@ -2005,11 +2022,45 @@ def validate_generated_layout(
         )
         if typed_helpers != 12:
             fail(f"shifted exponent helper lacks expected type: {shifted_path}")
+        if shifted_text.count(pointwise_exponent_replay) != 12:
+            fail(f"shifted exponent helper lacks pointwise replay: {shifted_path}")
+        if (
+            shifted_text.count("have htranslate_zsmul") != 1
+            or "(LaurentPolynomial.translateLinear shift).map_smul n p"
+            not in shifted_text
+            or shifted_text.count("have htranslate_neg") != 1
+            or "(LaurentPolynomial.translateLinear shift).map_neg p"
+            not in shifted_text
+            or "LaurentPolynomial.translate_add, htranslate_zsmul, htranslate_neg,\n"
+            "    LaurentPolynomial.translate_single" not in shifted_text
+        ):
+            fail(f"shifted translation linearity replay changed: {shifted_path}")
         checked_shifted_exponents += typed_helpers
     if checked_shifted_exponents != SHIFTED_EXPONENT_REPLAY_COUNT:
         fail(
             "generated typed shifted-exponent count changed: "
             f"{checked_shifted_exponents} != {SHIFTED_EXPONENT_REPLAY_COUNT}"
+        )
+
+    checked_factor_shifted_exponents = 0
+    for edge_id in range(RAW_EDGE_COUNT):
+        target_path = Path(f"Factor/E{edge_id:03d}/TargetEq.lean")
+        target_text = contents[target_path]
+        helper_indices = re.findall(
+            r"^  have h(\d{2}) : shift \+", target_text, re.MULTILINE
+        )
+        expected_indices = [f"{index:02d}" for index in range(4)]
+        if helper_indices != expected_indices:
+            fail(f"factor shifted helper order changed: {target_path}")
+        replay = "unfold shift\n    " + pointwise_exponent_replay
+        if target_text.count(replay) != 4:
+            fail(f"factor shifted helper lacks pointwise replay: {target_path}")
+        checked_factor_shifted_exponents += len(helper_indices)
+    if checked_factor_shifted_exponents != FACTOR_SHIFTED_EXPONENT_REPLAY_COUNT:
+        fail(
+            "generated factor shifted-exponent count changed: "
+            f"{checked_factor_shifted_exponents} != "
+            f"{FACTOR_SHIFTED_EXPONENT_REPLAY_COUNT}"
         )
 
     source_umbrella = (

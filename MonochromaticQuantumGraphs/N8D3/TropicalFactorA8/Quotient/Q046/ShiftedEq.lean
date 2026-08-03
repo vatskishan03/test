@@ -23,6 +23,18 @@ theorem shifted_eq :
       LaurentPolynomial.translate (shiftedUse k).shift
         (shiftedSources (shiftedUse k).source)) =
       intermediate := by
+  have htranslate_zsmul
+      (shift : LaurentExponent (Fin 144)) (n : ℤ)
+      (p : LaurentPolynomial (Fin 144)) :
+      LaurentPolynomial.translate shift (n • p) =
+        n • LaurentPolynomial.translate shift p :=
+    (LaurentPolynomial.translateLinear shift).map_smul n p
+  have htranslate_neg
+      (shift : LaurentExponent (Fin 144))
+      (p : LaurentPolynomial (Fin 144)) :
+      LaurentPolynomial.translate shift (-p) =
+        -LaurentPolynomial.translate shift p :=
+    (LaurentPolynomial.translateLinear shift).map_neg p
   have h00 : (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
@@ -35,7 +47,7 @@ theorem shifted_eq :
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (120 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h01 : (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (9 : Fin 144) (1 : ℤ) +
@@ -46,7 +58,7 @@ theorem shifted_eq :
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (127 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h02 : (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (9 : Fin 144) (1 : ℤ) +
@@ -57,7 +69,7 @@ theorem shifted_eq :
         Pi.single (38 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h03 : (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ)) + (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
@@ -70,7 +82,7 @@ theorem shifted_eq :
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (120 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h04 : (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ)) + (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (9 : Fin 144) (1 : ℤ) +
@@ -81,7 +93,7 @@ theorem shifted_eq :
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (127 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h05 : (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ)) + (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (9 : Fin 144) (1 : ℤ) +
@@ -92,7 +104,7 @@ theorem shifted_eq :
         Pi.single (41 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h06 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
@@ -102,7 +114,7 @@ theorem shifted_eq :
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (75 : Fin 144) (1 : ℤ) +
         Pi.single (120 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h07 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
@@ -112,7 +124,7 @@ theorem shifted_eq :
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (127 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h08 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (38 : Fin 144) (1 : ℤ) +
@@ -122,7 +134,7 @@ theorem shifted_eq :
         Pi.single (38 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h09 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
@@ -132,7 +144,7 @@ theorem shifted_eq :
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (75 : Fin 144) (1 : ℤ) +
         Pi.single (120 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h10 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
@@ -142,7 +154,7 @@ theorem shifted_eq :
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (127 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   have h11 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (41 : Fin 144) (1 : ℤ) +
@@ -152,11 +164,12 @@ theorem shifted_eq :
         Pi.single (41 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ))) := by
-    abel
+    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
   simp [shiftedUse, shiftedSources, TropicalFactorA8.Internal.Source078.reduced,
     TropicalFactorA8.Internal.Source081.reduced, intermediate,
     Fin.sum_univ_succ,
-    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_add, htranslate_zsmul, htranslate_neg,
+    LaurentPolynomial.translate_single,
     h00, h01, h02, h03, h04, h05, h06, h07, h08, h09, h10, h11] <;> abel
 
 end TropicalFactorA8.Internal.Quotient046
