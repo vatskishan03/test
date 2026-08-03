@@ -30,12 +30,12 @@ def shiftedSources : Fin 2 → LaurentPolynomial (Fin 144) :=
 def shiftedUse :
     Fin 2 → LaurentPolynomial.ShiftedUse (Fin 2) (Fin 144) :=
 ![
-  { source := 0
-      scale := (1 : ℤ)
+  { source := 0,
+      scale := (1 : ℤ),
       shift := (Pi.single (86 : Fin 144) (-1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ)) },
-  { source := 1
-      scale := (-1 : ℤ)
+  { source := 1,
+      scale := (-1 : ℤ),
       shift := (0 : LaurentExponent (Fin 144)) }
 ]
 

@@ -26,77 +26,77 @@ namespace TropicalFactorB8.Internal.Source131
 def uses : Fin 6 →
     CharacterReductionUse tropicalComponentBCharacter8 :=
 ![
-  { coefficient := (1 : ℤ)
+  { coefficient := (1 : ℤ),
       sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (88 : Fin 144) (1 : ℤ) +
         Pi.single (104 : Fin 144) (1 : ℤ) +
-        Pi.single (142 : Fin 144) (1 : ℤ))
+        Pi.single (142 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (88 : Fin 144) (1 : ℤ) +
         Pi.single (104 : Fin 144) (1 : ℤ) +
-        Pi.single (142 : Fin 144) (1 : ℤ))
+        Pi.single (142 : Fin 144) (1 : ℤ)),
       reduction := monomial00 },
-  { coefficient := (1 : ℤ)
+  { coefficient := (1 : ℤ),
       sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (88 : Fin 144) (1 : ℤ) +
         Pi.single (115 : Fin 144) (1 : ℤ) +
-        Pi.single (127 : Fin 144) (1 : ℤ))
+        Pi.single (127 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (88 : Fin 144) (1 : ℤ) +
         Pi.single (115 : Fin 144) (1 : ℤ) +
-        Pi.single (127 : Fin 144) (1 : ℤ))
+        Pi.single (127 : Fin 144) (1 : ℤ)),
       reduction := monomial01 },
-  { coefficient := (-1 : ℤ)
+  { coefficient := (-1 : ℤ),
       sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
         Pi.single (98 : Fin 144) (1 : ℤ) +
-        Pi.single (142 : Fin 144) (1 : ℤ))
+        Pi.single (142 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
         Pi.single (98 : Fin 144) (1 : ℤ) +
-        Pi.single (142 : Fin 144) (1 : ℤ))
+        Pi.single (142 : Fin 144) (1 : ℤ)),
       reduction := monomial02 },
-  { coefficient := (-1 : ℤ)
+  { coefficient := (-1 : ℤ),
       sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
         Pi.single (109 : Fin 144) (1 : ℤ) +
-        Pi.single (127 : Fin 144) (1 : ℤ))
+        Pi.single (127 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
         Pi.single (109 : Fin 144) (1 : ℤ) +
-        Pi.single (127 : Fin 144) (1 : ℤ))
+        Pi.single (127 : Fin 144) (1 : ℤ)),
       reduction := monomial03 },
-  { coefficient := (1 : ℤ)
+  { coefficient := (1 : ℤ),
       sourceExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (88 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ))
+        Pi.single (123 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (88 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ))
+        Pi.single (123 : Fin 144) (1 : ℤ)),
       reduction := monomial04 },
-  { coefficient := (-1 : ℤ)
+  { coefficient := (-1 : ℤ),
       sourceExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (117 : Fin 144) (1 : ℤ))
+        Pi.single (117 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (117 : Fin 144) (1 : ℤ))
+        Pi.single (117 : Fin 144) (1 : ℤ)),
       reduction := monomial05 }
 ]
 

@@ -39,7 +39,7 @@ def monomial05 :
       (0 : ℤ),
       (0 : ℤ),
       (0 : ℤ)
-]
+],
     combination_eq := by
       apply SignedCharacterRow.ext
       · simp [SignedCharacterRow.linearCombination,

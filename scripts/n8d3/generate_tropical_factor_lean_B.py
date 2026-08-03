@@ -752,7 +752,7 @@ def monomial{use_index:02d} :
       {source} {target} where
   signExponent := {z(integer(reduction["signExponent"], "monomial sign"))}
   implication := {{
-    coeff := tropicalComponentBWithParityCoefficients8 {vector(coeffs, "      ")}
+    coeff := tropicalComponentBWithParityCoefficients8 {vector(coeffs, "      ")},
     combination_eq := by
       apply SignedCharacterRow.ext
       · simp [SignedCharacterRow.linearCombination,
@@ -787,9 +787,9 @@ def emit_uses_module(
     imports = [f"{module}.Monomial.M{i:02d}" for i in range(len(uses))]
     items = []
     for use_index, use in enumerate(uses):
-        items.append(f'''{{ coefficient := {z(integer(use["coefficient"], "use coefficient"))}
-      sourceExponent := {exponent(use["sourceExponent"], "use source")}
-      targetExponent := {exponent(use["targetExponent"], "use target")}
+        items.append(f'''{{ coefficient := {z(integer(use["coefficient"], "use coefficient"))},
+      sourceExponent := {exponent(use["sourceExponent"], "use source")},
+      targetExponent := {exponent(use["targetExponent"], "use target")},
       reduction := monomial{use_index:02d} }}''')
     body = f'''/-- Decision-free collector of row-local monomial certificates. -/
 def uses : Fin {len(uses)} →
@@ -1060,8 +1060,8 @@ def emit_quotient_data(data: dict[str, Any], quotient_id: int) -> str:
     for local_index, use in enumerate(row["exact_source_uses"]):
         if use["source_reduction_id"] != source_ids[local_index]:
             fail(f"quotient {quotient_id} shifted source order changed")
-        shifted_items.append(f'''{{ source := {local_index}
-      scale := {z(use["integer_scale"])}
+        shifted_items.append(f'''{{ source := {local_index},
+      scale := {z(use["integer_scale"])},
       shift := {exponent(use["shift"], f"quotient {quotient_id} shift") } }}''')
     body = f'''/-- The two row-local normalized source polynomials. -/
 def shiftedSources : Fin 2 → LaurentPolynomial (Fin 144) :=
@@ -1615,6 +1615,73 @@ the sound all-zero dispatch through the existing {COVER_COUNT}-cover table.
 '''
 
 
+def missing_braced_record_commas(text: str) -> list[tuple[int, str]]:
+    """Return later fields in braced records not preceded by a comma.
+
+    Lean's layout syntax separates fields introduced by ``where``, but fields in
+    a ``{ field := value, ... }`` literal still require commas.  The generated
+    records do not contain top-level ``let`` assignments, so scanning balanced
+    braced regions for top-level ``identifier :=`` tokens is both conservative
+    and independent of the individual emitters.
+    """
+    brace_stack: list[int] = []
+    brace_pairs: list[tuple[int, int]] = []
+    for position, character in enumerate(text):
+        if character == "{":
+            brace_stack.append(position)
+        elif character == "}" and brace_stack:
+            brace_pairs.append((brace_stack.pop(), position))
+
+    missing: list[tuple[int, str]] = []
+    identifier = re.compile(r"[A-Za-z_][A-Za-z0-9_']*\s*:=")
+    for start, end in brace_pairs:
+        body = text[start + 1:end]
+        nested_braces = 0
+        parentheses = 0
+        brackets = 0
+        fields: list[tuple[int, str]] = []
+        position = 0
+        while position < len(body):
+            character = body[position]
+            if character == "{":
+                nested_braces += 1
+            elif character == "}":
+                nested_braces -= 1
+            elif character == "(":
+                parentheses += 1
+            elif character == ")":
+                parentheses -= 1
+            elif character == "[":
+                brackets += 1
+            elif character == "]":
+                brackets -= 1
+            elif (
+                nested_braces == 0
+                and parentheses == 0
+                and brackets == 0
+                and (character.isalpha() or character == "_")
+                and (
+                    position == 0
+                    or not (
+                        body[position - 1].isalnum()
+                        or body[position - 1] in "_'"
+                    )
+                )
+            ):
+                match = identifier.match(body, position)
+                if match is not None:
+                    field = body[position:match.end()].split(":=", 1)[0].strip()
+                    fields.append((position, field))
+                    position = match.end() - 1
+            position += 1
+
+        for field_position, field in fields[1:]:
+            if not body[:field_position].rstrip().endswith(","):
+                line = text.count("\n", 0, start + 1 + field_position) + 1
+                missing.append((line, field))
+    return missing
+
+
 def audit_generated(
     output: Path, umbrella: Path, generated: Sequence[Path]
 ) -> None:
@@ -1633,6 +1700,14 @@ def audit_generated(
         )
 
     contents = {path.relative_to(output): path.read_text() for path in lean_paths}
+    for path, text in contents.items():
+        missing_commas = missing_braced_record_commas(text)
+        if missing_commas:
+            line, field = missing_commas[0]
+            fail(
+                f"missing comma before braced-record field {field!r} "
+                f"in {path}:{line}"
+            )
     proof_tree = {
         path: text
         for path, text in contents.items()

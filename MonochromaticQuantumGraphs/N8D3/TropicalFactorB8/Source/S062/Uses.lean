@@ -26,77 +26,77 @@ namespace TropicalFactorB8.Internal.Source062
 def uses : Fin 6 →
     CharacterReductionUse tropicalComponentBCharacter8 :=
 ![
-  { coefficient := (1 : ℤ)
+  { coefficient := (1 : ℤ),
       sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (108 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ))
+        Pi.single (141 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (108 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ))
+        Pi.single (141 : Fin 144) (1 : ℤ)),
       reduction := monomial00 },
-  { coefficient := (-1 : ℤ)
+  { coefficient := (-1 : ℤ),
       sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (109 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ))
+        Pi.single (138 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (109 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ))
+        Pi.single (138 : Fin 144) (1 : ℤ)),
       reduction := monomial01 },
-  { coefficient := (1 : ℤ)
+  { coefficient := (1 : ℤ),
       sourceExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ))
+        Pi.single (141 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ))
+        Pi.single (141 : Fin 144) (1 : ℤ)),
       reduction := monomial02 },
-  { coefficient := (-1 : ℤ)
+  { coefficient := (-1 : ℤ),
       sourceExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ))
+        Pi.single (138 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ))
+        Pi.single (138 : Fin 144) (1 : ℤ)),
       reduction := monomial03 },
-  { coefficient := (1 : ℤ)
+  { coefficient := (1 : ℤ),
       sourceExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ))
+        Pi.single (141 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ))
+        Pi.single (141 : Fin 144) (1 : ℤ)),
       reduction := monomial04 },
-  { coefficient := (-1 : ℤ)
+  { coefficient := (-1 : ℤ),
       sourceExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ))
+        Pi.single (138 : Fin 144) (1 : ℤ)),
       targetExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
         Pi.single (52 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ))
+        Pi.single (138 : Fin 144) (1 : ℤ)),
       reduction := monomial05 }
 ]
 
