@@ -180,6 +180,102 @@ theorem laurentEval_eq_sign_mul_of_reduction
   exact (div_eq_iff
     (laurentEval_ne_zero x hx targetExponent)).mp hdiff
 
+/-- The integer coefficient obtained after absorbing a power of `-1` into an
+integer Laurent-polynomial coefficient. -/
+def signedCoefficient (signExponent coefficient : ℤ) : ℤ :=
+  if Even signExponent then coefficient else -coefficient
+
+/-- Absorbing a certified sign into an integer scalar commutes with complex
+evaluation. -/
+theorem zsmul_neg_one_zpow_mul
+    (signExponent coefficient : ℤ) (z : ℂ) :
+    coefficient • ((-1 : ℂ) ^ signExponent * z) =
+      signedCoefficient signExponent coefficient • z := by
+  rw [neg_one_zpow_eq_ite]
+  by_cases h : Even signExponent
+  · simp [signedCoefficient, h]
+  · simp [signedCoefficient, h]
+
+/-- One source monomial, its chosen representative, and the raw signed-
+character certificate connecting them. -/
+structure CharacterReductionUse
+    {ι χ : Type*} [Fintype χ]
+    (chars : χ → SignedCharacterRow ι) where
+  coefficient : ℤ
+  sourceExponent : LaurentExponent ι
+  targetExponent : LaurentExponent ι
+  reduction : MonomialReductionCertificate chars sourceExponent targetExponent
+
+/-- An exact term-by-term reduction of a sparse Laurent polynomial modulo a
+finite family of signed characters.  Both sparse-polynomial equalities are
+checked by Lean; the certificate does not trust a quotient normal form. -/
+structure CharacterReductionCertificate
+    {ι χ κ : Type*} [Fintype χ] [Fintype κ]
+    (chars : χ → SignedCharacterRow ι)
+    (source target : LaurentPolynomial ι) where
+  use : κ → CharacterReductionUse chars
+  source_eq :
+    ∑ k, Finsupp.single (use k).sourceExponent (use k).coefficient = source
+  target_eq :
+    ∑ k, Finsupp.single (use k).targetExponent
+      (signedCoefficient (use k).reduction.signExponent (use k).coefficient) =
+        target
+
+/-- Kernel replay of an exact term-by-term character reduction. -/
+theorem eval_eq_of_characterReductionCertificate
+    {ι χ κ : Type*} [Fintype ι] [Fintype χ] [Fintype κ]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (chars : χ → SignedCharacterRow ι)
+    (source target : LaurentPolynomial ι)
+    (cert : CharacterReductionCertificate (κ := κ) chars source target)
+    (hchars : ∀ c, (chars c).Holds x) :
+    source.eval x = target.eval x := by
+  classical
+  calc
+    source.eval x =
+        LaurentPolynomial.eval x
+          (∑ k, Finsupp.single (cert.use k).sourceExponent
+            (cert.use k).coefficient) :=
+      congrArg (LaurentPolynomial.eval x) cert.source_eq.symm
+    _ = ∑ k, LaurentPolynomial.eval x
+          (Finsupp.single (cert.use k).sourceExponent
+            (cert.use k).coefficient) :=
+      LaurentPolynomial.eval_finset_sum x Finset.univ _
+    _ = ∑ k, LaurentPolynomial.eval x
+          (Finsupp.single (cert.use k).targetExponent
+            (signedCoefficient (cert.use k).reduction.signExponent
+              (cert.use k).coefficient)) := by
+      apply Finset.sum_congr rfl
+      intro k _
+      rw [LaurentPolynomial.eval_single, LaurentPolynomial.eval_single,
+        laurentEval_eq_sign_mul_of_reduction x hx chars
+          (cert.use k).sourceExponent (cert.use k).targetExponent
+          (cert.use k).reduction hchars]
+      exact zsmul_neg_one_zpow_mul
+        (cert.use k).reduction.signExponent (cert.use k).coefficient _
+    _ = LaurentPolynomial.eval x
+          (∑ k, Finsupp.single (cert.use k).targetExponent
+            (signedCoefficient (cert.use k).reduction.signExponent
+              (cert.use k).coefficient)) :=
+      (LaurentPolynomial.eval_finset_sum x Finset.univ _).symm
+    _ = target.eval x :=
+      congrArg (LaurentPolynomial.eval x) cert.target_eq
+
+/-- Semantic consequence of a term-by-term character reduction. -/
+theorem holds_of_characterReductionCertificate
+    {ι χ κ : Type*} [Fintype ι] [Fintype χ] [Fintype κ]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (chars : χ → SignedCharacterRow ι)
+    (source target : LaurentPolynomial ι)
+    (cert : CharacterReductionCertificate (κ := κ) chars source target)
+    (hchars : ∀ c, (chars c).Holds x)
+    (hsource : source.Holds x) :
+    target.Holds x := by
+  unfold LaurentPolynomial.Holds at hsource ⊢
+  rw [← eval_eq_of_characterReductionCertificate
+    x hx chars source target cert hchars]
+  exact hsource
+
 namespace SignedCharacterRow
 
 /-- The actual pointwise factor represented by a signed character. -/
@@ -192,7 +288,121 @@ theorem factorValue_eq_zero_iff {ι : Type*} [Fintype ι]
     row.factorValue x = 0 ↔ row.Holds x := by
   simp [factorValue, Holds, sub_eq_zero]
 
+/-- The sparse two-term Laurent polynomial represented by a signed
+character. -/
+def factorPolynomial {ι : Type*} (row : SignedCharacterRow ι) :
+    LaurentPolynomial ι :=
+  Finsupp.single row.exponent 1 -
+    Finsupp.single 0 (signedCoefficient row.signExponent 1)
+
+/-- Exact evaluation of the two-term factor polynomial. -/
+theorem eval_factorPolynomial {ι : Type*} [Fintype ι]
+    (x : ι → ℂ) (row : SignedCharacterRow ι) :
+    row.factorPolynomial.eval x = row.factorValue x := by
+  unfold factorPolynomial
+  rw [LaurentPolynomial.eval_sub,
+    LaurentPolynomial.eval_single, LaurentPolynomial.eval_single]
+  simp only [one_zsmul, laurentEval_zero, factorValue]
+  rw [neg_one_zpow_eq_ite]
+  by_cases h : Even row.signExponent
+  · simp [signedCoefficient, h]
+  · simp [signedCoefficient, h]
+
+/-- The exact four-term expansion of the product of two signed-character
+factors. -/
+def factorProductPolynomial {ι : Type*}
+    (left right : SignedCharacterRow ι) : LaurentPolynomial ι :=
+  Finsupp.single (left.exponent + right.exponent) 1 -
+    Finsupp.single left.exponent
+      (signedCoefficient right.signExponent 1) -
+    Finsupp.single right.exponent
+      (signedCoefficient left.signExponent 1) +
+    Finsupp.single 0
+      (signedCoefficient left.signExponent 1 *
+        signedCoefficient right.signExponent 1)
+
+/-- Exact evaluation of the expanded four-term factor product. -/
+theorem eval_factorProductPolynomial
+    {ι : Type*} [Fintype ι]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (left right : SignedCharacterRow ι) :
+    (factorProductPolynomial left right).eval x =
+      left.factorValue x * right.factorValue x := by
+  unfold factorProductPolynomial
+  rw [LaurentPolynomial.eval_add, LaurentPolynomial.eval_sub,
+    LaurentPolynomial.eval_sub]
+  simp only [LaurentPolynomial.eval_single, one_zsmul,
+    laurentEval_add x hx, laurentEval_zero, factorValue]
+  rw [neg_one_zpow_eq_ite, neg_one_zpow_eq_ite]
+  by_cases hl : Even left.signExponent <;>
+    by_cases hr : Even right.signExponent <;>
+      simp [signedCoefficient, hl, hr] <;> ring
+
 end SignedCharacterRow
+
+/-- A known source relation reduces, modulo the declared signed characters,
+to a nonzero integer and Laurent-monomial multiple of one raw factor
+product. -/
+structure LaurentFactorCertificate
+    {ι χ κ : Type*} [Fintype χ] [Fintype κ]
+    (chars : χ → SignedCharacterRow ι)
+    (source : LaurentPolynomial ι)
+    (left right : SignedCharacterRow ι) where
+  unit : ℤ
+  unit_ne_zero : unit ≠ 0
+  shift : LaurentExponent ι
+  reduction : CharacterReductionCertificate (κ := κ) chars source
+    (unit • LaurentPolynomial.translate shift
+      (left.factorProductPolynomial right))
+
+/-- Pointwise kernel replay of a complete sparse factor certificate. -/
+theorem factorValues_mul_eq_zero_of_certificate
+    {ι χ κ : Type*} [Fintype ι] [Fintype χ] [Fintype κ]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (chars : χ → SignedCharacterRow ι)
+    (source : LaurentPolynomial ι)
+    (left right : SignedCharacterRow ι)
+    (cert : LaurentFactorCertificate
+      (κ := κ) chars source left right)
+    (hchars : ∀ c, (chars c).Holds x)
+    (hsource : source.Holds x) :
+    left.factorValue x * right.factorValue x = 0 := by
+  have htarget :
+      LaurentPolynomial.Holds x
+        (cert.unit • LaurentPolynomial.translate cert.shift
+          (left.factorProductPolynomial right)) :=
+    holds_of_characterReductionCertificate
+      x hx chars source _ cert.reduction hchars hsource
+  unfold LaurentPolynomial.Holds at htarget
+  rw [LaurentPolynomial.eval_zsmul,
+    LaurentPolynomial.eval_translate x hx,
+    SignedCharacterRow.eval_factorProductPolynomial x hx] at htarget
+  simp only [← Int.cast_smul_eq_zsmul ℂ, smul_eq_mul] at htarget
+  have hunit : (cert.unit : ℂ) ≠ 0 :=
+    Int.cast_ne_zero.mpr cert.unit_ne_zero
+  have hshift : laurentEval x cert.shift ≠ 0 :=
+    laurentEval_ne_zero x hx cert.shift
+  exact (mul_eq_zero.mp
+    ((mul_eq_zero.mp htarget).resolve_left hunit)).resolve_left hshift
+
+/-- The semantic endpoint dispatch supplied by a complete sparse factor
+certificate. -/
+theorem factorCertificate_cases
+    {ι χ κ : Type*} [Fintype ι] [Fintype χ] [Fintype κ]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (chars : χ → SignedCharacterRow ι)
+    (source : LaurentPolynomial ι)
+    (left right : SignedCharacterRow ι)
+    (cert : LaurentFactorCertificate
+      (κ := κ) chars source left right)
+    (hchars : ∀ c, (chars c).Holds x)
+    (hsource : source.Holds x) :
+    left.Holds x ∨ right.Holds x := by
+  rw [← SignedCharacterRow.factorValue_eq_zero_iff,
+    ← SignedCharacterRow.factorValue_eq_zero_iff]
+  exact mul_eq_zero.mp
+    (factorValues_mul_eq_zero_of_certificate
+      x hx chars source left right cert hchars hsource)
 
 end
 
