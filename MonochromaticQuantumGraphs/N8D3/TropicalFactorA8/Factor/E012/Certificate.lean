@@ -1,0 +1,37 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Factor.E012.SourceEq
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Factor.E012.TargetEq
+
+/-!
+# Component-A factor edge 12: certificate
+-/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+open MonochromaticQuantumGraph
+open MonochromaticQuantumGraphs
+open MonochromaticQuantumGraphs.FactorCoverCertificate
+open scoped BigOperators
+
+noncomputable section
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 8000000
+
+/-- Exact Laurent factor certificate for raw edge 12. -/
+def tropicalComponentAFactorCertificate8_012 :
+    LaurentFactorCertificate (κ := Fin 4) tropicalComponentACharacter8
+      (tropicalComponentAQuotientRelation8 39)
+      (tropicalComponentARawFactor8 1)
+      (tropicalComponentARawFactor8 46) where
+  unit := (1 : ℤ)
+  unit_ne_zero := by norm_num
+  shift := TropicalFactorA8.Internal.Factor012.shift
+  reduction := {
+    use := TropicalFactorA8.Internal.Factor012.use
+    source_eq := TropicalFactorA8.Internal.Factor012.source_eq
+    target_eq := TropicalFactorA8.Internal.Factor012.target_eq
+  }
+
+end
+
+end MonochromaticQuantumGraphs.N8D3

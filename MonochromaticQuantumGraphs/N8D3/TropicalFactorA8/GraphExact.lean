@@ -1,4 +1,4 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Factor
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Data
 
 /-!
 # Exact raw/class graph quotient

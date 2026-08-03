@@ -1,6 +1,5 @@
 import MonochromaticQuantumGraphs.LaurentPolynomialCertificate
 import MonochromaticQuantumGraphs.N8D3.TropicalLaurentCoordinates8
-import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8
 import MonochromaticQuantumGraphs.N8D3.TropicalNonattainmentComponentA8
 
 /-!
@@ -148,6 +147,3494 @@ def tropicalComponentAQuotientSourceIndex8 : Fin 116 → Fin 560 :=
   500,
   501,
   506
+]
+
+/-- Exact original polynomial of each of the 116 source reductions.  Keeping
+this finite data independent of the retained-relation semantic development
+lets each algebraic certificate compile as a genuinely small target. -/
+def tropicalComponentAQuotientOriginalSource8 :
+    Fin 116 → LaurentPolynomial (Fin 144) :=
+![
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (132 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (126 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (25 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (116 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (85 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (109 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (52 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (115 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (112 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (64 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (98 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (101 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (104 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (38 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (75 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (127 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (41 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (39 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (42 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (39 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (42 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (99 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (39 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (42 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (39 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (42 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (39 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (76 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (42 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (40 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (15 : Fin 144) (1 : ℤ) +
+        Pi.single (43 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (40 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (17 : Fin 144) (1 : ℤ) +
+        Pi.single (43 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (7 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (40 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (43 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (40 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (43 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (120 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (103 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (65 : Fin 144) (1 : ℤ) +
+        Pi.single (89 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ)),
+  (Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (40 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (-1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (77 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (1 : ℤ) +
+      Finsupp.single (Pi.single (0 : Fin 144) (1 : ℤ) +
+        Pi.single (11 : Fin 144) (1 : ℤ) +
+        Pi.single (43 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (1 : ℤ))
 ]
 
 /-- Exact normalized target of each retained source reduction. -/
@@ -7877,6 +11364,17 @@ def tropicalComponentAClassMembers8 : Fin 15 → Finset (Fin 59) :=
   {53},
   {54, 55, 56, 57, 58}
 ]
+
+/-- Translation is additive over subtraction.  This named algebraic bridge
+keeps generated factor equalities away from the implementation of Finsupp
+support and `translateLinear`. -/
+theorem tropicalComponentATranslate_sub8
+    (shift : LaurentExponent (Fin 144))
+    (p q : LaurentPolynomial (Fin 144)) :
+    LaurentPolynomial.translate shift (p - q) =
+      LaurentPolynomial.translate shift p -
+        LaurentPolynomial.translate shift q := by
+  exact LinearMap.map_sub (LaurentPolynomial.translateLinear shift) p q
 
 end
 

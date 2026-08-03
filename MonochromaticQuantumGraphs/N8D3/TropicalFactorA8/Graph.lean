@@ -1,4 +1,5 @@
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.GraphExact
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Factor
 
 /-!
 # Component-A false-twin classes and cover dispatch
