@@ -1348,10 +1348,10 @@ def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
             lemma_names.append(name)
             combined = normalize_exponent_rows(use["shift"], term_rows)
             exponent_lemmas.append(f'''  have {name} :
-      {exponent(use["shift"], f"quotient {quotient_id} shift {local_index}")} +
-        {exponent(term_rows, f"quotient {quotient_id} source exponent")} =
-      {exponent(combined, f"quotient {quotient_id} translated exponent")} := by
-    abel''')
+      (({exponent(use["shift"], f"quotient {quotient_id} shift {local_index}")} +
+        {exponent(term_rows, f"quotient {quotient_id} source exponent")} : LaurentExponent (Fin 144)) =
+      {exponent(combined, f"quotient {quotient_id} translated exponent")}) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega''')
     source_simp = ",\n    ".join(
         f"{stage_namespace('Source', source_id)}.reduced"
         for source_id in source_ids
@@ -1361,9 +1361,16 @@ theorem shifted_eq :
     (∑ k : Fin 2, (shiftedUse k).scale •
       LaurentPolynomial.translate (shiftedUse k).shift
         (shiftedSources (shiftedUse k).source)) = intermediate := by
+  have translate_zsmul
+      (shift : LaurentExponent (Fin 144)) (n : ℤ)
+      (p : LaurentPolynomial (Fin 144)) :
+      LaurentPolynomial.translate shift (n • p) =
+        n • LaurentPolynomial.translate shift p := by
+    exact (LaurentPolynomial.translateLinear shift).map_smul n p
 {chr(10).join(exponent_lemmas)}
   simp [shiftedUse, shiftedSources, {source_simp}, intermediate,
-    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_add, translate_zsmul,
+    LaurentPolynomial.translate_single,
     Fin.sum_univ_succ, {', '.join(lemma_names)}] <;> abel
 '''
     return module_header(
@@ -1604,7 +1611,7 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
       shift + {exponent(term_rows, f"factor {edge_id} product exponent")} =
         {exponent(combined, f"factor {edge_id} translated exponent")} := by
     unfold shift
-    abel''')
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega''')
     namespace = stage_namespace("Factor", edge_id)
     module = stage_module("Factor", edge_id)
     body = f'''/-- Sparse translated-product equality for factor edge {edge_id}. -/
@@ -2134,6 +2141,69 @@ def audit_generated(
             and "\n    abel\n" in text
         ):
             fail(f"source coordinate rewrite has redundant standalone abel: {path}")
+
+    checked_typed_shift_rows = 0
+    expected_shift_names = [
+        f"hexp{source_index}_{term_index}"
+        for source_index in range(2)
+        for term_index in range(6)
+    ]
+    for quotient_id in range(QUOTIENT_COUNT):
+        path = Path(f"Quotient/Q{quotient_id:03d}/ShiftedEq.lean")
+        text = contents[path]
+        if (
+            text.count("  have translate_zsmul\n") != 1
+            or text.count(
+                "exact (LaurentPolynomial.translateLinear shift).map_smul n p"
+            )
+            != 1
+            or text.count("LaurentPolynomial.translate_add, translate_zsmul,")
+            != 1
+        ):
+            fail(f"quotient shifted replay lacks local zsmul bridge: {path}")
+        rows = re.findall(
+            r"  have (hexp\d+_\d+) :\n(.*?) := by\n"
+            r"    ext x; simp \[Pi\.single_apply\]; split_ifs <;> omega",
+            text,
+            re.DOTALL,
+        )
+        if [name for name, _ in rows] != expected_shift_names:
+            fail(f"quotient shifted exponent rows changed: {path}")
+        for name, body in rows:
+            if (
+                not body.lstrip().startswith("((")
+                or not body.rstrip().endswith(")")
+                or body.count(": LaurentExponent (Fin 144)) =") != 1
+            ):
+                fail(f"untyped standalone shifted exponent equality {name}: {path}")
+            checked_typed_shift_rows += 1
+    expected_typed_shift_rows = QUOTIENT_COUNT * 12
+    if checked_typed_shift_rows != expected_typed_shift_rows:
+        fail(
+            "typed shifted exponent row count changed: "
+            f"{checked_typed_shift_rows} != {expected_typed_shift_rows}"
+        )
+
+    checked_factor_shift_rows = 0
+    expected_factor_shift_names = [f"hexp{index}" for index in range(4)]
+    for edge_id in range(RAW_EDGE_COUNT):
+        path = Path(f"Factor/E{edge_id:03d}/TargetEq.lean")
+        rows = re.findall(
+            r"  have (hexp\d+) :\n(.*?) := by\n"
+            r"    unfold shift\n"
+            r"    ext x; simp \[Pi\.single_apply\]; split_ifs <;> omega",
+            contents[path],
+            re.DOTALL,
+        )
+        if [name for name, _ in rows] != expected_factor_shift_names:
+            fail(f"factor shifted exponent rows lack pointwise replay: {path}")
+        checked_factor_shift_rows += len(rows)
+    expected_factor_shift_rows = RAW_EDGE_COUNT * 4
+    if checked_factor_shift_rows != expected_factor_shift_rows:
+        fail(
+            "factor shifted exponent row count changed: "
+            f"{checked_factor_shift_rows} != {expected_factor_shift_rows}"
+        )
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source\n"

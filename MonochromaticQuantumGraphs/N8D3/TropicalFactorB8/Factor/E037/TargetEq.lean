@@ -42,7 +42,7 @@ theorem target_eq :
         Pi.single (129 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    abel
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1 :
       shift + (Pi.single (69 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (-1 : ℤ) +
@@ -54,7 +54,7 @@ theorem target_eq :
         Pi.single (129 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    abel
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp2 :
       shift + (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (17 : Fin 144) (-1 : ℤ) +
@@ -70,7 +70,7 @@ theorem target_eq :
         Pi.single (126 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    abel
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp3 :
       shift + (0 : LaurentExponent (Fin 144)) =
         (Pi.single (17 : Fin 144) (1 : ℤ) +
@@ -81,7 +81,7 @@ theorem target_eq :
         Pi.single (126 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    abel
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   simp [uses, use00,
     use01,
     use02,

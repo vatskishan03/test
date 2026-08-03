@@ -22,8 +22,14 @@ theorem shifted_eq :
     (∑ k : Fin 2, (shiftedUse k).scale •
       LaurentPolynomial.translate (shiftedUse k).shift
         (shiftedSources (shiftedUse k).source)) = intermediate := by
+  have translate_zsmul
+      (shift : LaurentExponent (Fin 144)) (n : ℤ)
+      (p : LaurentPolynomial (Fin 144)) :
+      LaurentPolynomial.translate shift (n • p) =
+        n • LaurentPolynomial.translate shift p := by
+    exact (LaurentPolynomial.translateLinear shift).map_smul n p
   have hexp0_0 :
-      (Pi.single (9 : Fin 144) (-1 : ℤ) +
+      (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ)) +
@@ -31,7 +37,7 @@ theorem shifted_eq :
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (71 : Fin 144) (1 : ℤ) +
-        Pi.single (120 : Fin 144) (1 : ℤ)) =
+        Pi.single (120 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
@@ -40,10 +46,10 @@ theorem shifted_eq :
         Pi.single (71 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (120 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (120 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp0_1 :
-      (Pi.single (9 : Fin 144) (-1 : ℤ) +
+      (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ)) +
@@ -51,15 +57,15 @@ theorem shifted_eq :
         Pi.single (9 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) =
+        Pi.single (133 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (133 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp0_2 :
-      (Pi.single (9 : Fin 144) (-1 : ℤ) +
+      (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ)) +
@@ -67,15 +73,15 @@ theorem shifted_eq :
         Pi.single (9 : Fin 144) (1 : ℤ) +
         Pi.single (40 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) =
+        Pi.single (139 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (40 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (139 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp0_3 :
-      (Pi.single (9 : Fin 144) (-1 : ℤ) +
+      (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ)) +
@@ -83,7 +89,7 @@ theorem shifted_eq :
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (71 : Fin 144) (1 : ℤ) +
-        Pi.single (120 : Fin 144) (1 : ℤ)) =
+        Pi.single (120 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
@@ -92,10 +98,10 @@ theorem shifted_eq :
         Pi.single (71 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (120 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (120 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp0_4 :
-      (Pi.single (9 : Fin 144) (-1 : ℤ) +
+      (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ)) +
@@ -103,15 +109,15 @@ theorem shifted_eq :
         Pi.single (9 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) =
+        Pi.single (133 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (133 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp0_5 :
-      (Pi.single (9 : Fin 144) (-1 : ℤ) +
+      (((Pi.single (9 : Fin 144) (-1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ)) +
@@ -119,94 +125,95 @@ theorem shifted_eq :
         Pi.single (9 : Fin 144) (1 : ℤ) +
         Pi.single (43 : Fin 144) (1 : ℤ) +
         Pi.single (89 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) =
+        Pi.single (139 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (43 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (139 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1_0 :
-      (0 : LaurentExponent (Fin 144)) +
+      (((0 : LaurentExponent (Fin 144)) +
         (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (77 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ)) =
+        Pi.single (123 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (77 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (123 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1_1 :
-      (0 : LaurentExponent (Fin 144)) +
+      (((0 : LaurentExponent (Fin 144)) +
         (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) =
+        Pi.single (133 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (133 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1_2 :
-      (0 : LaurentExponent (Fin 144)) +
+      (((0 : LaurentExponent (Fin 144)) +
         (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (40 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) =
+        Pi.single (139 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (40 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (139 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1_3 :
-      (0 : LaurentExponent (Fin 144)) +
+      (((0 : LaurentExponent (Fin 144)) +
         (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (77 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ)) =
+        Pi.single (123 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (77 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (123 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1_4 :
-      (0 : LaurentExponent (Fin 144)) +
+      (((0 : LaurentExponent (Fin 144)) +
         (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) =
+        Pi.single (133 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (133 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (133 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   have hexp1_5 :
-      (0 : LaurentExponent (Fin 144)) +
+      (((0 : LaurentExponent (Fin 144)) +
         (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (43 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) =
+        Pi.single (139 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) =
       (Pi.single (0 : Fin 144) (1 : ℤ) +
         Pi.single (11 : Fin 144) (1 : ℤ) +
         Pi.single (43 : Fin 144) (1 : ℤ) +
         Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) := by
-    abel
+        Pi.single (139 : Fin 144) (1 : ℤ))) := by
+    ext x; simp [Pi.single_apply]; split_ifs <;> omega
   simp [shiftedUse, shiftedSources, TropicalFactorB8.Internal.Source121.reduced,
     TropicalFactorB8.Internal.Source126.reduced, intermediate,
-    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_add, translate_zsmul,
+    LaurentPolynomial.translate_single,
     Fin.sum_univ_succ, hexp0_0, hexp0_1, hexp0_2, hexp0_3, hexp0_4, hexp0_5, hexp1_0, hexp1_1, hexp1_2, hexp1_3, hexp1_4, hexp1_5] <;> abel
 
 end TropicalFactorB8.Internal.Quotient075
