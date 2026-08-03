@@ -12,13 +12,42 @@ log_file=$2
 shift 2
 targets=("$@")
 
-lake_workers=${LAKE_WORKERS:-7}
+lake_workers=${LAKE_WORKERS:-1}
 elan_bin_dir=${ELAN_BIN_DIR:-"$HOME/.elan/bin"}
 lake_bin=${LAKE_BIN:-"$elan_bin_dir/lake"}
-rss_limit_kb=${LEAN_RSS_LIMIT_KB:-8000000}
-aggregate_rss_limit_kb=${LEAN_AGGREGATE_RSS_LIMIT_KB:-55000000}
-available_floor_kb=${MEM_AVAILABLE_FLOOR_KB:-4000000}
-elapsed_limit_seconds=${LEAN_ELAPSED_LIMIT_SECONDS:-300}
+rss_limit_kb=${LEAN_RSS_LIMIT_KB:-7800000}
+aggregate_rss_limit_kb=${LEAN_AGGREGATE_RSS_LIMIT_KB:-7800000}
+available_floor_kb=${MEM_AVAILABLE_FLOOR_KB:-8000000}
+elapsed_limit_seconds=${LEAN_ELAPSED_LIMIT_SECONDS:-299}
+
+for value in "$lake_workers" "$rss_limit_kb" "$aggregate_rss_limit_kb" \
+    "$available_floor_kb" "$elapsed_limit_seconds"; do
+  if [[ ! "$value" =~ ^[0-9]+$ ]]; then
+    echo "[supervisor] resource limits must be nonnegative integers" >&2
+    exit 64
+  fi
+done
+
+if (( lake_workers != 1 )); then
+  echo "[supervisor] LAKE_WORKERS must be exactly 1" >&2
+  exit 64
+fi
+if (( rss_limit_kb > 7800000 )); then
+  echo "[supervisor] LEAN_RSS_LIMIT_KB must not exceed 7800000" >&2
+  exit 64
+fi
+if (( aggregate_rss_limit_kb > 7800000 )); then
+  echo "[supervisor] LEAN_AGGREGATE_RSS_LIMIT_KB must not exceed 7800000" >&2
+  exit 64
+fi
+if (( available_floor_kb < 8000000 )); then
+  echo "[supervisor] MEM_AVAILABLE_FLOOR_KB must be at least 8000000" >&2
+  exit 64
+fi
+if (( elapsed_limit_seconds > 299 )); then
+  echo "[supervisor] LEAN_ELAPSED_LIMIT_SECONDS must not exceed 299" >&2
+  exit 64
+fi
 
 if [[ ! -x "$lake_bin" ]]; then
   echo "[supervisor] Lake executable is missing or not executable: $lake_bin" >&2
@@ -35,6 +64,13 @@ fi
 mkdir -p "$(dirname "$log_file")"
 cd "$repository" || exit 66
 
+initial_mem_available_kb=$(awk '/^MemAvailable:/ { print $2 }' /proc/meminfo)
+if [[ ! "$initial_mem_available_kb" =~ ^[0-9]+$ ]] ||
+    (( initial_mem_available_kb < available_floor_kb )); then
+  echo "[supervisor] refusing to start: MemAvailable ${initial_mem_available_kb:-unknown} KB is below ${available_floor_kb} KB" >&2
+  exit 75
+fi
+
 printf '[supervisor] targets=%s lake_bin=%s lake_workers=%s rss_limit_kb=%s aggregate_rss_limit_kb=%s mem_available_floor_kb=%s elapsed_limit_seconds=%s\n' \
   "${targets[*]}" \
   "$lake_bin" \
@@ -50,10 +86,10 @@ setsid bash -c \
 build_group=$!
 
 terminate_group() {
-  if kill -0 "$build_group" 2>/dev/null; then
+  if kill -0 -- "-$build_group" 2>/dev/null; then
     kill -TERM -- "-$build_group" 2>/dev/null || true
     for _ in 1 2 3 4 5; do
-      kill -0 "$build_group" 2>/dev/null || return 0
+      kill -0 -- "-$build_group" 2>/dev/null || return 0
       sleep 1
     done
     kill -KILL -- "-$build_group" 2>/dev/null || true
@@ -76,7 +112,7 @@ max_aggregate_rss_kb=0
 max_elapsed_seconds=0
 last_report_seconds=0
 
-while kill -0 "$build_group" 2>/dev/null; do
+while kill -0 -- "-$build_group" 2>/dev/null; do
   read -r compiler_count aggregate_rss_kb current_max_rss_kb current_max_elapsed <<EOF
 $(ps -e -o pgid=,comm=,etimes=,rss= | awk -v pgid="$build_group" '
   $1 == pgid && $2 == "lean" {

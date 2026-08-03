@@ -2,7 +2,7 @@ name: General reduction and N8 D3 research
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, research/general-reduction-n8-d3]
   workflow_dispatch:
 
 permissions:
@@ -17,6 +17,13 @@ jobs:
   build:
     runs-on: [self-hosted, Linux, X64, lean-highmem-n8d3]
     timeout-minutes: 120
+    env:
+      LAKE_WORKERS: "1"
+      LEAN_NUM_THREADS: "1"
+      LEAN_RSS_LIMIT_KB: "7800000"
+      LEAN_AGGREGATE_RSS_LIMIT_KB: "7800000"
+      MEM_AVAILABLE_FLOOR_KB: "8000000"
+      LEAN_ELAPSED_LIMIT_SECONDS: "299"
     steps:
       - uses: actions/checkout@v4
       - name: Restore Lean dependencies
