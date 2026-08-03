@@ -60,6 +60,10 @@ OFFICIAL_RELATION_NAMES = {
     874: "tropicalTerminalRelation874_8",
     1213: "tropicalTerminalRelation1213_8",
 }
+OFFICIAL_RELATION_POS = {
+    relation: position
+    for position, relation in enumerate(OFFICIAL_RELATION_NAMES)
+}
 
 
 def fail(message: str) -> None:
@@ -205,7 +209,14 @@ def lean_vector(values: Sequence[str], indent: str = "  ", per_line: int = 12) -
 def emit_exponent(exponent: Sequence[int]) -> str:
     if len(exponent) != 144:
         fail("internal error: exponent does not have 144 coordinates")
-    return f"({lean_vector([str(x) for x in exponent])} : LaurentExponent (Fin 144))"
+    entries = [
+        f"Pi.single ({i} : Fin 144) ({value} : ℤ)"
+        for i, value in enumerate(exponent)
+        if value != 0
+    ]
+    if not entries:
+        return "(0 : LaurentExponent (Fin 144))"
+    return "(" + " +\n        ".join(entries) + ")"
 
 
 def emit_character(character: tuple[Sequence[int], int]) -> str:
@@ -332,23 +343,10 @@ def validate_character_reduction(value: Any, basis: Sequence[tuple[Sequence[int]
 
 
 def emit_character_reduction(uses: Sequence[dict[str, Any]]) -> str:
-    rendered = []
-    for use in uses:
-        rendered.append(
-            "{ coefficient := ("
-            + str(use["coefficient"])
-            + " : ℤ)\n        sourceExponent := "
-            + emit_exponent(use["source"])
-            + "\n        targetExponent := "
-            + emit_exponent(use["target"])
-            + "\n        reduction := "
-            + emit_monomial_reduction(use["sign"], use["coeff"])
-            + " }"
-        )
-    vector = lean_vector(rendered, indent="      ", per_line=1)
-    return f"""{{ use := {vector}
-    source_eq := by decide
-    target_eq := by decide }}"""
+    fail(
+        "inline CharacterReductionCertificate emission is disabled; "
+        "use the bounded Data/Source/Target replay modules"
+    )
 
 
 def validate_normalized(value: Any, basis: Sequence[tuple[Sequence[int], int]], source: Sequence[tuple[int, Sequence[int]]], target: Sequence[tuple[int, Sequence[int]]], support: Sequence[int], context: str) -> tuple[int, list[dict[str, Any]]]:
@@ -373,6 +371,251 @@ def emit_normalized(unit: int, uses: Sequence[dict[str, Any]]) -> str:
     return f"""{{ unit := ({unit} : ℤ)
     unit_ne_zero := by norm_num
     reduction := {emit_character_reduction(uses)} }}"""
+
+
+LEAN_NAMESPACE_HEADER = """namespace MonochromaticQuantumGraphs.N8D3
+
+open MonochromaticQuantumGraphs
+open scoped BigOperators
+
+noncomputable section
+
+set_option maxRecDepth 10000
+set_option maxHeartbeats 5000000
+
+"""
+
+LEAN_NAMESPACE_FOOTER = """
+end
+
+end MonochromaticQuantumGraphs.N8D3
+"""
+
+
+def lean_module(imports: Sequence[str], body: str, doc: str = "") -> str:
+    import_text = "\n".join(f"import {module}" for module in imports)
+    doc_text = f"\n\n/-! {doc} -/" if doc else ""
+    return (
+        import_text
+        + doc_text
+        + "\n\n"
+        + LEAN_NAMESPACE_HEADER
+        + body.rstrip()
+        + "\n"
+        + LEAN_NAMESPACE_FOOTER
+    )
+
+
+def indent_block(text: str, spaces: int) -> str:
+    prefix = " " * spaces
+    return "\n".join(prefix + line if line else line for line in text.splitlines()) + "\n"
+
+
+def emit_reduction_use(
+    use_name: str,
+    basis_expr: str,
+    uses: Sequence[dict[str, Any]],
+) -> str:
+    rendered = []
+    for use in uses:
+        rendered.append(
+            "{ coefficient := ("
+            + str(use["coefficient"])
+            + " : ℤ)\n      sourceExponent := "
+            + emit_exponent(use["source"])
+            + "\n      targetExponent := "
+            + emit_exponent(use["target"])
+            + "\n      reduction := "
+            + emit_monomial_reduction(use["sign"], use["coeff"])
+            + " }"
+        )
+    return f"""def {use_name} :
+    Fin {len(uses)} → CharacterReductionUse {basis_expr} :=
+{lean_vector(rendered, indent="  ", per_line=1)}
+"""
+
+
+def emit_reduction_replay_modules(
+    *,
+    outputs: dict[Path, str],
+    directory: Path,
+    module_name: str,
+    basis_import: str,
+    replay_prefix: str,
+    basis_expr: str,
+    uses: Sequence[dict[str, Any]],
+    source_expr: str,
+    target_expr: str,
+    source_terms: Sequence[tuple[int, Sequence[int]]],
+    target_terms: Sequence[tuple[int, Sequence[int]]],
+    source_explicit_proof: str,
+    target_explicit_proof: str,
+) -> tuple[str, str, str]:
+    """Emit one bounded reduction-use leaf and one module per Finsupp equality.
+
+    The JSON equality is checked twice: Python replays its sparse dictionary,
+    while Lean expands only the finitely many explicit `Finsupp.single` terms
+    and closes their additive rearrangement with `abel`.  No equality of two
+    whole quotient-backed `Finsupp` values is sent to `decide`.
+    """
+    use_name = f"{replay_prefix}ReductionUse8"
+    source_explicit_name = f"{replay_prefix}SourceExplicit8"
+    target_explicit_name = f"{replay_prefix}TargetExplicit8"
+    source_eq_name = f"{replay_prefix}SourceEq8"
+    target_eq_name = f"{replay_prefix}TargetEq8"
+    data_module = f"{module_name}.Data"
+    source_module = f"{module_name}.Source"
+    target_module = f"{module_name}.Target"
+
+    outputs[directory / "Data.lean"] = lean_module(
+        [basis_import],
+        emit_reduction_use(use_name, basis_expr, uses),
+        f"Explicit termwise uses for `{replay_prefix}`.",
+    )
+    outputs[directory / "Source.lean"] = lean_module(
+        [data_module],
+        f"""theorem {source_explicit_name} :
+    {source_expr} = {emit_polynomial(source_terms)} := by
+{source_explicit_proof.rstrip()}
+
+theorem {source_eq_name} :
+    (∑ k : Fin {len(uses)},
+      Finsupp.single ({use_name} k).sourceExponent
+        ({use_name} k).coefficient) = {source_expr} := by
+  rw [{source_explicit_name}]
+  simp only [Fin.sum_univ_succ, {use_name}] <;> abel
+""",
+        f"Sparse source equality for `{replay_prefix}`.",
+    )
+    outputs[directory / "Target.lean"] = lean_module(
+        [data_module],
+        f"""theorem {target_explicit_name} :
+    {target_expr} = {emit_polynomial(target_terms)} := by
+{target_explicit_proof.rstrip()}
+
+theorem {target_eq_name} :
+    (∑ k : Fin {len(uses)},
+      Finsupp.single ({use_name} k).targetExponent
+      (signedCoefficient ({use_name} k).reduction.signExponent
+          ({use_name} k).coefficient)) = {target_expr} := by
+  rw [{target_explicit_name}]
+  simp [Fin.sum_univ_succ, {use_name}, signedCoefficient] <;> abel
+""",
+        f"Sparse target equality for `{replay_prefix}`.",
+    )
+    return use_name, source_eq_name, target_eq_name
+
+
+def emit_reduction_record(
+    use_name: str, source_eq_name: str, target_eq_name: str
+) -> str:
+    return f"""{{ use := {use_name}
+    source_eq := {source_eq_name}
+    target_eq := {target_eq_name} }}"""
+
+
+def emit_replay_helpers() -> str:
+    return lean_module(
+        ["MonochromaticQuantumGraphs.LaurentPolynomialCertificate"],
+        """theorem terminalB_translate_sub8
+    (shift : LaurentExponent (Fin 144))
+    (p q : LaurentPolynomial (Fin 144)) :
+    LaurentPolynomial.translate shift (p - q) =
+      LaurentPolynomial.translate shift p -
+        LaurentPolynomial.translate shift q := by
+  exact (LaurentPolynomial.translateLinear shift).map_sub p q
+
+theorem terminalB_translate_neg8
+    (shift : LaurentExponent (Fin 144))
+    (p : LaurentPolynomial (Fin 144)) :
+    LaurentPolynomial.translate shift (-p) =
+      -LaurentPolynomial.translate shift p := by
+  exact (LaurentPolynomial.translateLinear shift).map_neg p
+
+theorem terminalB_translate_zsmul8
+    (shift : LaurentExponent (Fin 144)) (n : ℤ)
+    (p : LaurentPolynomial (Fin 144)) :
+    LaurentPolynomial.translate shift (n • p) =
+      n • LaurentPolynomial.translate shift p := by
+  exact (LaurentPolynomial.translateLinear shift).map_smul n p
+
+theorem terminalB_translate_factorPolynomial8
+    (shift : LaurentExponent (Fin 144))
+    (row : SignedCharacterRow (Fin 144)) :
+    LaurentPolynomial.translate shift row.factorPolynomial =
+      Finsupp.single (shift + row.exponent) 1 -
+        Finsupp.single shift (signedCoefficient row.signExponent 1) := by
+  unfold SignedCharacterRow.factorPolynomial
+  rw [terminalB_translate_sub8,
+    LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_single]
+  simp
+
+theorem terminalB_translate_factorProductPolynomial8
+    (shift : LaurentExponent (Fin 144))
+    (left right : SignedCharacterRow (Fin 144)) :
+    LaurentPolynomial.translate shift
+        (SignedCharacterRow.factorProductPolynomial left right) =
+      Finsupp.single (shift + (left.exponent + right.exponent)) 1 -
+        Finsupp.single (shift + left.exponent)
+          (signedCoefficient right.signExponent 1) -
+        Finsupp.single (shift + right.exponent)
+          (signedCoefficient left.signExponent 1) +
+        Finsupp.single shift
+          (signedCoefficient left.signExponent 1 *
+            signedCoefficient right.signExponent 1) := by
+  unfold SignedCharacterRow.factorProductPolynomial
+  rw [LaurentPolynomial.translate_add,
+    terminalB_translate_sub8, terminalB_translate_sub8,
+    LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_single,
+    LaurentPolynomial.translate_single]
+  simp
+""",
+        "Structural translation lemmas used by bounded terminal-B replays.",
+    )
+
+
+def emit_exponent_equality(name: str, lhs: str, rhs: Sequence[int]) -> str:
+    """A bounded coordinate replay; never decides a `Finsupp` equality."""
+    return f"""  have {name} :
+      {lhs} = {emit_exponent(rhs)} := by
+    funext i
+    fin_cases i <;> decide
+"""
+
+
+def defeq_explicit_proof(terms: Sequence[tuple[int, Sequence[int]]]) -> str:
+    polynomial = emit_polynomial(terms)
+    return f"""  change {polynomial} = {polynomial}
+  rfl
+"""
+
+
+def overlap_explicit_proof(
+    index: int, terms: Sequence[tuple[int, Sequence[int]]]
+) -> str:
+    return f"""  change tropicalOverlapRelation8Row{index} =
+    {emit_polynomial(terms)}
+  unfold tropicalOverlapRelation8Row{index}
+  unfold tropicalOverlapDegreeFiveExponent8
+  simp only [Finsupp.single_neg] <;> abel
+"""
+
+
+def terminal_explicit_proof(
+    relation_index: int, terms: Sequence[tuple[int, Sequence[int]]]
+) -> str:
+    source_name = OFFICIAL_RELATION_NAMES[relation_index]
+    position = OFFICIAL_RELATION_POS[relation_index]
+    return f"""  calc
+    {source_name} = tropicalTerminalExplicitRelation8 {position} :=
+      {source_name}_explicit
+    _ = {emit_polynomial(terms)} := by
+      change {emit_polynomial(terms)} = {emit_polynomial(terms)}
+      rfl
+"""
 
 
 def source_tags(initial_sources: Sequence[dict[str, Any]], factor_base: Sequence[tuple[Sequence[int], int]], factor_raw: Sequence[tuple[Sequence[int], int]], support: Sequence[int], context: str) -> tuple[list[int], list[int], list[int], list[tuple[Sequence[int], int]]]:
@@ -647,6 +890,467 @@ set_option maxHeartbeats 5000000
         "right_index": right_index,
     }
     return text, metadata
+
+
+def emit_core_modules(
+    key: str,
+    value: dict[str, Any],
+    factor_base: Sequence[tuple[Sequence[int], int]],
+    factor_raw: Sequence[tuple[Sequence[int], int]],
+    support: Sequence[int],
+) -> tuple[dict[Path, str], dict[str, Any]]:
+    """Emit one non-survivor destination as bounded certificate leaves."""
+    module, short, selected_classes = CORE_LAYOUT[key]
+    prefix = f"terminalB{module}"
+    module_root = (
+        f"MonochromaticQuantumGraphs.N8D3."
+        f"TropicalTerminalComponentB8.{module}"
+    )
+    directory = COMPONENT_DIR / module
+    outputs: dict[Path, str] = {}
+    base_tags, raw_tags, raw_classes, initial_characters = source_tags(
+        value["initial_basis_sources"], factor_base, factor_raw, support, key
+    )
+    if value["selected_class_ids"] != selected_classes:
+        fail(f"selected-class mismatch for {key}")
+    if len(initial_characters) != int(value["initial_character_count"]):
+        fail(f"initial count mismatch for {key}")
+    source_definitions, raw_count = emit_source_definitions(
+        prefix, base_tags, raw_tags, raw_classes
+    )
+
+    final_characters = list(initial_characters)
+    derived_items: list[dict[str, Any]] = []
+    derived_sources: list[tuple[str, int]] = []
+    for j, certificate in enumerate(value["derived_character_certificates"]):
+        expected_index = len(final_characters)
+        if int(certificate["new_character_index"]) != expected_index:
+            fail(f"nonsequential derived character in {key}")
+        if int(certificate["prior_character_count"]) != expected_index:
+            fail(f"wrong prior character count in {key}")
+        if (
+            int(certificate["binomial_ratio"]) != 1
+            or certificate["orientation_reversed"] is not False
+        ):
+            fail(f"unexpected derived binomial orientation in {key}")
+        source = certificate["source_relation"]
+        if source["kind"] == "first_overlap":
+            source_kind = "overlap"
+            source_index = int(source["index"])
+            source_expression = f"tropicalOverlapRelation8 {source_index}"
+        elif source["kind"] == "component_quotient":
+            source_kind = "quotient"
+            source_index = int(source["quotient_index"])
+            source_expression = f"tropicalComponentBQuotientRelation8 {source_index}"
+        else:
+            fail(f"unexpected derived source in {key}: {source['kind']}")
+        new_character = research_character(
+            certificate["new_character"], support, key
+        )
+        final_characters.append(new_character)
+        source_terms = polynomial_terms(
+            certificate["source_reduction"]["reduction"]["source_eq"]["rhs"],
+            support,
+            f"{key}.derived[{j}].source",
+        )
+        normalized_target = polynomial_terms(
+            certificate["source_reduction"]["provenance"]["normalized_target"],
+            support,
+            f"{key}.derived[{j}].target",
+        )
+        unit, uses = validate_normalized(
+            certificate["source_reduction"],
+            final_characters[:-1],
+            source_terms,
+            normalized_target,
+            support,
+            f"{key}.derived[{j}]",
+        )
+        orientation_unit, shift = character_shift(
+            normalized_target, new_character, f"{key}.derived[{j}]"
+        )
+        character_unit = unit * orientation_unit
+        target_terms = tuple(
+            (unit * coefficient, exponent)
+            for coefficient, exponent in normalized_target
+        )
+        derived_items.append(
+            {
+                "index": expected_index,
+                "source_kind": source_kind,
+                "source_index": source_index,
+                "source_expression": source_expression,
+                "source_terms": source_terms,
+                "target_terms": target_terms,
+                "uses": uses,
+                "shift": shift,
+                "character_unit": character_unit,
+                "character": new_character,
+            }
+        )
+        derived_sources.append((source_kind, source_index))
+    if len(final_characters) != int(value["final_character_count"]):
+        fail(f"final character count mismatch for {key}")
+
+    basis_entries = [
+        f"{prefix}InitialBasis8 {i}" for i in range(len(initial_characters))
+    ] + [
+        emit_character(character)
+        for character in final_characters[len(initial_characters) :]
+    ]
+    basis_definition = f"""def {prefix}Basis8 :
+    Fin {len(final_characters)} → SignedCharacterRow (Fin 144) :=
+{lean_vector(basis_entries, per_line=1)}
+"""
+    outputs[directory / "Data.lean"] = lean_module(
+        [
+            "MonochromaticQuantumGraphs.LaurentBasisCertificate",
+            "MonochromaticQuantumGraphs.LaurentNestedFaceCertificate",
+            "MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentB8.Replay",
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8",
+            "MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8",
+            "MonochromaticQuantumGraphs.N8D3.TropicalTerminalRelations8",
+        ],
+        source_definitions + "\n" + basis_definition,
+        f"Basis data for terminal Component-B destination {module}.",
+    )
+
+    character_modules: list[str] = []
+    for item in derived_items:
+        index = item["index"]
+        leaf = f"Character{index}"
+        leaf_module = f"{module_root}.{leaf}"
+        leaf_dir = directory / leaf
+        basis_expr = prefix_basis_expr(f"{prefix}Basis8", index)
+        source_expression = item["source_expression"]
+        shift = item["shift"]
+        target_expression = (
+            f"({item['character_unit']} : ℤ) • "
+            f"LaurentPolynomial.translate {emit_exponent(shift)} "
+            f"({prefix}Basis8 {index}).factorPolynomial"
+        )
+        if item["source_kind"] == "overlap":
+            source_proof = overlap_explicit_proof(
+                item["source_index"], item["source_terms"]
+            )
+        else:
+            source_proof = defeq_explicit_proof(item["source_terms"])
+        shifted_character = add_exponents(shift, item["character"][0])
+        target_proof = (
+            "  rw [terminalB_translate_factorPolynomial8]\n"
+            + emit_exponent_equality(
+                "hExponent",
+                f"{emit_exponent(shift)} + ({prefix}Basis8 {index}).exponent",
+                shifted_character,
+            )
+            + "  rw [hExponent]\n"
+            + f"  simp [{prefix}Basis8, tropicalBinomialCharacter8, "
+            "signedCoefficient] <;> abel\n"
+        )
+        use_name, source_eq_name, target_eq_name = emit_reduction_replay_modules(
+            outputs=outputs,
+            directory=leaf_dir,
+            module_name=leaf_module,
+            basis_import=f"{module_root}.Data",
+            replay_prefix=f"{prefix}Character{index}",
+            basis_expr=basis_expr,
+            uses=item["uses"],
+            source_expr=source_expression,
+            target_expr=target_expression,
+            source_terms=item["source_terms"],
+            target_terms=item["target_terms"],
+            source_explicit_proof=source_proof,
+            target_explicit_proof=target_proof,
+        )
+        cert_name = f"{prefix}CharacterCertificate{index}_8"
+        outputs[directory / f"{leaf}.lean"] = lean_module(
+            [f"{leaf_module}.Source", f"{leaf_module}.Target"],
+            f"""def {cert_name} :
+    LaurentCharacterCertificate (κ := Fin {len(item['uses'])})
+      {basis_expr} ({source_expression})
+      ({prefix}Basis8 {index}) :=
+  {{ unit := ({item['character_unit']} : ℤ)
+    unit_ne_zero := by norm_num
+    shift := {emit_exponent(shift)}
+    reduction := {emit_reduction_record(use_name, source_eq_name, target_eq_name)} }}
+""",
+            f"Bounded character certificate {index} for {module}.",
+        )
+        character_modules.append(f"{module_root}.{leaf}")
+
+    nested = value["nested_face_contradiction"]
+    if int(nested["basis_character_count"]) != len(final_characters):
+        fail(f"nested basis count mismatch for {key}")
+    left_index = int(nested["left_relation_index"])
+    right_index = int(nested["right_relation_index"])
+    left_source = OFFICIAL_RELATION_NAMES[left_index]
+    right_source = OFFICIAL_RELATION_NAMES[right_index]
+    omitted_exponent = sparse_exponent(nested["omitted_exponent"], support, key)
+    omitted_coefficient = fraction_to_int(nested["omitted_coefficient"], key)
+    if omitted_coefficient == 0 or nested["omitted_coefficient_nonzero"] is not True:
+        fail(f"zero omitted coefficient for {key}")
+    face_scalar = int(nested["face_integer_scalar"])
+    if face_scalar == 0:
+        fail(f"zero face scalar for {key}")
+    face_shift = sparse_exponent(nested["face_translation_shift"], support, key)
+    left_target = polynomial_terms(
+        nested["left_relation_reduction"]["provenance"]["normalized_target"],
+        support,
+        key,
+    )
+    right_target = polynomial_terms(
+        nested["right_relation_reduction"]["provenance"]["normalized_target"],
+        support,
+        key,
+    )
+    omitted_matches = [
+        i
+        for i, (coefficient, exponent) in enumerate(left_target)
+        if coefficient == omitted_coefficient and exponent == omitted_exponent
+    ]
+    if len(omitted_matches) != 1:
+        fail(f"omitted term not found exactly once for {key}")
+    face = tuple(
+        term for i, term in enumerate(left_target) if i != omitted_matches[0]
+    )
+    left_source_terms = polynomial_terms(
+        nested["left_relation_reduction"]["reduction"]["source_eq"]["rhs"],
+        support,
+        key,
+    )
+    right_source_terms = polynomial_terms(
+        nested["right_relation_reduction"]["reduction"]["source_eq"]["rhs"],
+        support,
+        key,
+    )
+    left_unit, left_uses = validate_normalized(
+        nested["left_relation_reduction"],
+        final_characters,
+        left_source_terms,
+        left_target,
+        support,
+        f"{key}.nested.left",
+    )
+    right_unit, right_uses = validate_normalized(
+        nested["right_relation_reduction"],
+        final_characters,
+        right_source_terms,
+        right_target,
+        support,
+        f"{key}.nested.right",
+    )
+    compatibility_source_dict = polynomial_dict(
+        [
+            (
+                face_scalar * coefficient,
+                add_exponents(face_shift, exponent),
+            )
+            for coefficient, exponent in face
+        ]
+        + [(-coefficient, exponent) for coefficient, exponent in right_target]
+    )
+    compatibility_source_terms = tuple(
+        (coefficient, exponent)
+        for exponent, coefficient in compatibility_source_dict.items()
+    )
+    paired = nested["paired_face_reduction_to_zero"]
+    if int(paired["unit"]) != 1 or paired["unit_ne_zero"] is not True:
+        fail(f"paired face reduction is not unit-normalized for {key}")
+    paired_uses = validate_character_reduction(
+        paired["reduction"],
+        final_characters,
+        compatibility_source_terms,
+        (),
+        support,
+        f"{key}.nested.face",
+    )
+
+    nested_module = f"{module_root}.Nested"
+    nested_dir = directory / "Nested"
+    outputs[nested_dir / "Data.lean"] = lean_module(
+        [f"{module_root}.Data"],
+        f"""def {prefix}NestedOmittedExponent8 : LaurentExponent (Fin 144) :=
+  {emit_exponent(omitted_exponent)}
+
+def {prefix}NestedFace8 : LaurentPolynomial (Fin 144) :=
+  {emit_polynomial(face)}
+
+def {prefix}NestedRightReduced8 : LaurentPolynomial (Fin 144) :=
+  {emit_polynomial(right_target)}
+
+def {prefix}NestedFaceShift8 : LaurentExponent (Fin 144) :=
+  {emit_exponent(face_shift)}
+""",
+        f"Shared nested-face data for {module}.",
+    )
+
+    left_target_terms = tuple(
+        (left_unit * coefficient, exponent)
+        for coefficient, exponent in left_target
+    )
+    left_target_expr = (
+        f"({left_unit} : ℤ) • (Finsupp.single "
+        f"{prefix}NestedOmittedExponent8 ({omitted_coefficient} : ℤ) + "
+        f"{prefix}NestedFace8)"
+    )
+    left_use, left_source_eq, left_target_eq = emit_reduction_replay_modules(
+        outputs=outputs,
+        directory=nested_dir / "Left",
+        module_name=f"{nested_module}.Left",
+        basis_import=f"{nested_module}.Data",
+        replay_prefix=f"{prefix}NestedLeft",
+        basis_expr=f"{prefix}Basis8",
+        uses=left_uses,
+        source_expr=left_source,
+        target_expr=left_target_expr,
+        source_terms=left_source_terms,
+        target_terms=left_target_terms,
+        source_explicit_proof=terminal_explicit_proof(left_index, left_source_terms),
+        target_explicit_proof=(
+            f"  simp [{prefix}NestedOmittedExponent8, {prefix}NestedFace8] "
+            "<;> abel\n"
+        ),
+    )
+    outputs[nested_dir / "Left.lean"] = lean_module(
+        [f"{nested_module}.Left.Source", f"{nested_module}.Left.Target"],
+        f"""def {prefix}NestedLeftReduction8 :
+    NormalizedCharacterReductionCertificate (κ := Fin {len(left_uses)})
+      {prefix}Basis8 {left_source}
+      (Finsupp.single {prefix}NestedOmittedExponent8
+        ({omitted_coefficient} : ℤ) + {prefix}NestedFace8) :=
+  {{ unit := ({left_unit} : ℤ)
+    unit_ne_zero := by norm_num
+    reduction := {emit_reduction_record(left_use, left_source_eq, left_target_eq)} }}
+""",
+        f"Left nested reduction for {module}.",
+    )
+
+    right_target_terms = tuple(
+        (right_unit * coefficient, exponent)
+        for coefficient, exponent in right_target
+    )
+    right_target_expr = (
+        f"({right_unit} : ℤ) • {prefix}NestedRightReduced8"
+    )
+    right_use, right_source_eq, right_target_eq = emit_reduction_replay_modules(
+        outputs=outputs,
+        directory=nested_dir / "Right",
+        module_name=f"{nested_module}.Right",
+        basis_import=f"{nested_module}.Data",
+        replay_prefix=f"{prefix}NestedRight",
+        basis_expr=f"{prefix}Basis8",
+        uses=right_uses,
+        source_expr=right_source,
+        target_expr=right_target_expr,
+        source_terms=right_source_terms,
+        target_terms=right_target_terms,
+        source_explicit_proof=terminal_explicit_proof(right_index, right_source_terms),
+        target_explicit_proof=(
+            f"  simp [{prefix}NestedRightReduced8] <;> abel\n"
+        ),
+    )
+    outputs[nested_dir / "Right.lean"] = lean_module(
+        [f"{nested_module}.Right.Source", f"{nested_module}.Right.Target"],
+        f"""def {prefix}NestedRightReduction8 :
+    NormalizedCharacterReductionCertificate (κ := Fin {len(right_uses)})
+      {prefix}Basis8 {right_source} {prefix}NestedRightReduced8 :=
+  {{ unit := ({right_unit} : ℤ)
+    unit_ne_zero := by norm_num
+    reduction := {emit_reduction_record(right_use, right_source_eq, right_target_eq)} }}
+""",
+        f"Right nested reduction for {module}.",
+    )
+
+    face_source_expr = (
+        f"({face_scalar} : ℤ) • LaurentPolynomial.translate "
+        f"{prefix}NestedFaceShift8 {prefix}NestedFace8 - "
+        f"{prefix}NestedRightReduced8"
+    )
+    exponent_lemmas = ""
+    exponent_names: list[str] = []
+    for i, (_, exponent) in enumerate(face):
+        name = f"hFaceExponent{i}"
+        exponent_names.append(name)
+        exponent_lemmas += emit_exponent_equality(
+            name,
+            f"{prefix}NestedFaceShift8 + {emit_exponent(exponent)}",
+            add_exponents(face_shift, exponent),
+        )
+    face_source_proof = exponent_lemmas + f"""  unfold {prefix}NestedFace8
+  unfold {prefix}NestedFaceShift8 {prefix}NestedRightReduced8
+  simp only [LaurentPolynomial.translate_add,
+    LaurentPolynomial.translate_single]
+  rw [{', '.join(exponent_names)}]
+  simp only [one_zsmul, neg_one_zsmul] <;> abel
+"""
+    face_use, face_source_eq, face_target_eq = emit_reduction_replay_modules(
+        outputs=outputs,
+        directory=nested_dir / "Face",
+        module_name=f"{nested_module}.Face",
+        basis_import=f"{nested_module}.Data",
+        replay_prefix=f"{prefix}NestedFace",
+        basis_expr=f"{prefix}Basis8",
+        uses=paired_uses,
+        source_expr=face_source_expr,
+        target_expr="(0 : LaurentPolynomial (Fin 144))",
+        source_terms=compatibility_source_terms,
+        target_terms=(),
+        source_explicit_proof=face_source_proof,
+        target_explicit_proof="  rfl\n",
+    )
+    outputs[nested_dir / "Face.lean"] = lean_module(
+        [f"{nested_module}.Face.Source", f"{nested_module}.Face.Target"],
+        f"""def {prefix}NestedFaceReduction8 :
+    CharacterReductionCertificate (κ := Fin {len(paired_uses)})
+      {prefix}Basis8
+      ({face_source_expr}) 0 :=
+  {emit_reduction_record(face_use, face_source_eq, face_target_eq)}
+""",
+        f"Compatibility reduction for {module}.",
+    )
+    outputs[directory / "Nested.lean"] = lean_module(
+        [
+            f"{nested_module}.Left",
+            f"{nested_module}.Right",
+            f"{nested_module}.Face",
+        ],
+        f"""def {prefix}NestedCertificate8 :
+    LaurentNestedFaceCertificate
+      (κLeft := Fin {len(left_uses)}) (κRight := Fin {len(right_uses)})
+      (κFace := Fin {len(paired_uses)}) {prefix}Basis8
+      {left_source} {right_source} :=
+  {{ omittedExponent := {prefix}NestedOmittedExponent8
+    omittedCoefficient := ({omitted_coefficient} : ℤ)
+    omittedCoefficient_ne_zero := by norm_num
+    face := {prefix}NestedFace8
+    rightReduced := {prefix}NestedRightReduced8
+    faceScalar := ({face_scalar} : ℤ)
+    faceScalar_ne_zero := by norm_num
+    faceShift := {prefix}NestedFaceShift8
+    leftReduction := {prefix}NestedLeftReduction8
+    rightReduction := {prefix}NestedRightReduction8
+    faceReduction := {prefix}NestedFaceReduction8 }}
+""",
+        f"Complete nested-face certificate for {module}.",
+    )
+
+    outputs[COMPONENT_DIR / f"{module}.lean"] = "\n".join(
+        [*(f"import {name}" for name in character_modules),
+         f"import {module_root}.Nested", ""]
+    )
+    metadata = {
+        "module": module,
+        "short": short,
+        "prefix": prefix,
+        "selected_classes": selected_classes,
+        "raw_count": raw_count,
+        "initial_count": len(initial_characters),
+        "final_count": len(final_characters),
+        "derived_sources": derived_sources,
+        "left_index": left_index,
+        "right_index": right_index,
+    }
+    return outputs, metadata
 
 
 def emit_non_survivor(metadata: Sequence[dict[str, Any]]) -> str:
@@ -1124,7 +1828,9 @@ def {cert_name} :
         branch_blocks.append(block)
         branch_metadata.append((branch_index, compact_count, target_count, cert_names))
 
-    hraw_proof = f"""private theorem {prefix}RawBasis_holds8
+    hraw_proof = f"""open MonochromaticQuantumGraphs.FactorCoverCertificate
+
+private theorem {prefix}RawBasis_holds8
     {{W : WeightsN 8 3 ℂ}} (hChars : TropicalComponentBCharacters8 W)
     (hcover : ∀ c ∈ componentBCover8 {state_index},
       AllZeroInClass tropicalComponentBClassMembers8
@@ -1244,6 +1950,575 @@ end MonochromaticQuantumGraphs.N8D3
 """
 
 
+def emit_state_modules(
+    state: dict[str, Any],
+    factor_base: Sequence[tuple[Sequence[int], int]],
+    factor_raw: Sequence[tuple[Sequence[int], int]],
+    support: Sequence[int],
+) -> dict[Path, str]:
+    state_index = int(state["state"])
+    if state_index not in (3, 9, 15):
+        fail(f"unexpected survivor state {state_index}")
+    prefix = f"terminalBState{state_index}"
+    state_module = (
+        f"MonochromaticQuantumGraphs.N8D3."
+        f"TropicalTerminalBranches8.State{state_index}"
+    )
+    directory = BRANCH_DIR / f"State{state_index}"
+    outputs: dict[Path, str] = {}
+    base_tags, raw_tags, raw_classes, raw_basis_characters = source_tags(
+        state["raw_cover_basis_sources"],
+        factor_base,
+        factor_raw,
+        support,
+        f"state{state_index}.raw_basis",
+    )
+    if (
+        len(raw_basis_characters) != 19
+        or state["raw_cover_basis_character_count"] != 19
+    ):
+        fail(f"state {state_index} does not have the required 19-character basis")
+    source_definitions, raw_count = emit_source_definitions(
+        f"{prefix}Raw", base_tags, raw_tags, raw_classes
+    )
+    if raw_count != 17:
+        fail(f"state {state_index} does not have 17 raw cover characters")
+    source_definitions = source_definitions.replace(
+        f"{prefix}RawInitialSource8", f"{prefix}RawBasisSource8"
+    ).replace(f"{prefix}RawInitialBasis8", f"{prefix}RawBasis8")
+    parent_cover = [int(x) for x in state["parent_cover"]]
+    if parent_cover not in (
+        [0, 1, 2, 3, 4, 9, 10, 11, 12, 17, 22],
+        [0, 1, 2, 4, 6, 9, 10, 11, 12, 17, 22],
+        [0, 1, 4, 6, 9, 10, 11, 12, 17, 18, 22],
+    ):
+        fail(f"unexpected parent cover for state {state_index}")
+
+    second = state["second_quotient"]
+    emitted = second["emitted_rows"]
+    if (
+        len(emitted) != 2
+        or second["only_semantically_required_eliminants_emitted"] is not True
+    ):
+        fail(f"state {state_index} does not emit exactly two eliminants")
+    combination_items: list[dict[str, Any]] = []
+    data_blocks: list[str] = [source_definitions]
+    for j, row in enumerate(emitted):
+        provenance = row["provenance"]
+        if (
+            int(provenance["source_i"]["quotient_index"]) != 0
+            or int(provenance["source_j"]["quotient_index"]) != 2
+        ):
+            fail(f"state {state_index} eliminant {j} does not use Bq0/Bq2")
+        if int(provenance["integer_scalar"]) != 1:
+            fail(f"state {state_index} eliminant {j} has nonunit source scalar")
+        shift = sparse_exponent(
+            provenance["shift"], support, f"state{state_index}.shift{j}"
+        )
+        source_q0 = polynomial_terms(
+            provenance["source_i"]["relation"],
+            support,
+            f"state{state_index}.q0",
+        )
+        source_q2 = polynomial_terms(
+            provenance["source_j"]["relation"],
+            support,
+            f"state{state_index}.q2",
+        )
+        raw_combination = tuple(
+            (coefficient, add_exponents(shift, exponent))
+            for coefficient, exponent in source_q0
+        ) + tuple((-coefficient, exponent) for coefficient, exponent in source_q2)
+        target_relation = polynomial_terms(
+            row["relation"], support, f"state{state_index}.relation{j}"
+        )
+        unit, uses = validate_normalized(
+            row["combination_reduction"],
+            raw_basis_characters,
+            raw_combination,
+            target_relation,
+            support,
+            f"state{state_index}.combination{j}",
+        )
+        relation_name = f"{prefix}SplitRelation{j}_8"
+        shift_name = f"{prefix}CombinationShift{j}_8"
+        data_blocks.append(
+            f"""def {relation_name} : LaurentPolynomial (Fin 144) :=
+  {emit_polynomial(target_relation)}
+
+def {shift_name} : LaurentExponent (Fin 144) :=
+  {emit_exponent(shift)}
+"""
+        )
+        combination_items.append(
+            {
+                "index": j,
+                "shift": shift,
+                "shift_name": shift_name,
+                "q0": source_q0,
+                "q2": source_q2,
+                "source_terms": raw_combination,
+                "target_terms": tuple(
+                    (unit * coefficient, exponent)
+                    for coefficient, exponent in target_relation
+                ),
+                "target_relation": target_relation,
+                "relation_name": relation_name,
+                "unit": unit,
+                "uses": uses,
+            }
+        )
+
+    split = state["split_factor_graph"]
+    vertices = [
+        character_row_from_factor_json(
+            vertex, support, f"state{state_index}.vertex"
+        )
+        for vertex in split["vertices"]
+    ]
+    common_vertices = [
+        research_character(
+            {
+                "bit": 0,
+                "row": [
+                    {"local": i, "global": support[i], "exp": e}
+                    for i, e in enumerate(row)
+                    if e
+                ],
+            },
+            support,
+            "common",
+        )
+        for row in (
+            tuple(
+                1 if i in (69, 99) else -1 if i in (70, 98) else 0
+                for i in range(144)
+            ),
+            tuple(
+                1 if i in (38, 70) else -1 if i in (39, 69) else 0
+                for i in range(144)
+            ),
+            tuple(
+                1 if i in (9, 65) else -1 if i in (11, 59) else 0
+                for i in range(144)
+            ),
+        )
+    ]
+    if vertices != common_vertices:
+        fail(f"state {state_index} split vertices differ from common A,C,B")
+    factor_items: list[dict[str, Any]] = []
+    for j, factor in enumerate(split["factor_certificates"]):
+        edge = [
+            research_character(
+                character, support, f"state{state_index}.factor{j}"
+            )
+            for character in factor["factor_edge"]
+        ]
+        expected_edge = [vertices[0], vertices[2]] if j == 0 else [vertices[1], vertices[2]]
+        if edge != expected_edge:
+            fail(f"state {state_index} split factor edge {j} mismatch")
+        factor_json = factor["factor_certificate"]
+        unit = int(factor_json["unit"])
+        if unit == 0 or factor_json["unit_ne_zero"] is not True:
+            fail(f"state {state_index} factor {j} has zero unit")
+        shift = sparse_exponent(
+            factor_json["shift"], support, f"state{state_index}.factor{j}"
+        )
+        source_relation = polynomial_terms(
+            factor_json["reduction"]["source_eq"]["rhs"],
+            support,
+            f"state{state_index}.factor{j}.source",
+        )
+        emitted_relation = polynomial_terms(
+            emitted[j]["relation"], support, f"state{state_index}.emitted{j}"
+        )
+        if polynomial_dict(source_relation) != polynomial_dict(emitted_relation):
+            fail(f"state {state_index} factor source mismatch")
+        target = factor_target_polynomial(edge[0], edge[1], shift, unit)
+        uses = validate_character_reduction(
+            factor_json["reduction"],
+            raw_basis_characters,
+            source_relation,
+            target,
+            support,
+            f"state{state_index}.factor{j}",
+        )
+        factor_items.append(
+            {
+                "index": j,
+                "unit": unit,
+                "shift": shift,
+                "edge": edge,
+                "source_terms": source_relation,
+                "target_terms": target,
+                "uses": uses,
+            }
+        )
+
+    branch_items: list[dict[str, Any]] = []
+    for branch in state["branches"]:
+        branch_index = int(branch["branch"])
+        if branch_index not in (0, 1):
+            fail(f"unexpected branch in state {state_index}")
+        compact_count = 21 if branch_index == 0 else 20
+        target_count = 4 if branch_index == 0 else 5
+        selected_vertices = [0, 1] if branch_index == 0 else [2]
+        if int(branch["compact_basis_character_count"]) != compact_count:
+            fail(f"state {state_index} branch {branch_index} compact count mismatch")
+        compact_characters = [
+            research_character(
+                character,
+                support,
+                f"state{state_index}.branch{branch_index}.basis",
+            )
+            for character in branch["compact_basis_characters"]
+        ]
+        if compact_characters != raw_basis_characters + [
+            vertices[i] for i in selected_vertices
+        ]:
+            fail(f"state {state_index} branch {branch_index} basis order mismatch")
+        source_type_count = len(selected_vertices)
+        source_entries = [f".base {i}" for i in range(19)] + [
+            f".raw {i}" for i in range(source_type_count)
+        ]
+        split_entries = [
+            f"terminalBSplitCharacter8 {i}" for i in selected_vertices
+        ]
+        data_blocks.append(
+            f"""def {prefix}Branch{branch_index}Source8 :
+    Fin {compact_count} → FactorBasisSource (Fin 19) (Fin {source_type_count}) :=
+{lean_vector(source_entries, per_line=6)}
+
+def {prefix}Branch{branch_index}SplitRow8 :
+    Fin {source_type_count} → SignedCharacterRow (Fin 144) :=
+{lean_vector(split_entries, per_line=3)}
+
+def {prefix}Branch{branch_index}Basis8 :
+    Fin {compact_count} → SignedCharacterRow (Fin 144) :=
+  fun i ↦ ({prefix}Branch{branch_index}Source8 i).row {prefix}RawBasis8
+    {prefix}Branch{branch_index}SplitRow8
+"""
+        )
+        implications = branch["derivative_character_implications"]
+        if len(implications) != target_count:
+            fail(f"state {state_index} branch {branch_index} target count mismatch")
+        coeffs: list[list[int]] = []
+        for j, implication in enumerate(implications):
+            if int(implication["target_index"]) != j:
+                fail(f"state {state_index} branch {branch_index} target order mismatch")
+            target = research_character(
+                implication["target_character"],
+                support,
+                f"state{state_index}.branch{branch_index}.target{j}",
+            )
+            coeffs.append(
+                validate_implication(
+                    implication["implication_certificate"],
+                    compact_characters,
+                    target,
+                    support,
+                    f"state{state_index}.branch{branch_index}.target{j}",
+                )
+            )
+        branch_items.append(
+            {
+                "index": branch_index,
+                "compact_count": compact_count,
+                "target_count": target_count,
+                "coeffs": coeffs,
+            }
+        )
+
+    outputs[directory / "Data.lean"] = lean_module(
+        ["MonochromaticQuantumGraphs.N8D3.TropicalTerminalBranches8.Data"],
+        "\n\n".join(data_blocks),
+        f"Shared basis and split data for survivor state {state_index}.",
+    )
+
+    for item in combination_items:
+        j = item["index"]
+        leaf = f"Combination{j}"
+        leaf_module = f"{state_module}.{leaf}"
+        leaf_dir = directory / leaf
+        shift_name = item["shift_name"]
+        source_expr = (
+            f"LaurentPolynomial.translate {shift_name} "
+            "(tropicalComponentBQuotientRelation8 0) - "
+            "tropicalComponentBQuotientRelation8 2"
+        )
+        target_expr = f"({item['unit']} : ℤ) • {item['relation_name']}"
+        exponent_proofs = ""
+        exponent_names: list[str] = []
+        for k, (_, exponent) in enumerate(item["q0"]):
+            name = f"hShiftedExponent{k}"
+            exponent_names.append(name)
+            exponent_proofs += emit_exponent_equality(
+                name,
+                f"{shift_name} + {emit_exponent(exponent)}",
+                add_exponents(item["shift"], exponent),
+            )
+        source_proof = (
+            f"  have hq0 : tropicalComponentBQuotientRelation8 0 = "
+            f"{emit_polynomial(item['q0'])} := by\n"
+            + indent_block(defeq_explicit_proof(item["q0"]), 2)
+            + f"  have hq2 : tropicalComponentBQuotientRelation8 2 = "
+            f"{emit_polynomial(item['q2'])} := by\n"
+            + indent_block(defeq_explicit_proof(item["q2"]), 2)
+            + exponent_proofs
+            + "  rw [hq0, hq2]\n"
+            + "  simp only [LaurentPolynomial.translate_add, "
+            "LaurentPolynomial.translate_single]\n"
+            + f"  rw [{', '.join(exponent_names)}]\n"
+            + "  abel\n"
+        )
+        use_name, source_eq_name, target_eq_name = emit_reduction_replay_modules(
+            outputs=outputs,
+            directory=leaf_dir,
+            module_name=leaf_module,
+            basis_import=f"{state_module}.Data",
+            replay_prefix=f"{prefix}Combination{j}",
+            basis_expr=f"{prefix}RawBasis8",
+            uses=item["uses"],
+            source_expr=source_expr,
+            target_expr=target_expr,
+            source_terms=item["source_terms"],
+            target_terms=item["target_terms"],
+            source_explicit_proof=source_proof,
+            target_explicit_proof=(
+                f"  simp [{item['relation_name']}] <;> abel\n"
+            ),
+        )
+        cert_name = f"{prefix}CombinationCertificate{j}_8"
+        outputs[directory / f"{leaf}.lean"] = lean_module(
+            [f"{leaf_module}.Source", f"{leaf_module}.Target"],
+            f"""def {cert_name} :
+    NormalizedCharacterReductionCertificate (κ := Fin {len(item['uses'])})
+      {prefix}RawBasis8 ({source_expr}) {item['relation_name']} :=
+  {{ unit := ({item['unit']} : ℤ)
+    unit_ne_zero := by norm_num
+    reduction := {emit_reduction_record(use_name, source_eq_name, target_eq_name)} }}
+""",
+            f"Second-quotient eliminant {j} for state {state_index}.",
+        )
+
+    for item in factor_items:
+        j = item["index"]
+        leaf = f"Factor{j}"
+        leaf_module = f"{state_module}.{leaf}"
+        leaf_dir = directory / leaf
+        left_index = 0 if j == 0 else 1
+        right_index = 2
+        source_expr = f"{prefix}SplitRelation{j}_8"
+        target_expr = (
+            f"({item['unit']} : ℤ) • LaurentPolynomial.translate "
+            f"{emit_exponent(item['shift'])} "
+            f"(SignedCharacterRow.factorProductPolynomial "
+            f"(terminalBSplitCharacter8 {left_index}) "
+            f"(terminalBSplitCharacter8 {right_index}))"
+        )
+        left_exp = item["edge"][0][0]
+        right_exp = item["edge"][1][0]
+        structural = [
+            (
+                f"{emit_exponent(item['shift'])} + "
+                f"((terminalBSplitCharacter8 {left_index}).exponent + "
+                f"(terminalBSplitCharacter8 {right_index}).exponent)",
+                add_exponents(item["shift"], add_exponents(left_exp, right_exp)),
+            ),
+            (
+                f"{emit_exponent(item['shift'])} + "
+                f"(terminalBSplitCharacter8 {left_index}).exponent",
+                add_exponents(item["shift"], left_exp),
+            ),
+            (
+                f"{emit_exponent(item['shift'])} + "
+                f"(terminalBSplitCharacter8 {right_index}).exponent",
+                add_exponents(item["shift"], right_exp),
+            ),
+        ]
+        exponent_proofs = ""
+        for k, (lhs, rhs) in enumerate(structural):
+            exponent_proofs += emit_exponent_equality(f"hExponent{k}", lhs, rhs)
+        target_proof = (
+            "  rw [terminalB_translate_factorProductPolynomial8]\n"
+            + exponent_proofs
+            + "  rw [hExponent0, hExponent1, hExponent2]\n"
+            + "  simp [terminalBSplitCharacter8, tropicalBinomialCharacter8, "
+            "signedCoefficient] <;> abel\n"
+        )
+        use_name, source_eq_name, target_eq_name = emit_reduction_replay_modules(
+            outputs=outputs,
+            directory=leaf_dir,
+            module_name=leaf_module,
+            basis_import=f"{state_module}.Data",
+            replay_prefix=f"{prefix}Factor{j}",
+            basis_expr=f"{prefix}RawBasis8",
+            uses=item["uses"],
+            source_expr=source_expr,
+            target_expr=target_expr,
+            source_terms=item["source_terms"],
+            target_terms=item["target_terms"],
+            source_explicit_proof=defeq_explicit_proof(item["source_terms"]),
+            target_explicit_proof=target_proof,
+        )
+        cert_name = f"{prefix}FactorCertificate{j}_8"
+        outputs[directory / f"{leaf}.lean"] = lean_module(
+            [f"{leaf_module}.Source", f"{leaf_module}.Target"],
+            f"""def {cert_name} :
+    LaurentFactorCertificate (κ := Fin {len(item['uses'])})
+      {prefix}RawBasis8 {source_expr}
+      (terminalBSplitCharacter8 {left_index})
+      (terminalBSplitCharacter8 {right_index}) :=
+  {{ unit := ({item['unit']} : ℤ)
+    unit_ne_zero := by norm_num
+    shift := {emit_exponent(item['shift'])}
+    reduction := {emit_reduction_record(use_name, source_eq_name, target_eq_name)} }}
+""",
+            f"Split factor {j} for state {state_index}.",
+        )
+
+    for item in branch_items:
+        branch_index = item["index"]
+        target_function = f"terminalBBranch{branch_index}TargetCharacter8"
+        body = ""
+        for j, coeff in enumerate(item["coeffs"]):
+            body += f"""def {prefix}Branch{branch_index}Implication{j}_8 :
+    SignedCharacterRow.ImplicationCertificate
+      (SignedCharacterRow.withParityGenerator
+        {prefix}Branch{branch_index}Basis8)
+      ({target_function} {j}) :=
+  {emit_implication_fields(coeff)}
+
+"""
+        outputs[directory / f"Branch{branch_index}.lean"] = lean_module(
+            [f"{state_module}.Data"],
+            body,
+            f"Bounded branch-{branch_index} character replay for state {state_index}.",
+        )
+
+    hraw_proof = f"""open MonochromaticQuantumGraphs.FactorCoverCertificate
+
+private theorem {prefix}RawBasis_holds8
+    {{W : WeightsN 8 3 ℂ}} (hChars : TropicalComponentBCharacters8 W)
+    (hcover : ∀ c ∈ componentBCover8 {state_index},
+      AllZeroInClass tropicalComponentBClassMembers8
+        (fun r ↦ (tropicalComponentBRawFactor8 r).factorValue
+          (tropicalSupportWeight8 W)) c) :
+    ∀ c, ({prefix}RawBasis8 c).Holds (tropicalSupportWeight8 W) := by
+  let x := tropicalSupportWeight8 W
+  have hraw : ∀ r : Fin 17,
+      (tropicalComponentBRawFactor8 ({prefix}RawRawSource8 r)).Holds x := by
+    intro r
+    apply rawCharacter_holds_of_allZeroInClass x
+      tropicalComponentBClassMembers8 tropicalComponentBRawFactor8
+      (hcover ({prefix}RawRawClass8 r) (by fin_cases r <;> decide))
+    fin_cases r <;> decide
+  intro c
+  exact FactorBasisSource.row_holds x tropicalComponentBCharacter8
+    (fun r ↦ tropicalComponentBRawFactor8 ({prefix}RawRawSource8 r))
+    hChars hraw ({prefix}RawBasisSource8 c)
+"""
+    semantic = f"""
+theorem {prefix}_impossible8
+    {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W)
+    (hcover : ∀ c ∈ componentBCover8 {state_index},
+      AllZeroInClass tropicalComponentBClassMembers8
+        (fun r ↦ (tropicalComponentBRawFactor8 r).factorValue
+          (tropicalSupportWeight8 W)) c) : False := by
+  let x := tropicalSupportWeight8 W
+  have hx : ∀ i, x i ≠ 0 := tropicalSupportWeight8_ne_zero hSupport
+  have hRaw := {prefix}RawBasis_holds8 hChars hcover
+  have hq0 := tropicalComponentBQuotientRelations8_hold
+    hSupport hEq hChars 0
+  have hq2 := tropicalComponentBQuotientRelations8_hold
+    hSupport hEq hChars 2
+"""
+    for j in range(2):
+        semantic += f"""  have hCombination{j} :
+      (LaurentPolynomial.translate {prefix}CombinationShift{j}_8
+        (tropicalComponentBQuotientRelation8 0) -
+        tropicalComponentBQuotientRelation8 2).Holds x :=
+    terminalB_translate_sub_holds8 x hx {prefix}CombinationShift{j}_8
+      (tropicalComponentBQuotientRelation8 0)
+      (tropicalComponentBQuotientRelation8 2) hq0 hq2
+  have hRelation{j} : {prefix}SplitRelation{j}_8.Holds x :=
+    holds_of_normalizedCharacterReductionCertificate x hx {prefix}RawBasis8
+      _ _ {prefix}CombinationCertificate{j}_8 hRaw hCombination{j}
+"""
+    semantic += f"""  have hAB := factorCertificate_cases x hx {prefix}RawBasis8
+    {prefix}SplitRelation0_8 (terminalBSplitCharacter8 0)
+    (terminalBSplitCharacter8 2) {prefix}FactorCertificate0_8 hRaw hRelation0
+  have hCB := factorCertificate_cases x hx {prefix}RawBasis8
+    {prefix}SplitRelation1_8 (terminalBSplitCharacter8 1)
+    (terminalBSplitCharacter8 2) {prefix}FactorCertificate1_8 hRaw hRelation1
+  have hsplit :
+      ((terminalBSplitCharacter8 0).Holds x ∧
+        (terminalBSplitCharacter8 1).Holds x) ∨
+      (terminalBSplitCharacter8 2).Holds x := by
+    rcases hAB with hA | hB
+    · rcases hCB with hC | hB
+      · exact Or.inl ⟨hA, hC⟩
+      · exact Or.inr hB
+    · exact Or.inr hB
+  rcases hsplit with hBranch0 | hBranch1
+  · have hBasis : ∀ c, ({prefix}Branch0Basis8 c).Holds x := by
+      intro c
+      exact FactorBasisSource.row_holds x {prefix}RawBasis8
+        {prefix}Branch0SplitRow8 hRaw
+        (by intro r; fin_cases r <;> simp [hBranch0])
+        ({prefix}Branch0Source8 c)
+    have hRows : ∀ i, (terminalBBranch0TargetCharacter8 i).Holds x := by
+      intro i
+      fin_cases i
+"""
+    for j in range(4):
+        semantic += f"""      · exact SignedCharacterRow.holds_of_implicationCertificate x hx
+        (SignedCharacterRow.withParityGenerator {prefix}Branch0Basis8)
+        (terminalBBranch0TargetCharacter8 {j})
+        {prefix}Branch0Implication{j}_8
+        (SignedCharacterRow.withParityGenerator_holds x
+          {prefix}Branch0Basis8 hBasis)
+"""
+    semantic += f"""    exact branch0DerivativeCharacters_impossible8 hSupport hEq
+      (terminalB_branch0DerivativeCharacters8 hSupport hRows)
+  · have hBasis : ∀ c, ({prefix}Branch1Basis8 c).Holds x := by
+      intro c
+      exact FactorBasisSource.row_holds x {prefix}RawBasis8
+        {prefix}Branch1SplitRow8 hRaw
+        (by intro r; fin_cases r; exact hBranch1)
+        ({prefix}Branch1Source8 c)
+    have hRows : ∀ i, (terminalBBranch1TargetCharacter8 i).Holds x := by
+      intro i
+      fin_cases i
+"""
+    for j in range(5):
+        semantic += f"""      · exact SignedCharacterRow.holds_of_implicationCertificate x hx
+        (SignedCharacterRow.withParityGenerator {prefix}Branch1Basis8)
+        (terminalBBranch1TargetCharacter8 {j})
+        {prefix}Branch1Implication{j}_8
+        (SignedCharacterRow.withParityGenerator_holds x
+          {prefix}Branch1Basis8 hBasis)
+"""
+    semantic += """    exact branch1DerivativeCharacters_impossible8 hSupport hEq
+      (terminalB_branch1DerivativeCharacters8 hSupport hRows)
+"""
+    state_imports = [
+        f"{state_module}.Combination0",
+        f"{state_module}.Combination1",
+        f"{state_module}.Factor0",
+        f"{state_module}.Factor1",
+        f"{state_module}.Branch0",
+        f"{state_module}.Branch1",
+    ]
+    outputs[BRANCH_DIR / f"State{state_index}.lean"] = lean_module(
+        state_imports,
+        hraw_proof + semantic,
+        f"Semantic terminal contradiction for survivor state {state_index}.",
+    )
+    return outputs
+
+
 def emit_branch_top() -> str:
     return """import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentB8.NonSurvivor
 import MonochromaticQuantumGraphs.N8D3.TropicalTerminalBranches8.State3
@@ -1355,20 +2630,19 @@ def main() -> None:
     ]
 
     outputs: dict[Path, str] = {}
+    outputs[COMPONENT_DIR / "Replay.lean"] = emit_replay_helpers()
     metadata: list[dict[str, Any]] = []
     for key in CORE_LAYOUT:
-        text, item = emit_core_shard(
+        core_outputs, item = emit_core_modules(
             key, terminal["core_elimination_certificates"][key],
             factor_base, factor_raw, support,
         )
-        outputs[COMPONENT_DIR / f"{item['module']}.lean"] = text
+        outputs.update(core_outputs)
         metadata.append(item)
     outputs[COMPONENT_DIR / "NonSurvivor.lean"] = emit_non_survivor(metadata)
     outputs[BRANCH_DIR / "Data.lean"] = emit_branch_data()
     for state in branches["states"]:
-        outputs[BRANCH_DIR / f"State{state['state']}.lean"] = emit_state_shard(
-            state, factor_base, factor_raw, support
-        )
+        outputs.update(emit_state_modules(state, factor_base, factor_raw, support))
     outputs[BRANCH_TOP] = emit_branch_top()
     outputs[COMPONENT_TOP] = emit_component_top()
     write_or_check(outputs, args.check)
