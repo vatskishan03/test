@@ -30,6 +30,39 @@ def tropicalOverlapDegreeFiveExponent8
   Pi.single a (1 : ℤ) + Pi.single b (1 : ℤ) + Pi.single c (1 : ℤ) +
     Pi.single d (1 : ℤ) + Pi.single e (1 : ℤ)
 
+/-- Transport the exact support-rank inverse along a concrete coordinate
+identity.  Overlap source replays use this to avoid expanding all 144
+coordinates of a matching exponent. -/
+theorem tropicalSupportRank8_eq_of_globalCoordinate8
+    {x : Fin 252} {i : Fin 144}
+    (h : x = tropicalSupportGlobalCoordinate8 i) :
+    tropicalSupportRank8 x = i :=
+  (congrArg tropicalSupportRank8 h).trans
+    (tropicalSupportRank8_globalCoordinate8 i)
+
+/-- Reconstruct a matching exponent from its four concrete supported
+coordinates. -/
+theorem tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+    (q : Fin 8 → Fin 3) (m : Fin 105)
+    (a0 a1 a2 a3 : Fin 144)
+    (h0 : tropicalMatchingCoordinate8 q m 0 =
+      tropicalSupportGlobalCoordinate8 a0)
+    (h1 : tropicalMatchingCoordinate8 q m 1 =
+      tropicalSupportGlobalCoordinate8 a1)
+    (h2 : tropicalMatchingCoordinate8 q m 2 =
+      tropicalSupportGlobalCoordinate8 a2)
+    (h3 : tropicalMatchingCoordinate8 q m 3 =
+      tropicalSupportGlobalCoordinate8 a3) :
+    tropicalMatchingLocalExponent8 q m =
+      Pi.single a0 (1 : ℤ) + Pi.single a1 (1 : ℤ) +
+        Pi.single a2 (1 : ℤ) + Pi.single a3 (1 : ℤ) := by
+  unfold tropicalMatchingLocalExponent8
+  rw [Fin.sum_univ_four,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h0,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h1,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h2,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h3]
+
 /-- Interpret exact overlap provenance as a sparse Laurent polynomial. -/
 def tropicalOverlapProvenancePolynomial8
     (p : TropicalOverlapProvenance8) : LaurentPolynomial (Fin 144) :=

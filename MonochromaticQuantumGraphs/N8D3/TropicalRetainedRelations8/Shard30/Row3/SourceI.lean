@@ -16,7 +16,79 @@ theorem tropicalOverlapSourceIExponent8_replay_row153 (j : Fin 6) :
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row153.sourceI)
           (tropicalBaseMatching8 j) =
       tropicalOverlapSourceIExponent8Row153 j := by
-  fin_cases j <;> funext k <;> fin_cases k <;> decide
+  fin_cases j
+  · change
+      Pi.single 139 (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 1373)
+            0 =
+        tropicalOverlapDegreeFiveExponent8 7 65 103 138 139
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 1373) 0
+      7 65 103 138
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel
+  · change
+      Pi.single 139 (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 1373)
+            1 =
+        tropicalOverlapDegreeFiveExponent8 7 65 111 132 139
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 1373) 1
+      7 65 111 132
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel
+  · change
+      Pi.single 139 (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 1373)
+            6 =
+        tropicalOverlapDegreeFiveExponent8 7 77 89 138 139
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 1373) 6
+      7 77 89 138
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel
+  · change
+      Pi.single 139 (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 1373)
+            21 =
+        tropicalOverlapDegreeFiveExponent8 17 43 89 138 139
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 1373) 21
+      17 43 89 138
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel
+  · change
+      Pi.single 139 (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 1373)
+            24 =
+        tropicalOverlapDegreeFiveExponent8 17 51 89 132 139
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 1373) 24
+      17 51 89 132
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel
+  · change
+      Pi.single 139 (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 1373)
+            40 =
+        tropicalOverlapDegreeFiveExponent8 26 51 77 119 139
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 1373) 40
+      26 51 77 119
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel
 
 end
 

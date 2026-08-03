@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from dataclasses import dataclass
 import hashlib
 import json
 from pathlib import Path
@@ -101,6 +102,21 @@ def read_support(data: dict[str, Any]) -> list[int]:
 
 Exponent = tuple[int, ...]
 Polynomial = dict[Exponent, int]
+
+
+@dataclass(frozen=True)
+class SourceReplayCase:
+    """One exact matching term from one translated overlap source."""
+
+    overlap_index: int
+    use_index: int
+    source_index: int
+    term_index: int
+    coloring_code: int
+    matching_index: int
+    local_coordinates: tuple[int, ...]
+    translation_coordinate: int
+    target_coordinates: tuple[int, ...]
 
 
 def sparse_exponent(
@@ -328,20 +344,128 @@ def lean_shifted_source_exponent(
     return "tropicalOverlapDegreeFiveExponent8 " + " ".join(map(str, coordinates))
 
 
-def lean_shifted_source_table(
-    rows: list[dict[str, Any]], base_rows: list[dict[str, Any]], use_index: int
-) -> str:
-    rendered_rows: list[str] = []
-    for row in rows:
-        use = row["exact_source_uses"][use_index]
-        source = base_rows[use["source_index"]]["relation"]
-        rendered_rows.append(
-            lean_vector(
-                [lean_shifted_source_exponent(use, term) for term in source],
-                indent="    ",
+def source_replay_cases(
+    row: dict[str, Any],
+    base_rows: list[dict[str, Any]],
+    use_index: int,
+) -> list[SourceReplayCase]:
+    """Extract one source replay once for both its data and its Lean proof.
+
+    The four local coordinates retain the JSON monomial order because they
+    correspond respectively to matching coordinates 0, 1, 2, and 3.  The
+    explicit degree-five target is separately canonicalized.  These guards
+    prevent a proof branch from accidentally mixing a coloring, matching,
+    shift, or target taken from another source term.
+    """
+
+    context = f"first-overlap row {row['index']} source use {use_index}"
+    uses = row.get("exact_source_uses")
+    if not isinstance(uses, list) or not 0 <= use_index < len(uses):
+        fail(f"{context}: source use is unavailable")
+    use = uses[use_index]
+    source_index = use.get("source_index")
+    if not isinstance(source_index, int) or not 0 <= source_index < len(base_rows):
+        fail(f"{context}: source index is unavailable")
+    base = base_rows[source_index]
+    if base.get("index") != source_index:
+        fail(f"{context}: source row index changed")
+    if base.get("active_matching_indices") != EXPECTED_MATCHINGS:
+        fail(f"{context}: matching order changed")
+
+    coloring_code = base.get("source_coloring_code")
+    if not isinstance(coloring_code, int) or not 0 <= coloring_code < 6561:
+        fail(f"{context}: coloring code is outside Fin 6561")
+    decoded_coloring = [(coloring_code // (3**vertex)) % 3 for vertex in range(8)]
+    if base.get("source_coloring") != decoded_coloring:
+        fail(f"{context}: coloring code disagrees with its explicit coloring")
+
+    source_relation = base.get("relation")
+    if not isinstance(source_relation, list) or len(source_relation) != 6:
+        fail(f"{context}: source relation is not the canonical six-term row")
+    translation_coordinate = local_of_single_shift(use)
+    cases: list[SourceReplayCase] = []
+    for term_index, term in enumerate(source_relation):
+        matching_index = EXPECTED_MATCHINGS[term_index]
+        term_context = f"{context} term {term_index}"
+        monomial = term.get("monomial")
+        if not isinstance(monomial, list) or len(monomial) != 4:
+            fail(f"{term_context}: matching monomial does not have four coordinates")
+        if term.get("coef") != [1, 1]:
+            fail(f"{term_context}: matching monomial is not monic")
+        local_coordinates = tuple(entry.get("local") for entry in monomial)
+        if any(
+            not isinstance(coordinate, int) or not 0 <= coordinate < DIMENSION
+            for coordinate in local_coordinates
+        ):
+            fail(f"{term_context}: local coordinate is outside Fin 144")
+        if any(entry.get("exp") != 1 for entry in monomial):
+            fail(f"{term_context}: matching monomial is not squarefree")
+        if local_coordinates != tuple(sorted(set(local_coordinates))):
+            fail(f"{term_context}: matching-coordinate order is not canonical")
+        if translation_coordinate in local_coordinates:
+            fail(f"{term_context}: translation coordinate repeats a matching coordinate")
+
+        target_coordinates = tuple(
+            sorted((*local_coordinates, translation_coordinate))
+        )
+        shifted_exponent = [0] * DIMENSION
+        for coordinate in (*local_coordinates, translation_coordinate):
+            shifted_exponent[coordinate] += 1
+        explicit_exponent = [0] * DIMENSION
+        for coordinate in target_coordinates:
+            explicit_exponent[coordinate] = 1
+        if shifted_exponent != explicit_exponent:
+            fail(f"{term_context}: explicit degree-five exponent changed")
+
+        rendered_target = (
+            "tropicalOverlapDegreeFiveExponent8 "
+            + " ".join(map(str, target_coordinates))
+        )
+        if rendered_target != lean_shifted_source_exponent(use, term):
+            fail(f"{term_context}: data and proof target extraction disagree")
+        cases.append(
+            SourceReplayCase(
+                overlap_index=row["index"],
+                use_index=use_index,
+                source_index=source_index,
+                term_index=term_index,
+                coloring_code=coloring_code,
+                matching_index=matching_index,
+                local_coordinates=local_coordinates,
+                translation_coordinate=translation_coordinate,
+                target_coordinates=target_coordinates,
             )
         )
-    return lean_vector(rendered_rows)
+    return cases
+
+
+def lean_source_replay_target(case: SourceReplayCase) -> str:
+    return "tropicalOverlapDegreeFiveExponent8 " + " ".join(
+        map(str, case.target_coordinates)
+    )
+
+
+def validate_source_replay_bundle(
+    row: dict[str, Any], use_index: int, cases: list[SourceReplayCase]
+) -> None:
+    """Reject any cross-row, cross-source, or cross-term replay bundle."""
+
+    context = f"first-overlap row {row['index']} source use {use_index}"
+    use = row["exact_source_uses"][use_index]
+    source_index = use["source_index"]
+    translation_coordinate = local_of_single_shift(use)
+    if len(cases) != 6 or any(
+        case.overlap_index != row["index"]
+        or case.use_index != use_index
+        or case.source_index != source_index
+        or case.term_index != term_index
+        or case.matching_index != EXPECTED_MATCHINGS[term_index]
+        or case.translation_coordinate != translation_coordinate
+        or case.target_coordinates
+        != tuple(sorted((*case.local_coordinates, translation_coordinate)))
+        for term_index, case in enumerate(cases)
+    ):
+        fail(f"{context}: replay cases are mixed")
 
 
 def generate_data() -> str:
@@ -376,6 +500,39 @@ def tropicalOverlapDegreeFiveExponent8
     (a b c d e : Fin 144) : LaurentExponent (Fin 144) :=
   Pi.single a (1 : ℤ) + Pi.single b (1 : ℤ) + Pi.single c (1 : ℤ) +
     Pi.single d (1 : ℤ) + Pi.single e (1 : ℤ)
+
+/-- Transport the exact support-rank inverse along a concrete coordinate
+identity.  Overlap source replays use this to avoid expanding all 144
+coordinates of a matching exponent. -/
+theorem tropicalSupportRank8_eq_of_globalCoordinate8
+    {x : Fin 252} {i : Fin 144}
+    (h : x = tropicalSupportGlobalCoordinate8 i) :
+    tropicalSupportRank8 x = i :=
+  (congrArg tropicalSupportRank8 h).trans
+    (tropicalSupportRank8_globalCoordinate8 i)
+
+/-- Reconstruct a matching exponent from its four concrete supported
+coordinates. -/
+theorem tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+    (q : Fin 8 → Fin 3) (m : Fin 105)
+    (a0 a1 a2 a3 : Fin 144)
+    (h0 : tropicalMatchingCoordinate8 q m 0 =
+      tropicalSupportGlobalCoordinate8 a0)
+    (h1 : tropicalMatchingCoordinate8 q m 1 =
+      tropicalSupportGlobalCoordinate8 a1)
+    (h2 : tropicalMatchingCoordinate8 q m 2 =
+      tropicalSupportGlobalCoordinate8 a2)
+    (h3 : tropicalMatchingCoordinate8 q m 3 =
+      tropicalSupportGlobalCoordinate8 a3) :
+    tropicalMatchingLocalExponent8 q m =
+      Pi.single a0 (1 : ℤ) + Pi.single a1 (1 : ℤ) +
+        Pi.single a2 (1 : ℤ) + Pi.single a3 (1 : ℤ) := by
+  unfold tropicalMatchingLocalExponent8
+  rw [Fin.sum_univ_four,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h0,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h1,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h2,
+    tropicalSupportRank8_eq_of_globalCoordinate8 h3]
 
 /-- Interpret exact overlap provenance as a sparse Laurent polynomial. -/
 def tropicalOverlapProvenancePolynomial8
@@ -447,32 +604,21 @@ def render_row_payload(
     shard: int,
     local_row: int,
     row: dict[str, Any],
-    base_rows: list[dict[str, Any]],
+    source_i_cases: list[SourceReplayCase],
+    source_j_cases: list[SourceReplayCase],
 ) -> tuple[int, str, str, str, str]:
     global_row = shard * ROWS_PER_SHARD + local_row
     if row["index"] != global_row:
         fail(f"internal error: expected overlap row {global_row}")
+    validate_source_replay_bundle(row, 0, source_i_cases)
+    validate_source_replay_bundle(row, 1, source_j_cases)
     provenance = lean_provenance(row)
     relation = lean_relation(row)
     source_i_exponents = lean_vector(
-        [
-            lean_shifted_source_exponent(
-                row["exact_source_uses"][0], term
-            )
-            for term in base_rows[
-                row["exact_source_uses"][0]["source_index"]
-            ]["relation"]
-        ]
+        [lean_source_replay_target(case) for case in source_i_cases]
     )
     source_j_exponents = lean_vector(
-        [
-            lean_shifted_source_exponent(
-                row["exact_source_uses"][1], term
-            )
-            for term in base_rows[
-                row["exact_source_uses"][1]["source_index"]
-            ]["relation"]
-        ]
+        [lean_source_replay_target(case) for case in source_j_cases]
     )
     return (
         global_row,
@@ -546,8 +692,36 @@ def generate_row_source_collector(
     local_row: int,
     global_row: int,
     side: str,
+    cases: list[SourceReplayCase],
 ) -> str:
     coordinate, source, label = source_side_coordinate(side)
+    expected_use_index = 0 if side == "I" else 1
+    if len(cases) != 6 or any(
+        case.overlap_index != global_row
+        or case.use_index != expected_use_index
+        or case.term_index != term_index
+        for term_index, case in enumerate(cases)
+    ):
+        fail(f"overlap row {global_row} source {side}: replay cases are mixed")
+    proof_cases = []
+    for case in cases:
+        a0, a1, a2, a3 = case.local_coordinates
+        target = lean_source_replay_target(case)
+        proof_cases.append(
+            f'''  · change
+      Pi.single {case.translation_coordinate} (1 : ℤ) +
+          tropicalMatchingLocalExponent8
+            (tropicalColoringOfCode8 {case.coloring_code})
+            {case.matching_index} =
+        {target}
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 {case.coloring_code}) {case.matching_index}
+      {a0} {a1} {a2} {a3}
+      (by decide) (by decide) (by decide) (by decide)]
+    unfold tropicalOverlapDegreeFiveExponent8
+    abel'''
+        )
+    replay = "\n".join(proof_cases)
     data_import = (
         "import MonochromaticQuantumGraphs.N8D3."
         f"TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Data"
@@ -570,7 +744,8 @@ theorem tropicalOverlapSource{side}Exponent8_replay_row{global_row} (j : Fin 6) 
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.{source})
           (tropicalBaseMatching8 j) =
       tropicalOverlapSource{side}Exponent8Row{global_row} j := by
-  fin_cases j <;> funext k <;> fin_cases k <;> decide
+  fin_cases j
+{replay}
 
 end
 
@@ -849,11 +1024,15 @@ def generated_files(
         start = shard * ROWS_PER_SHARD
         result[SHARD_DIR / f"Shard{shard}.lean"] = generate_shard(shard)
         for local_row in range(ROWS_PER_SHARD):
+            row = rows[start + local_row]
+            source_i_cases = source_replay_cases(row, base_rows, 0)
+            source_j_cases = source_replay_cases(row, base_rows, 1)
             payload = render_row_payload(
                 shard,
                 local_row,
-                rows[start + local_row],
-                base_rows,
+                row,
+                source_i_cases,
+                source_j_cases,
             )
             global_row, provenance, relation, source_i, source_j = payload
             row_path = SHARD_DIR / f"Shard{shard}" / f"Row{local_row}"
@@ -863,10 +1042,14 @@ def generated_files(
             result[row_path / "Data.lean"] = generate_row_data(
                 global_row, provenance, relation, source_i, source_j
             )
-            for side in ("I", "J"):
+            for side, cases in (("I", source_i_cases), ("J", source_j_cases)):
                 result[row_path / f"Source{side}.lean"] = (
                     generate_row_source_collector(
-                        shard, local_row, global_row, side
+                        shard,
+                        local_row,
+                        global_row,
+                        side,
+                        cases,
                     )
                 )
             result[row_path / "Cancellation.lean"] = generate_row_cancellation(
