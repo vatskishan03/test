@@ -46,7 +46,7 @@ jobs:
           lake exe cache get
       - name: Attach exact VM proof build
         run: |
-          verified=/mnt/lean/monochromatic-quantum-graphs
+          verified=/mnt/lean/mqg-n8d3-nonattainment
           test -d "$verified/.lake/build"
           git -C "$verified" diff --quiet --
           while IFS= read -r -d '' path; do
