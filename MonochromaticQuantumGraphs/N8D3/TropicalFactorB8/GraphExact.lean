@@ -1,17 +1,13 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Factor
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.GraphData
 
 /-!
-# Exact raw/class graph quotient
-
-Each row is checked separately so the 49-by-49 finite equality is not one
-monolithic kernel reduction.
+# Exact raw/class graph quotient over lightweight tables
 -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
 open MonochromaticQuantumGraph
 open MonochromaticQuantumGraphs
-open MonochromaticQuantumGraphs.FactorCoverCertificate
 open scoped BigOperators
 
 noncomputable section
@@ -460,7 +456,7 @@ private theorem tropicalComponentBRawFactorEdge8_row48
   revert s
   decide
 
-/-- The class graph is the exact adjacency quotient of the 59 raw edges. -/
+/-- The class graph is the exact adjacency quotient of the raw edges. -/
 theorem tropicalComponentBRawFactorEdge8_iff_classEdge
     (r s : Fin 49) :
     tropicalComponentBRawFactorEdge8 r s ↔

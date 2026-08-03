@@ -1,4 +1,5 @@
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.GraphExact
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Factor
 
 /-!
 # Component-B false-twin classes and cover dispatch
@@ -8,13 +9,14 @@ namespace MonochromaticQuantumGraphs.N8D3
 
 open MonochromaticQuantumGraph
 open MonochromaticQuantumGraphs
-open MonochromaticQuantumGraphs.FactorCoverCertificate
 open scoped BigOperators
 
 noncomputable section
 
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
+
+open MonochromaticQuantumGraphs.FactorCoverCertificate
 
 private theorem tropicalComponentBClassMembers8_class00
     (r : Fin 49) :
@@ -177,7 +179,7 @@ private theorem tropicalComponentBClassMembers8_class22
   revert r
   decide
 
-/-- Exact membership characterization for all 23 false-twin classes. -/
+/-- Exact membership characterization for all false-twin classes. -/
 theorem tropicalComponentBClassMembers8_iff
     (c : Fin 23) (r : Fin 49) :
     r ∈ tropicalComponentBClassMembers8 c ↔
@@ -207,8 +209,7 @@ theorem tropicalComponentBClassMembers8_iff
   · exact tropicalComponentBClassMembers8_class21 r
   · exact tropicalComponentBClassMembers8_class22 r
 
-/-- Every existing class edge expands to a complete bipartite raw graph, with
-membership and adjacency both checked from their exact finite tables. -/
+/-- Every class edge expands to a complete bipartite raw graph. -/
 theorem tropicalComponentBCompleteBipartiteQuotient8 :
     IsCompleteBipartiteQuotient
       tropicalComponentBRawFactorEdge8 componentBFactorEdge8
@@ -221,8 +222,7 @@ theorem tropicalComponentBCompleteBipartiteQuotient8 :
   rw [tropicalComponentBRawFactorEdge8_iff_classEdge]
   simpa [hrc', hsd'] using hcd
 
-/-- Exact Component-B dispatch to the already checked 288-row class-cover
-table.  The cover table is imported and is not duplicated here. -/
+/-- Exact dispatch to the existing 288-row class-cover table. -/
 theorem tropicalComponentB_allZero_class_cover8
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :

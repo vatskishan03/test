@@ -7,10 +7,12 @@ and cross references, and emits Lean declarations which replay every Laurent
 polynomial equality, signed-character implication, shifted combination,
 factorization, false-twin membership, and complete-bipartite quotient claim.
 
-The output is intentionally highly sharded.  In particular, every normalized
-source reduction, quotient row, and factor edge gets its own module, while the
-small equality obligations inside those modules are separate declarations.
-No generated declaration has a heartbeat limit above ten million.
+The output is intentionally highly sharded.  Every normalized source,
+quotient row, and factor edge has row-local data; every monomial implication
+and polynomial equality is a separate bounded leaf module.  Quotient holds
+import only their two source holds, and factor holds import only their one
+quotient hold.  No generated declaration has a heartbeat limit above eight
+million, and no Laurent-polynomial equality is delegated to `decide`.
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import tempfile
 from typing import Any, Iterable, Sequence
 
@@ -41,6 +44,16 @@ RAW_VERTEX_COUNT = 49
 RAW_EDGE_COUNT = 59
 CLASS_COUNT = 23
 COVER_COUNT = 288
+
+# The Component-B source slice uses exactly base rows 100--139.  Pin their
+# already-authoritative ternary coloring codes here so a row-local exponent
+# replay never has to reduce the 200-entry base-color vector.
+BASE_COLORING_CODE_100_TO_139 = (
+    2972, 2975, 2990, 2993, 3051, 3053, 3054, 3056, 3069, 3071,
+    3072, 3074, 3132, 3134, 3135, 3137, 3150, 3152, 3153, 3155,
+    3215, 3218, 3233, 3236, 3294, 3296, 3297, 3299, 3312, 3314,
+    3315, 3317, 3375, 3377, 3378, 3380, 3393, 3395, 3396, 3398,
+)
 
 # This is the already checked class graph in TropicalNonattainmentComponentB8.
 EXPECTED_CLASS_EDGES = {
@@ -147,6 +160,42 @@ def canonical_polynomial(payload: Any, context: str) -> tuple[tuple[tuple[tuple[
         exponent = tuple((row["local"], row["exp"]) for row in exponent_rows)
         aggregate[exponent] = aggregate.get(exponent, 0) + coefficient
     return tuple(sorted((exponent, coefficient) for exponent, coefficient in aggregate.items() if coefficient))
+
+
+def add_sparse_exponent_tuples(
+    left: tuple[tuple[int, int], ...],
+    right: tuple[tuple[int, int], ...],
+) -> tuple[tuple[int, int], ...]:
+    values: dict[int, int] = {}
+    for local, value in (*left, *right):
+        values[local] = values.get(local, 0) + value
+    return tuple(sorted((local, value) for local, value in values.items() if value))
+
+
+def translated_canonical_polynomial(
+    canonical: tuple[tuple[tuple[tuple[int, int], ...], int], ...],
+    shift_rows: Any,
+    scale: int,
+) -> tuple[tuple[tuple[tuple[int, int], ...], int], ...]:
+    shift = tuple(
+        (row["local"], row["exp"])
+        for row in check_sparse_exponent(shift_rows, "translated polynomial shift")
+    )
+    aggregate: dict[tuple[tuple[int, int], ...], int] = {}
+    for term_exponent, coefficient in canonical:
+        translated = add_sparse_exponent_tuples(shift, term_exponent)
+        aggregate[translated] = aggregate.get(translated, 0) + scale * coefficient
+    return tuple(sorted((term, coefficient) for term, coefficient in aggregate.items() if coefficient))
+
+
+def add_canonical_polynomials(
+    *polynomials: tuple[tuple[tuple[tuple[int, int], ...], int], ...],
+) -> tuple[tuple[tuple[tuple[int, int], ...], int], ...]:
+    aggregate: dict[tuple[tuple[int, int], ...], int] = {}
+    for polynomial_ in polynomials:
+        for term, coefficient in polynomial_:
+            aggregate[term] = aggregate.get(term, 0) + coefficient
+    return tuple(sorted((term, coefficient) for term, coefficient in aggregate.items() if coefficient))
 
 
 def check_polynomial_equality(payload: Any, context: str) -> None:
@@ -313,6 +362,26 @@ def load_and_validate(path: Path) -> dict[str, Any]:
                 fail(f"quotient row {row_index} source ids disagree")
             integer(use.get("integer_scale"), f"quotient row {row_index} source scale")
             check_sparse_exponent(use.get("shift"), f"quotient row {row_index} source shift")
+        translated_sources = []
+        for use in uses:
+            source_id = use["source_reduction_id"]
+            source_target = canonical_polynomial(
+                source_reductions[source_id]["certificate"]["provenance"]
+                    ["normalized_target"],
+                f"quotient row {row_index} shifted source {source_id}",
+            )
+            translated_sources.append(
+                translated_canonical_polynomial(
+                    source_target, use["shift"], use["integer_scale"]
+                )
+            )
+        shifted_aggregate = add_canonical_polynomials(*translated_sources)
+        expected_intermediate = canonical_polynomial(
+            row["combination_reduction"]["reduction"]["source_eq"]["rhs"],
+            f"quotient row {row_index} expected shifted aggregate",
+        )
+        if shifted_aggregate != expected_intermediate:
+            fail(f"quotient row {row_index} shifted aggregate is inconsistent")
         normalized_certificate(
             row.get("combination_reduction"), 12,
             f"quotient row {row_index} combination reduction",
@@ -363,6 +432,36 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         ):
             fail(f"raw edge {edge_index} source is not its exact quotient row")
         factor_certificate(witness.get("factor_certificate"), f"raw edge {edge_index}")
+        payload = witness["factor_certificate"]
+        left_exponent = tuple(
+            (row["local"], row["exp"])
+            for row in check_sparse_exponent(
+                vertices[left]["row"], f"raw edge {edge_index} left factor"
+            )
+        )
+        right_exponent = tuple(
+            (row["local"], row["exp"])
+            for row in check_sparse_exponent(
+                vertices[right]["row"], f"raw edge {edge_index} right factor"
+            )
+        )
+        left_sign = 1 if vertices[left]["bit"] % 2 == 0 else -1
+        right_sign = 1 if vertices[right]["bit"] % 2 == 0 else -1
+        raw_product = add_canonical_polynomials(
+            ((add_sparse_exponent_tuples(left_exponent, right_exponent), 1),),
+            ((left_exponent, -right_sign),),
+            ((right_exponent, -left_sign),),
+            (((), left_sign * right_sign),),
+        )
+        translated_product = translated_canonical_polynomial(
+            raw_product, payload["shift"], payload["unit"]
+        )
+        expected_product = canonical_polynomial(
+            payload["reduction"]["target_eq"]["rhs"],
+            f"raw edge {edge_index} expected translated product",
+        )
+        if translated_product != expected_product:
+            fail(f"raw edge {edge_index} translated factor product is inconsistent")
 
     owner: dict[int, int] = {}
     for class_id, class_row in enumerate(classes):
@@ -441,7 +540,7 @@ def finset(items: Sequence[int]) -> str:
 
 
 def module_header(imports: Iterable[str], doc: str) -> str:
-    return "".join(f"import {name}\n" for name in imports) + f'''\n/-!\n{doc}\n-/\n\nnamespace MonochromaticQuantumGraphs.N8D3\n\nopen MonochromaticQuantumGraph\nopen MonochromaticQuantumGraphs\nopen MonochromaticQuantumGraphs.FactorCoverCertificate\nopen scoped BigOperators\n\nnoncomputable section\n\nset_option maxRecDepth 100000\nset_option maxHeartbeats 8000000\n\n'''
+    return "".join(f"import {name}\n" for name in imports) + f'''\n/-!\n{doc}\n-/\n\nnamespace MonochromaticQuantumGraphs.N8D3\n\nopen MonochromaticQuantumGraph\nopen MonochromaticQuantumGraphs\nopen scoped BigOperators\n\nnoncomputable section\n\nset_option maxRecDepth 100000\nset_option maxHeartbeats 8000000\n\n'''
 
 
 FOOTER = "\nend\n\nend MonochromaticQuantumGraphs.N8D3\n"
@@ -452,119 +551,157 @@ def write(path: Path, contents: str) -> None:
     path.write_text(contents)
 
 
-def reduction_use_name(prefix: str, use_index: int) -> str:
-    return f"{prefix}Monomial{use_index:02d}8"
-
-
-def emit_monomial_defs(prefix: str, uses: Sequence[dict[str, Any]]) -> str:
-    chunks: list[str] = []
-    for use_index, use in enumerate(uses):
-        source = exponent(use["sourceExponent"], f"{prefix} use {use_index} source")
-        target = exponent(use["targetExponent"], f"{prefix} use {use_index} target")
-        reduction = use["reduction"]
-        coeffs = [z(integer(value, f"{prefix} use {use_index} coeff")) for value in reduction["implication"]["coeff"]]
-        chunks.append(f'''private def {reduction_use_name(prefix, use_index)} :
-    MonomialReductionCertificate tropicalComponentBCharacter8
-      {source} {target} where
-  signExponent := {z(integer(reduction["signExponent"], f"{prefix} use {use_index} sign"))}
-  implication := {{
-    coeff := tropicalComponentBWithParityCoefficients8 {vector(coeffs, "      ")}
-    combination_eq := by
-      apply SignedCharacterRow.ext <;> decide
-  }}
-''')
-    return "\n".join(chunks)
-
-
-def emit_use_vector(prefix: str, uses: Sequence[dict[str, Any]], name: str) -> str:
-    items = []
-    for use_index, use in enumerate(uses):
-        items.append(f'''{{ coefficient := {z(integer(use["coefficient"], prefix + " coefficient"))}
-      sourceExponent := {exponent(use["sourceExponent"], prefix + " source")}
-      targetExponent := {exponent(use["targetExponent"], prefix + " target")}
-      reduction := {reduction_use_name(prefix, use_index)} }}''')
-    return f'''private def {name} :
-    Fin {len(uses)} → CharacterReductionUse tropicalComponentBCharacter8 :=
-{vector(items, "  ")}
-'''
-
-
-def emit_reduction_equalities(
-    use_name: str,
-    use_count: int,
-    source: str,
-    target: str,
-    unit: int,
-    theorem_prefix: str,
-) -> str:
-    return f'''private theorem {theorem_prefix}_source_eq :
-    (∑ k : Fin {use_count},
-      Finsupp.single ({use_name} k).sourceExponent
-        ({use_name} k).coefficient) = {source} := by
-  decide
-
-private theorem {theorem_prefix}_target_eq :
-    (∑ k : Fin {use_count},
-      Finsupp.single ({use_name} k).targetExponent
-        (signedCoefficient ({use_name} k).reduction.signExponent
-          ({use_name} k).coefficient)) =
-      {z(unit)} • {target} := by
-  decide
-'''
-
-
-def emit_data(data: dict[str, Any]) -> str:
-    sources = data["quotient"]["source_reductions"]
-    rows = data["quotient"]["rows"]
-    factor = data["factor"]
-    source_indices = [str(item["relation_source"]["combined_index"]) for item in sources]
-    reduced = [
-        polynomial(
-            item["certificate"]["provenance"]["normalized_target"],
-            f"source {i} normalized target",
-        )
-        for i, item in enumerate(sources)
+def normalize_exponent_rows(
+    *groups: Sequence[dict[str, Any]],
+) -> list[dict[str, int]]:
+    """Add sparse exponents without involving the Lean `Finsupp` quotient."""
+    values: dict[int, int] = {}
+    for group in groups:
+        for row in group:
+            local = integer(row["local"], "combined exponent local")
+            values[local] = values.get(local, 0) + integer(
+                row["exp"], "combined exponent value"
+            )
+    return [
+        {"local": local, "global": local, "exp": value}
+        for local, value in sorted(values.items())
+        if value
     ]
-    intermediates = [
-        polynomial(
-            row["combination_reduction"]["reduction"]["source_eq"]["rhs"],
-            f"quotient {i} intermediate",
-        )
-        for i, row in enumerate(rows)
-    ]
-    quotients = [
-        polynomial(row["quotient_relation"], f"quotient {i}")
-        for i, row in enumerate(rows)
-    ]
-    raw_factors = [
-        signed_row(vertex, f"raw factor {i}")
-        for i, vertex in enumerate(factor["vertices"])
-    ]
-    edge_pairs = [f"({edge[0]}, {edge[1]})" for edge in factor["raw_edges"]]
-    edge_sources = [str(witness["source_quotient_index"]) for witness in factor["edge_witnesses"]]
-    class_of = [None] * RAW_VERTEX_COUNT
-    member_sets = []
-    for class_row in factor["classes"]:
-        members = class_row["vertex_ids"]
-        member_sets.append(finset(members))
-        for member in members:
-            class_of[member] = class_row["class_id"]
+
+
+def stage_namespace(stage: str, index: int) -> str:
+    return f"TropicalFactorB8.Internal.{stage}{index:03d}"
+
+
+def stage_module(stage: str, index: int) -> str:
+    letter = {"Source": "S", "Quotient": "Q", "Factor": "E"}[stage]
+    return (
+        "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8."
+        f"{stage}.{letter}{index:03d}"
+    )
+
+
+def namespace_block(namespace: str, body: str) -> str:
+    return f"namespace {namespace}\n\n{body}\nend {namespace}\n"
+
+
+def monomial_names(use_count: int) -> str:
+    return ",\n    ".join(f"monomial{i:02d}" for i in range(use_count))
+
+
+def emit_core() -> str:
     return module_header(
         [
             "MonochromaticQuantumGraphs.LaurentPolynomialCertificate",
             "MonochromaticQuantumGraphs.N8D3.TropicalLaurentCoordinates8",
-            "MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8",
-            "MonochromaticQuantumGraphs.N8D3.TropicalNonattainmentComponentB8",
         ],
-        "# Generated Component-B factor data\n\nExact finite data from the pinned factor-semantics artifact.  No audit Boolean\nis imported as a proposition.",
-    ) + f'''/-- Adapt a three-entry coefficient vector to the two Component-B rows plus
-the universally valid parity generator used by monomial certificates. -/
+        "# Lightweight common definitions for Component-B factor replay",
+    ) + '''/-- Adapt three coefficients to the two Component-B characters and the
+universal parity generator. -/
 def tropicalComponentBWithParityCoefficients8
     (coeff : Fin 3 → ℤ) : Sum (Fin 2) Unit → ℤ
   | .inl i => coeff i.castSucc
   | .inr _ => coeff (Fin.last 2)
 
-/-- The retained row behind each of the {SOURCE_COUNT} unique quotient source reductions. -/
+/-- Translation is additive over subtraction.  This structural lemma avoids
+unfolding the quotient-backed `Finsupp` implementation in factor leaves. -/
+theorem tropicalComponentBTranslateSub8
+    (shift : LaurentExponent (Fin 144))
+    (p q : LaurentPolynomial (Fin 144)) :
+    LaurentPolynomial.translate shift (p - q) =
+      LaurentPolynomial.translate shift p -
+        LaurentPolynomial.translate shift q := by
+  exact LinearMap.map_sub (LaurentPolynomial.translateLinear shift) p q
+''' + FOOTER
+
+
+def emit_graph_data(data: dict[str, Any]) -> str:
+    factor = data["factor"]
+    edge_pairs = [f"({edge[0]}, {edge[1]})" for edge in factor["raw_edges"]]
+    edge_sources = [
+        str(witness["source_quotient_index"])
+        for witness in factor["edge_witnesses"]
+    ]
+    class_of: list[int | None] = [None] * RAW_VERTEX_COUNT
+    member_sets: list[str] = []
+    for class_row in factor["classes"]:
+        members = class_row["vertex_ids"]
+        member_sets.append(finset(members))
+        for member in members:
+            class_of[member] = class_row["class_id"]
+    if any(value is None for value in class_of):
+        fail("false-twin class dispatch is incomplete")
+    return module_header(
+        [
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core",
+            "MonochromaticQuantumGraphs.N8D3.TropicalNonattainmentComponentB8",
+        ],
+        "# Lightweight Component-B graph tables",
+    ) + f'''/-- Exact unordered raw-factor edges in certificate order. -/
+def tropicalComponentBRawFactorEdgePair8 :
+    Fin {RAW_EDGE_COUNT} → Fin {RAW_VERTEX_COUNT} × Fin {RAW_VERTEX_COUNT} :=
+{vector(edge_pairs, "  ")}
+
+/-- Quotient row supplying each raw edge. -/
+def tropicalComponentBRawFactorEdgeQuotient8 :
+    Fin {RAW_EDGE_COUNT} → Fin {QUOTIENT_COUNT} :=
+{vector(edge_sources, "  ")}
+
+/-- Exact symmetric raw adjacency. -/
+def tropicalComponentBRawFactorEdge8
+    (r s : Fin {RAW_VERTEX_COUNT}) : Prop :=
+  ∃ e : Fin {RAW_EDGE_COUNT},
+    tropicalComponentBRawFactorEdgePair8 e = (r, s) ∨
+      tropicalComponentBRawFactorEdgePair8 e = (s, r)
+
+/-- False-twin class of every raw factor. -/
+def tropicalComponentBRawFactorClass8 :
+    Fin {RAW_VERTEX_COUNT} → Fin {CLASS_COUNT} :=
+{vector([str(value) for value in class_of], "  ")}
+
+/-- Exact members of every false-twin class. -/
+def tropicalComponentBClassMembers8 :
+    Fin {CLASS_COUNT} → Finset (Fin {RAW_VERTEX_COUNT}) :=
+{vector(member_sets, "  ")}
+''' + FOOTER
+
+
+def emit_public_data(data: dict[str, Any]) -> str:
+    imports = ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.GraphData"]
+    imports += [
+        f"{stage_module('Source', i)}.Data" for i in range(SOURCE_COUNT)
+    ]
+    imports += [
+        f"{stage_module('Quotient', i)}.Data" for i in range(QUOTIENT_COUNT)
+    ]
+    imports += [
+        "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8."
+        f"Factor.Vertex.V{i:03d}" for i in range(RAW_VERTEX_COUNT)
+    ]
+    source_indices = [
+        f"{stage_namespace('Source', i)}.retainedIndex"
+        for i in range(SOURCE_COUNT)
+    ]
+    reduced = [
+        f"{stage_namespace('Source', i)}.reduced"
+        for i in range(SOURCE_COUNT)
+    ]
+    intermediate = [
+        f"{stage_namespace('Quotient', i)}.intermediate"
+        for i in range(QUOTIENT_COUNT)
+    ]
+    quotient = [
+        f"{stage_namespace('Quotient', i)}.relation"
+        for i in range(QUOTIENT_COUNT)
+    ]
+    factors = [
+        f"TropicalFactorB8.Internal.Vertex{i:03d}.row"
+        for i in range(RAW_VERTEX_COUNT)
+    ]
+    return module_header(
+        imports,
+        "# Public dispatch over row-local Component-B data\n\nEntries are declaration names, not repeated polynomial syntax. Certificate\nleaves never import this all-row collector.",
+    ) + f'''/-- Retained row behind each unique quotient source reduction. -/
 def tropicalComponentBQuotientSourceIndex8 : Fin {SOURCE_COUNT} → Fin 560 :=
 {vector(source_indices, "  ")}
 
@@ -573,113 +710,327 @@ def tropicalComponentBQuotientReducedSource8 :
     Fin {SOURCE_COUNT} → LaurentPolynomial (Fin 144) :=
 {vector(reduced, "  ")}
 
-/-- Exact shifted two-source aggregate before the final quotient reduction. -/
+/-- Exact shifted aggregate before each quotient reduction. -/
 def tropicalComponentBQuotientIntermediate8 :
     Fin {QUOTIENT_COUNT} → LaurentPolynomial (Fin 144) :=
-{vector(intermediates, "  ")}
+{vector(intermediate, "  ")}
 
-/-- The exact {QUOTIENT_COUNT} normalized Component-B quotient relations. -/
+/-- The exact normalized Component-B quotient relations. -/
 def tropicalComponentBQuotientRelation8 :
     Fin {QUOTIENT_COUNT} → LaurentPolynomial (Fin 144) :=
-{vector(quotients, "  ")}
+{vector(quotient, "  ")}
 
-/-- The exact {RAW_VERTEX_COUNT} raw signed-character factors. -/
+/-- The exact raw signed-character factors. -/
 def tropicalComponentBRawFactor8 :
     Fin {RAW_VERTEX_COUNT} → SignedCharacterRow (Fin 144) :=
-{vector(raw_factors, "  ")}
-
-/-- The exact {RAW_EDGE_COUNT} unordered raw-factor edges, in certificate order. -/
-def tropicalComponentBRawFactorEdgePair8 :
-    Fin {RAW_EDGE_COUNT} → Fin {RAW_VERTEX_COUNT} × Fin {RAW_VERTEX_COUNT} :=
-{vector(edge_pairs, "  ")}
-
-/-- The quotient row supplying each raw factor edge. -/
-def tropicalComponentBRawFactorEdgeQuotient8 : Fin {RAW_EDGE_COUNT} → Fin {QUOTIENT_COUNT} :=
-{vector(edge_sources, "  ")}
-
-/-- Exact symmetric adjacency generated by the {RAW_EDGE_COUNT} certified raw edges. -/
-def tropicalComponentBRawFactorEdge8
-    (r s : Fin {RAW_VERTEX_COUNT}) : Prop :=
-  ∃ e : Fin {RAW_EDGE_COUNT},
-    tropicalComponentBRawFactorEdgePair8 e = (r, s) ∨
-      tropicalComponentBRawFactorEdgePair8 e = (s, r)
-
-/-- False-twin class of every raw factor. -/
-def tropicalComponentBRawFactorClass8 : Fin {RAW_VERTEX_COUNT} → Fin {CLASS_COUNT} :=
-{vector([str(value) for value in class_of], "  ")}
-
-/-- Exact member set of every one of the {CLASS_COUNT} false-twin classes. -/
-def tropicalComponentBClassMembers8 : Fin {CLASS_COUNT} → Finset (Fin {RAW_VERTEX_COUNT}) :=
-{vector(member_sets, "  ")}
+{vector(factors, "  ")}
 ''' + FOOTER
 
 
-def emit_source_module(data: dict[str, Any], source_id: int) -> str:
+def emit_monomial_leaf(
+    stage: str,
+    index: int,
+    use_index: int,
+    use: dict[str, Any],
+) -> str:
+    namespace = stage_namespace(stage, index)
+    module = stage_module(stage, index)
+    reduction = use["reduction"]
+    coeffs = [
+        z(integer(value, f"{stage} {index} monomial {use_index} coefficient"))
+        for value in reduction["implication"]["coeff"]
+    ]
+    source = exponent(
+        use["sourceExponent"], f"{stage} {index} monomial {use_index} source"
+    )
+    target = exponent(
+        use["targetExponent"], f"{stage} {index} monomial {use_index} target"
+    )
+    body = f'''/-- Algebraic signed-character replay for monomial {use_index}. -/
+def monomial{use_index:02d} :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      {source} {target} where
+  signExponent := {z(integer(reduction["signExponent"], "monomial sign"))}
+  implication := {{
+    coeff := tropicalComponentBWithParityCoefficients8 {vector(coeffs, "      ")}
+    combination_eq := by
+      apply SignedCharacterRow.ext
+      · simp [SignedCharacterRow.linearCombination,
+          Fintype.sum_sum_type, Fin.sum_univ_succ,
+          tropicalComponentBWithParityCoefficients8,
+          SignedCharacterRow.withParityGenerator,
+          SignedCharacterRow.parityGenerator,
+          tropicalComponentBCharacter8, tropicalBinomialCharacter8,
+          differenceRow] <;> abel
+      · norm_num [SignedCharacterRow.linearCombination,
+          Fintype.sum_sum_type, Fin.sum_univ_succ,
+          tropicalComponentBWithParityCoefficients8,
+          SignedCharacterRow.withParityGenerator,
+          SignedCharacterRow.parityGenerator,
+          tropicalComponentBCharacter8, tropicalBinomialCharacter8,
+          differenceRow]
+  }}
+'''
+    return module_header(
+        [f"{module}.Data"],
+        f"# {stage} {index}, monomial implication {use_index}",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_uses_module(
+    stage: str,
+    index: int,
+    uses: Sequence[dict[str, Any]],
+) -> str:
+    namespace = stage_namespace(stage, index)
+    module = stage_module(stage, index)
+    imports = [f"{module}.Monomial.M{i:02d}" for i in range(len(uses))]
+    items = []
+    for use_index, use in enumerate(uses):
+        items.append(f'''{{ coefficient := {z(integer(use["coefficient"], "use coefficient"))}
+      sourceExponent := {exponent(use["sourceExponent"], "use source")}
+      targetExponent := {exponent(use["targetExponent"], "use target")}
+      reduction := monomial{use_index:02d} }}''')
+    body = f'''/-- Decision-free collector of row-local monomial certificates. -/
+def uses : Fin {len(uses)} →
+    CharacterReductionUse tropicalComponentBCharacter8 :=
+{vector(items, "  ")}
+'''
+    return module_header(
+        imports, f"# {stage} {index} reduction-use collector"
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def source_data_import_and_expression(
+    source: dict[str, Any],
+) -> tuple[str, str]:
+    relation = source["relation_source"]
+    if relation["kind"] == "base":
+        return (
+            "MonochromaticQuantumGraphs.N8D3.TropicalBaseRelations8",
+            f"tropicalBaseRelation8 {relation['index']}",
+        )
+    overlap = relation["index"]
+    shard, row = divmod(overlap, 5)
+    return (
+        "MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8."
+        f"Shard{shard}.Row{row}.Data",
+        f"tropicalOverlapRelation8Row{overlap}",
+    )
+
+
+def emit_source_data(data: dict[str, Any], source_id: int) -> str:
     source = data["quotient"]["source_reductions"][source_id]
     payload = source["certificate"]
-    reduction = payload["reduction"]
-    prefix = f"tropicalComponentBSourceReduction{source_id:03d}"
-    use_name = f"{prefix}Use8"
-    cert_name = f"tropicalComponentBSourceReductionCertificate8_{source_id:03d}"
-    hold_name = f"tropicalComponentBSourceReduced8_{source_id:03d}_hold"
-    result = module_header(
-        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Data"],
-        f"# Component-B normalized source reduction {source_id}\n\nAll six termwise character implications and both polynomial equalities are\nreplayed by Lean.",
-    )
-    result += emit_monomial_defs(prefix, reduction["use"])
-    result += "\n" + emit_use_vector(prefix, reduction["use"], use_name)
-    result += "\n" + emit_reduction_equalities(
-        use_name,
-        6,
-        f"tropicalRetainedRelation8 (tropicalComponentBQuotientSourceIndex8 {source_id})",
-        f"tropicalComponentBQuotientReducedSource8 {source_id}",
-        payload["unit"],
-        prefix,
-    )
-    result += f'''\n/-- Exact normalized reduction of retained source {source_id}. -/
-def {cert_name} :
-    NormalizedCharacterReductionCertificate (\u03ba := Fin 6)
-      tropicalComponentBCharacter8
-      (tropicalRetainedRelation8 (tropicalComponentBQuotientSourceIndex8 {source_id}))
-      (tropicalComponentBQuotientReducedSource8 {source_id}) where
+    namespace = stage_namespace("Source", source_id)
+    extra_import, source_expression = source_data_import_and_expression(source)
+    body = f'''/-- Global retained index represented by this row-local shard. -/
+def retainedIndex : Fin 560 := {source["relation_source"]["combined_index"]}
+
+/-- Exact semantic source polynomial without an all-row dispatcher. -/
+def sourcePolynomial : LaurentPolynomial (Fin 144) :=
+  {source_expression}
+
+/-- Exact normalized target for source reduction {source_id}. -/
+def reduced : LaurentPolynomial (Fin 144) :=
+  {polynomial(payload["provenance"]["normalized_target"], f"source {source_id} reduced")}
+'''
+    return module_header(
+        [
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core",
+            extra_import,
+        ],
+        f"# Row-local data for Component-B source reduction {source_id}",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_source_source_eq(data: dict[str, Any], source_id: int) -> str:
+    source = data["quotient"]["source_reductions"][source_id]
+    reduction = source["certificate"]["reduction"]
+    namespace = stage_namespace("Source", source_id)
+    module = stage_module("Source", source_id)
+    relation = source["relation_source"]
+    proof_prefix = ""
+    extra_imports: list[str] = []
+    extra_simp = ""
+    if relation["kind"] == "base":
+        base_index = relation["index"]
+        if not 100 <= base_index <= 139:
+            fail(f"unexpected Component-B base source index {base_index}")
+        code = BASE_COLORING_CODE_100_TO_139[base_index - 100]
+        rhs_terms = polynomial_entries(
+            reduction["source_eq"]["rhs"], f"source {source_id} base rhs"
+        )
+        if len(rhs_terms) != 6 or any(
+            coefficient != 1 or len(rows) != 4
+            for coefficient, rows in rhs_terms
+        ):
+            fail(f"base source {source_id} is not six squarefree monomials")
+        extra_imports.append(
+            "MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data"
+        )
+        replay_chunks = [
+            f"  have hcolor : tropicalBaseColoring8 {base_index} =\n"
+            f"      tropicalColoringOfCode8 {code} := by rfl"
+        ]
+        matching_indices = (0, 1, 6, 21, 24, 40)
+        for term_index, ((_, rows), matching) in enumerate(
+            zip(rhs_terms, matching_indices)
+        ):
+            locals_ = " ".join(str(row["local"]) for row in rows)
+            replay_chunks.append(f'''  have hexp{term_index} :
+      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 {code}) {matching} =
+        {exponent(rows, f"source {source_id} base exponent {term_index}")} := by
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 {code}) {matching} {locals_}
+      (by decide) (by decide) (by decide) (by decide)]
+    abel''')
+        proof_prefix = "\n".join(replay_chunks) + "\n"
+        extra_simp = ", hcolor, " + ", ".join(
+            f"hexp{i}" for i in range(6)
+        ) + ", tropicalBaseMatching8"
+    else:
+        extra_simp = f", tropicalOverlapRelation8Row{relation['index']}"
+    body = f'''/-- Sparse source-polynomial equality for source reduction {source_id}. -/
+theorem source_eq :
+    (∑ k : Fin 6,
+      Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
+      sourcePolynomial := by
+{proof_prefix}  simp [uses, {monomial_names(6)}, sourcePolynomial,
+    tropicalBaseRelation8, Fin.sum_univ_succ{extra_simp}] <;> abel
+'''
+    return module_header(
+        [f"{module}.Uses", *extra_imports],
+        f"# Source {source_id} sparse source equality",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_target_eq(
+    stage: str,
+    index: int,
+    use_count: int,
+    unit: int,
+    target: str,
+) -> str:
+    namespace = stage_namespace(stage, index)
+    module = stage_module(stage, index)
+    body = f'''/-- Sparse signed target-polynomial equality. -/
+theorem target_eq :
+    (∑ k : Fin {use_count},
+      Finsupp.single (uses k).targetExponent
+        (signedCoefficient (uses k).reduction.signExponent
+          (uses k).coefficient)) =
+      {z(unit)} • {target} := by
+  simp [uses, {monomial_names(use_count)}, {target},
+    signedCoefficient, Fin.sum_univ_succ] <;> abel
+'''
+    return module_header(
+        [f"{module}.Uses"], f"# {stage} {index} sparse target equality"
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_source_certificate(data: dict[str, Any], source_id: int) -> str:
+    payload = data["quotient"]["source_reductions"][source_id]["certificate"]
+    namespace = stage_namespace("Source", source_id)
+    module = stage_module("Source", source_id)
+    body = f'''/-- Exact normalized reduction of row-local retained source {source_id}. -/
+def certificate :
+    NormalizedCharacterReductionCertificate (κ := Fin 6)
+      tropicalComponentBCharacter8 sourcePolynomial reduced where
   unit := {z(payload["unit"])}
   unit_ne_zero := by norm_num
-  reduction := {{
-    use := {use_name}
-    source_eq := {prefix}_source_eq
-    target_eq := {prefix}_target_eq
-  }}
+  reduction := {{ use := uses, source_eq := source_eq, target_eq := target_eq }}
+'''
+    alias = f'''\n/-- Public source-certificate API for row {source_id}. -/
+def tropicalComponentBSourceReductionCertificate8_{source_id:03d} :=
+  {namespace}.certificate
+'''
+    return module_header(
+        [f"{module}.SourceEq", f"{module}.TargetEq"],
+        f"# Source {source_id} decision-free certificate assembly",
+    ) + namespace_block(namespace, body) + alias + FOOTER
 
-theorem {hold_name}
+
+def emit_source_hold(data: dict[str, Any], source_id: int) -> str:
+    source = data["quotient"]["source_reductions"][source_id]
+    namespace = stage_namespace("Source", source_id)
+    module = stage_module("Source", source_id)
+    relation = source["relation_source"]
+    if relation["kind"] == "base":
+        source_hold = (
+            "  have hsource := tropicalBaseRelations8_hold hSupport hEq "
+            f"({relation['index']} : Fin 200)\n"
+        )
+    else:
+        overlap = relation["index"]
+        source_hold = f'''  have hi := tropicalBaseRelations8_hold hSupport hEq
+    tropicalOverlapProvenance8Row{overlap}.sourceI
+  have hj := tropicalBaseRelations8_hold hSupport hEq
+    tropicalOverlapProvenance8Row{overlap}.sourceJ
+  have hsource : sourcePolynomial.Holds (tropicalSupportWeight8 W) := by
+    rw [sourcePolynomial, tropicalOverlapRelation8_provenance_row{overlap}]
+    unfold tropicalOverlapProvenancePolynomial8
+    unfold LaurentPolynomial.Holds at hi hj ⊢
+    rw [LaurentPolynomial.eval_zsmul, LaurentPolynomial.eval_sub,
+      LaurentPolynomial.eval_translate _
+        (tropicalSupportWeight8_ne_zero hSupport),
+      LaurentPolynomial.eval_translate _
+        (tropicalSupportWeight8_ne_zero hSupport), hi, hj]
+    simp
+'''
+    body = f'''/-- Semantic hold for the row-local normalized source. -/
+theorem hold
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
-    (tropicalComponentBQuotientReducedSource8 {source_id}).Holds
-      (tropicalSupportWeight8 W) :=
-  holds_of_normalizedCharacterReductionCertificate
+    reduced.Holds (tropicalSupportWeight8 W) := by
+{source_hold}  exact holds_of_normalizedCharacterReductionCertificate
     (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-    tropicalComponentBCharacter8
-    (tropicalRetainedRelation8 (tropicalComponentBQuotientSourceIndex8 {source_id}))
-    (tropicalComponentBQuotientReducedSource8 {source_id})
-    {cert_name} hChars
-    (tropicalRetainedRelations8_hold hSupport hEq
-      (tropicalComponentBQuotientSourceIndex8 {source_id}))
+    tropicalComponentBCharacter8 sourcePolynomial reduced
+    tropicalComponentBSourceReductionCertificate8_{source_id:03d}
+    hChars hsource
 '''
-    return result + FOOTER
+    return module_header(
+        [
+            f"{module}.Certificate",
+            "MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8",
+        ],
+        f"# Source {source_id} semantic hold (the only retained aggregate import)",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_source_row_collector(source_id: int) -> str:
+    module = stage_module("Source", source_id)
+    return module_header(
+        [f"{module}.Hold"],
+        f"# Complete row-local Component-B source reduction {source_id}",
+    ) + FOOTER
 
 
 def emit_source_aggregator() -> str:
-    imports = [
+    imports = ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Data"]
+    imports += [
         f"MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source.S{i:03d}"
         for i in range(SOURCE_COUNT)
     ]
+    individual = []
+    for i in range(SOURCE_COUNT):
+        individual.append(f'''theorem tropicalComponentBSourceReduced8_{i:03d}_hold
+    {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
+    (tropicalComponentBQuotientReducedSource8 {i}).Holds
+      (tropicalSupportWeight8 W) := by
+  simpa [tropicalComponentBQuotientReducedSource8] using
+    {stage_namespace("Source", i)}.hold hSupport hEq hChars
+''')
     cases = "\n".join(
-        f"  · exact tropicalComponentBSourceReduced8_{i:03d}_hold hSupport hEq hChars"
+        f"  · exact tropicalComponentBSourceReduced8_{i:03d}_hold "
+        "hSupport hEq hChars"
         for i in range(SOURCE_COUNT)
     )
     return module_header(
-        imports,
-        f"# All {SOURCE_COUNT} Component-B normalized source reductions",
-    ) + f'''theorem tropicalComponentBQuotientReducedSources8_hold
+        imports, f"# Public collector for all {SOURCE_COUNT} source reductions"
+    ) + "\n".join(individual) + f'''\n/-- All normalized Component-B quotient sources hold. -/
+theorem tropicalComponentBQuotientReducedSources8_hold
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
     ∀ s : Fin {SOURCE_COUNT},
@@ -691,106 +1042,223 @@ def emit_source_aggregator() -> str:
 ''' + FOOTER
 
 
-def emit_quotient_module(data: dict[str, Any], quotient_id: int) -> str:
+def emit_quotient_data(data: dict[str, Any], quotient_id: int) -> str:
     row = data["quotient"]["rows"][quotient_id]
     payload = row["combination_reduction"]
-    reduction = payload["reduction"]
-    prefix = f"tropicalComponentBQuotient{quotient_id:03d}"
-    shifted_use_name = f"{prefix}ShiftedUse8"
-    reduction_use = f"{prefix}ReductionUse8"
+    namespace = stage_namespace("Quotient", quotient_id)
+    source_ids = row["source_reduction_ids"]
+    imports = ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core"]
+    imports += [
+        f"{stage_module('Source', source_id)}.Data"
+        for source_id in source_ids
+    ]
+    source_items = [
+        f"{stage_namespace('Source', source_id)}.reduced"
+        for source_id in source_ids
+    ]
     shifted_items = []
-    for use in row["exact_source_uses"]:
-        shifted_items.append(f'''{{ source := {use["source_reduction_id"]}
+    for local_index, use in enumerate(row["exact_source_uses"]):
+        if use["source_reduction_id"] != source_ids[local_index]:
+            fail(f"quotient {quotient_id} shifted source order changed")
+        shifted_items.append(f'''{{ source := {local_index}
       scale := {z(use["integer_scale"])}
-      shift := {exponent(use["shift"], prefix + " shifted use")} }}''')
-    result = module_header(
-        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source"],
-        f"# Component-B quotient row {quotient_id}\n\nThis module separately replays its exact shifted combination, twelve monomial\nimplications, and normalized quotient reduction.",
-    )
-    result += f'''private def {shifted_use_name} :
-    Fin 2 → LaurentPolynomial.ShiftedUse (Fin {SOURCE_COUNT}) (Fin 144) :=
+      shift := {exponent(use["shift"], f"quotient {quotient_id} shift") } }}''')
+    body = f'''/-- The two row-local normalized source polynomials. -/
+def shiftedSources : Fin 2 → LaurentPolynomial (Fin 144) :=
+{vector(source_items, "  ")}
+
+/-- Exact two-source shifted-combination data. -/
+def shiftedUse :
+    Fin 2 → LaurentPolynomial.ShiftedUse (Fin 2) (Fin 144) :=
 {vector(shifted_items, "  ")}
 
-private theorem {prefix}_shifted_eq :
-    (∑ k : Fin 2, ({shifted_use_name} k).scale •
-      LaurentPolynomial.translate ({shifted_use_name} k).shift
-        (tropicalComponentBQuotientReducedSource8
-          ({shifted_use_name} k).source)) =
-      tropicalComponentBQuotientIntermediate8 {quotient_id} := by
-  decide
+/-- Exact aggregate before the final character reduction. -/
+def intermediate : LaurentPolynomial (Fin 144) :=
+  {polynomial(payload["reduction"]["source_eq"]["rhs"], f"quotient {quotient_id} intermediate")}
 
-/-- Exact two-source shifted combination for quotient row {quotient_id}. -/
-def tropicalComponentBQuotientShiftedCertificate8_{quotient_id:03d} :
-    LaurentPolynomial.ShiftedCombinationCertificate (κ := Fin 2)
-      tropicalComponentBQuotientReducedSource8
-      (tropicalComponentBQuotientIntermediate8 {quotient_id}) where
-  use := {shifted_use_name}
-  combination_eq := {prefix}_shifted_eq
-
+/-- Exact normalized quotient relation. -/
+def relation : LaurentPolynomial (Fin 144) :=
+  {polynomial(row["quotient_relation"], f"quotient {quotient_id} relation")}
 '''
-    result += emit_monomial_defs(prefix, reduction["use"])
-    result += "\n" + emit_use_vector(prefix, reduction["use"], reduction_use)
-    result += "\n" + emit_reduction_equalities(
-        reduction_use,
-        12,
-        f"tropicalComponentBQuotientIntermediate8 {quotient_id}",
-        f"tropicalComponentBQuotientRelation8 {quotient_id}",
-        payload["unit"],
-        prefix,
+    return module_header(
+        imports, f"# Row-local data for Component-B quotient {quotient_id}"
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
+    row = data["quotient"]["rows"][quotient_id]
+    namespace = stage_namespace("Quotient", quotient_id)
+    module = stage_module("Quotient", quotient_id)
+    source_ids = row["source_reduction_ids"]
+    exponent_lemmas: list[str] = []
+    lemma_names: list[str] = []
+    for local_index, use in enumerate(row["exact_source_uses"]):
+        source_id = use["source_reduction_id"]
+        source_payload = data["quotient"]["source_reductions"][source_id]
+        source_terms = polynomial_entries(
+            source_payload["certificate"]["provenance"]["normalized_target"],
+            f"quotient {quotient_id} shifted source {local_index}",
+        )
+        for term_index, (_, term_rows) in enumerate(source_terms):
+            name = f"hexp{local_index}_{term_index}"
+            lemma_names.append(name)
+            combined = normalize_exponent_rows(use["shift"], term_rows)
+            exponent_lemmas.append(f'''  have {name} :
+      {exponent(use["shift"], f"quotient {quotient_id} shift {local_index}")} +
+        {exponent(term_rows, f"quotient {quotient_id} source exponent")} =
+      {exponent(combined, f"quotient {quotient_id} translated exponent")} := by
+    abel''')
+    source_simp = ",\n    ".join(
+        f"{stage_namespace('Source', source_id)}.reduced"
+        for source_id in source_ids
     )
-    result += f'''\n/-- Exact normalized character reduction for quotient row {quotient_id}. -/
-def tropicalComponentBQuotientReductionCertificate8_{quotient_id:03d} :
+    body = f'''/-- Explicit sparse replay of the two-source shifted aggregate. -/
+theorem shifted_eq :
+    (∑ k : Fin 2, (shiftedUse k).scale •
+      LaurentPolynomial.translate (shiftedUse k).shift
+        (shiftedSources (shiftedUse k).source)) = intermediate := by
+{chr(10).join(exponent_lemmas)}
+  simp [shiftedUse, shiftedSources, {source_simp}, intermediate,
+    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single,
+    Fin.sum_univ_succ, {', '.join(lemma_names)}] <;> abel
+'''
+    return module_header(
+        [f"{module}.Data"],
+        f"# Quotient {quotient_id} sparse shifted-combination equality",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_quotient_source_eq(data: dict[str, Any], quotient_id: int) -> str:
+    namespace = stage_namespace("Quotient", quotient_id)
+    module = stage_module("Quotient", quotient_id)
+    body = f'''/-- Sparse source equality for the quotient character reduction. -/
+theorem source_eq :
+    (∑ k : Fin 12,
+      Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
+      intermediate := by
+  simp [uses, {monomial_names(12)}, intermediate,
+    Fin.sum_univ_succ] <;> abel
+'''
+    return module_header(
+        [f"{module}.Uses"], f"# Quotient {quotient_id} sparse source equality"
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_quotient_certificate(data: dict[str, Any], quotient_id: int) -> str:
+    row = data["quotient"]["rows"][quotient_id]
+    payload = row["combination_reduction"]
+    namespace = stage_namespace("Quotient", quotient_id)
+    module = stage_module("Quotient", quotient_id)
+    body = f'''/-- Exact shifted combination for quotient row {quotient_id}. -/
+def shiftedCertificate :
+    LaurentPolynomial.ShiftedCombinationCertificate (κ := Fin 2)
+      shiftedSources intermediate where
+  use := shiftedUse
+  combination_eq := shifted_eq
+
+/-- Exact normalized character reduction for quotient row {quotient_id}. -/
+def reductionCertificate :
     NormalizedCharacterReductionCertificate (κ := Fin 12)
-      tropicalComponentBCharacter8
-      (tropicalComponentBQuotientIntermediate8 {quotient_id})
-      (tropicalComponentBQuotientRelation8 {quotient_id}) where
+      tropicalComponentBCharacter8 intermediate relation where
   unit := {z(payload["unit"])}
   unit_ne_zero := by norm_num
-  reduction := {{
-    use := {reduction_use}
-    source_eq := {prefix}_source_eq
-    target_eq := {prefix}_target_eq
-  }}
+  reduction := {{ use := uses, source_eq := source_eq, target_eq := target_eq }}
+'''
+    aliases = f'''\n/-- Public shifted-certificate API for quotient row {quotient_id}. -/
+def tropicalComponentBQuotientShiftedCertificate8_{quotient_id:03d} :=
+  {namespace}.shiftedCertificate
 
-theorem tropicalComponentBQuotientRelation8_{quotient_id:03d}_hold
+/-- Public reduction-certificate API for quotient row {quotient_id}. -/
+def tropicalComponentBQuotientReductionCertificate8_{quotient_id:03d} :=
+  {namespace}.reductionCertificate
+'''
+    return module_header(
+        [
+            f"{module}.ShiftedEq",
+            f"{module}.SourceEq",
+            f"{module}.TargetEq",
+        ],
+        f"# Quotient {quotient_id} decision-free certificate assembly",
+    ) + namespace_block(namespace, body) + aliases + FOOTER
+
+
+def emit_quotient_hold(data: dict[str, Any], quotient_id: int) -> str:
+    row = data["quotient"]["rows"][quotient_id]
+    source_ids = row["source_reduction_ids"]
+    namespace = stage_namespace("Quotient", quotient_id)
+    module = stage_module("Quotient", quotient_id)
+    imports = [f"{module}.Certificate"]
+    imports += [
+        f"{stage_module('Source', source_id)}.Hold"
+        for source_id in source_ids
+    ]
+    source_cases = "\n".join(
+        f"    · simpa [shiftedSources] using\n"
+        f"        {stage_namespace('Source', source_id)}.hold "
+        "hSupport hEq hChars"
+        for source_id in source_ids
+    )
+    body = f'''/-- Row-local semantic hold for quotient relation {quotient_id}. -/
+theorem hold
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
-    (tropicalComponentBQuotientRelation8 {quotient_id}).Holds
-      (tropicalSupportWeight8 W) := by
+    relation.Holds (tropicalSupportWeight8 W) := by
+  have hsources : ∀ s : Fin 2,
+      (shiftedSources s).Holds (tropicalSupportWeight8 W) := by
+    intro s
+    fin_cases s
+{source_cases}
   have hintermediate :
-      (tropicalComponentBQuotientIntermediate8 {quotient_id}).Holds
-        (tropicalSupportWeight8 W) :=
+      intermediate.Holds (tropicalSupportWeight8 W) :=
     LaurentPolynomial.holds_of_shiftedCombinationCertificate
       (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-      tropicalComponentBQuotientReducedSource8
-      (tropicalComponentBQuotientIntermediate8 {quotient_id})
+      shiftedSources intermediate
       tropicalComponentBQuotientShiftedCertificate8_{quotient_id:03d}
-      (tropicalComponentBQuotientReducedSources8_hold hSupport hEq hChars)
+      hsources
   exact holds_of_normalizedCharacterReductionCertificate
     (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-    tropicalComponentBCharacter8
-    (tropicalComponentBQuotientIntermediate8 {quotient_id})
-    (tropicalComponentBQuotientRelation8 {quotient_id})
+    tropicalComponentBCharacter8 intermediate relation
     tropicalComponentBQuotientReductionCertificate8_{quotient_id:03d}
     hChars hintermediate
 '''
-    return result + FOOTER
+    return module_header(
+        imports,
+        f"# Quotient {quotient_id} local hold from exactly two source rows",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_quotient_row_collector(quotient_id: int) -> str:
+    module = stage_module("Quotient", quotient_id)
+    return module_header(
+        [f"{module}.Hold"],
+        f"# Complete row-local Component-B quotient {quotient_id}",
+    ) + FOOTER
 
 
 def emit_quotient_aggregator() -> str:
-    imports = [
+    imports = ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Data"]
+    imports += [
         f"MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Quotient.Q{i:03d}"
         for i in range(QUOTIENT_COUNT)
     ]
+    individual = []
+    for i in range(QUOTIENT_COUNT):
+        individual.append(f'''theorem tropicalComponentBQuotientRelation8_{i:03d}_hold
+    {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
+    (tropicalComponentBQuotientRelation8 {i}).Holds
+      (tropicalSupportWeight8 W) := by
+  simpa [tropicalComponentBQuotientRelation8] using
+    {stage_namespace("Quotient", i)}.hold hSupport hEq hChars
+''')
     cases = "\n".join(
-        f"  · exact tropicalComponentBQuotientRelation8_{i:03d}_hold hSupport hEq hChars"
+        f"  · exact tropicalComponentBQuotientRelation8_{i:03d}_hold "
+        "hSupport hEq hChars"
         for i in range(QUOTIENT_COUNT)
     )
     return module_header(
-        imports,
-        f"# All {QUOTIENT_COUNT} Component-B quotient relations",
-    ) + f'''/-- All exact Component-B quotient relations hold under the two component
-characters and the official retained relation system. -/
+        imports, f"# Public collector for all {QUOTIENT_COUNT} quotient rows"
+    ) + "\n".join(individual) + f'''\n/-- All exact Component-B quotient relations hold. -/
 theorem tropicalComponentBQuotientRelations8_hold
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
@@ -803,92 +1271,209 @@ theorem tropicalComponentBQuotientRelations8_hold
 ''' + FOOTER
 
 
-def emit_factor_module(data: dict[str, Any], edge_id: int) -> str:
+def emit_vertex(data: dict[str, Any], vertex_id: int) -> str:
+    vertex = data["factor"]["vertices"][vertex_id]
+    namespace = f"TropicalFactorB8.Internal.Vertex{vertex_id:03d}"
+    body = f'''/-- Exact row-local raw factor {vertex_id}. -/
+def row : SignedCharacterRow (Fin 144) :=
+  {signed_row(vertex, f"raw factor {vertex_id}")}
+'''
+    return module_header(
+        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core"],
+        f"# Row-local raw Component-B factor {vertex_id}",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_factor_data(data: dict[str, Any], edge_id: int) -> str:
     witness = data["factor"]["edge_witnesses"][edge_id]
     payload = witness["factor_certificate"]
-    reduction = payload["reduction"]
     left, right = data["factor"]["raw_edges"][edge_id]
     quotient_id = witness["source_quotient_index"]
-    prefix = f"tropicalComponentBFactorEdge{edge_id:03d}"
-    use_name = f"{prefix}Use8"
-    cert_name = f"tropicalComponentBFactorCertificate8_{edge_id:03d}"
-    result = module_header(
-        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Quotient"],
-        f"# Component-B raw factor edge {edge_id}\n\nThe four source terms are reduced to the exact translated product of raw\nfactors {left} and {right}.",
-    )
-    result += emit_monomial_defs(prefix, reduction["use"])
-    result += "\n" + emit_use_vector(prefix, reduction["use"], use_name)
-    factor_target = (
-        f"{z(payload['unit'])} • LaurentPolynomial.translate "
-        f"{exponent(payload['shift'], prefix + ' shift')} "
-        f"((tropicalComponentBRawFactor8 {left}).factorProductPolynomial "
-        f"(tropicalComponentBRawFactor8 {right}))"
-    )
-    # LaurentFactorCertificate's reduction target already includes the unit;
-    # emit the equality directly rather than route through the normalized helper.
-    result += f'''\nprivate theorem {prefix}_source_eq :
-    (∑ k : Fin 4,
-      Finsupp.single ({use_name} k).sourceExponent
-        ({use_name} k).coefficient) =
-      tropicalComponentBQuotientRelation8 {quotient_id} := by
-  decide
+    namespace = stage_namespace("Factor", edge_id)
+    imports = [
+        "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core",
+        f"{stage_module('Quotient', quotient_id)}.Data",
+        "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8."
+        f"Factor.Vertex.V{left:03d}",
+        "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8."
+        f"Factor.Vertex.V{right:03d}",
+    ]
+    body = f'''/-- Exact row-local quotient source for this edge. -/
+def sourceRelation : LaurentPolynomial (Fin 144) :=
+  {stage_namespace("Quotient", quotient_id)}.relation
 
-private theorem {prefix}_target_eq :
-    (∑ k : Fin 4,
-      Finsupp.single ({use_name} k).targetExponent
-        (signedCoefficient ({use_name} k).reduction.signExponent
-          ({use_name} k).coefficient)) =
-      {factor_target} := by
-  decide
+/-- Left raw factor endpoint. -/
+def leftFactor : SignedCharacterRow (Fin 144) :=
+  TropicalFactorB8.Internal.Vertex{left:03d}.row
 
-/-- Exact Laurent factor certificate for raw edge {edge_id}. -/
-def {cert_name} :
+/-- Right raw factor endpoint. -/
+def rightFactor : SignedCharacterRow (Fin 144) :=
+  TropicalFactorB8.Internal.Vertex{right:03d}.row
+
+/-- Exact Laurent translation in the factor certificate. -/
+def shift : LaurentExponent (Fin 144) :=
+  {exponent(payload["shift"], f"factor edge {edge_id} shift")}
+'''
+    return module_header(
+        imports, f"# Row-local data for Component-B factor edge {edge_id}"
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_factor_source_eq(data: dict[str, Any], edge_id: int) -> str:
+    witness = data["factor"]["edge_witnesses"][edge_id]
+    quotient_id = witness["source_quotient_index"]
+    namespace = stage_namespace("Factor", edge_id)
+    module = stage_module("Factor", edge_id)
+    body = f'''/-- Sparse source equality for factor edge {edge_id}. -/
+theorem source_eq :
+    (∑ k : Fin 4,
+      Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
+      sourceRelation := by
+  simp [uses, {monomial_names(4)}, sourceRelation,
+    {stage_namespace("Quotient", quotient_id)}.relation,
+    Fin.sum_univ_succ] <;> abel
+'''
+    return module_header(
+        [f"{module}.Uses"], f"# Factor edge {edge_id} sparse source equality"
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
+    witness = data["factor"]["edge_witnesses"][edge_id]
+    payload = witness["factor_certificate"]
+    left, right = data["factor"]["raw_edges"][edge_id]
+    left_rows = data["factor"]["vertices"][left]["row"]
+    right_rows = data["factor"]["vertices"][right]["row"]
+    shift_rows = payload["shift"]
+    structural = [
+        normalize_exponent_rows(left_rows, right_rows),
+        list(left_rows),
+        list(right_rows),
+        [],
+    ]
+    exponent_lemmas: list[str] = []
+    for term_index, term_rows in enumerate(structural):
+        combined = normalize_exponent_rows(shift_rows, term_rows)
+        exponent_lemmas.append(f'''  have hexp{term_index} :
+      shift + {exponent(term_rows, f"factor {edge_id} product exponent")} =
+        {exponent(combined, f"factor {edge_id} translated exponent")} := by
+    unfold shift
+    abel''')
+    namespace = stage_namespace("Factor", edge_id)
+    module = stage_module("Factor", edge_id)
+    body = f'''/-- Sparse translated-product equality for factor edge {edge_id}. -/
+theorem target_eq :
+    (∑ k : Fin 4,
+      Finsupp.single (uses k).targetExponent
+        (signedCoefficient (uses k).reduction.signExponent
+          (uses k).coefficient)) =
+      {z(payload["unit"])} • LaurentPolynomial.translate shift
+        (leftFactor.factorProductPolynomial rightFactor) := by
+{chr(10).join(exponent_lemmas)}
+  simp [uses, {monomial_names(4)}, leftFactor, rightFactor,
+    TropicalFactorB8.Internal.Vertex{left:03d}.row,
+    TropicalFactorB8.Internal.Vertex{right:03d}.row,
+    SignedCharacterRow.factorProductPolynomial,
+    tropicalComponentBTranslateSub8, LaurentPolynomial.translate_add,
+    LaurentPolynomial.translate_single, signedCoefficient,
+    Fin.sum_univ_succ, hexp0, hexp1, hexp2, hexp3] <;> abel
+'''
+    return module_header(
+        [f"{module}.Uses"],
+        f"# Factor edge {edge_id} sparse translated-product equality",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_factor_certificate(data: dict[str, Any], edge_id: int) -> str:
+    witness = data["factor"]["edge_witnesses"][edge_id]
+    payload = witness["factor_certificate"]
+    namespace = stage_namespace("Factor", edge_id)
+    module = stage_module("Factor", edge_id)
+    body = f'''/-- Exact Laurent factor certificate for raw edge {edge_id}. -/
+def certificate :
     LaurentFactorCertificate (κ := Fin 4) tropicalComponentBCharacter8
-      (tropicalComponentBQuotientRelation8 {quotient_id})
-      (tropicalComponentBRawFactor8 {left})
-      (tropicalComponentBRawFactor8 {right}) where
+      sourceRelation leftFactor rightFactor where
   unit := {z(payload["unit"])}
   unit_ne_zero := by norm_num
-  shift := {exponent(payload["shift"], prefix + " shift")}
-  reduction := {{
-    use := {use_name}
-    source_eq := {prefix}_source_eq
-    target_eq := {prefix}_target_eq
-  }}
+  shift := shift
+  reduction := {{ use := uses, source_eq := source_eq, target_eq := target_eq }}
+'''
+    alias = f'''\n/-- Public factor-certificate API for raw edge {edge_id}. -/
+def tropicalComponentBFactorCertificate8_{edge_id:03d} :=
+  {namespace}.certificate
+'''
+    return module_header(
+        [f"{module}.SourceEq", f"{module}.TargetEq"],
+        f"# Factor edge {edge_id} decision-free certificate assembly",
+    ) + namespace_block(namespace, body) + alias + FOOTER
 
-theorem tropicalComponentBRawFactorEdgeProduct8_{edge_id:03d}
+
+def emit_factor_hold(data: dict[str, Any], edge_id: int) -> str:
+    witness = data["factor"]["edge_witnesses"][edge_id]
+    quotient_id = witness["source_quotient_index"]
+    namespace = stage_namespace("Factor", edge_id)
+    module = stage_module("Factor", edge_id)
+    body = f'''/-- Row-local product vanishing for raw factor edge {edge_id}. -/
+theorem product
+    {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
+    leftFactor.factorValue (tropicalSupportWeight8 W) *
+      rightFactor.factorValue (tropicalSupportWeight8 W) = 0 :=
+  factorValues_mul_eq_zero_of_certificate
+    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
+    tropicalComponentBCharacter8 sourceRelation leftFactor rightFactor
+    tropicalComponentBFactorCertificate8_{edge_id:03d} hChars
+    (by
+      simpa [sourceRelation] using
+        {stage_namespace("Quotient", quotient_id)}.hold
+          hSupport hEq hChars)
+'''
+    return module_header(
+        [
+            f"{module}.Certificate",
+            f"{stage_module('Quotient', quotient_id)}.Hold",
+        ],
+        f"# Factor edge {edge_id} hold from exactly quotient row {quotient_id}",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_factor_row_collector(edge_id: int) -> str:
+    module = stage_module("Factor", edge_id)
+    return module_header(
+        [f"{module}.Hold"],
+        f"# Complete row-local Component-B factor edge {edge_id}",
+    ) + FOOTER
+
+
+def emit_factor_aggregator(data: dict[str, Any]) -> str:
+    imports = ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Data"]
+    imports += [
+        f"MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Factor.E{i:03d}"
+        for i in range(RAW_EDGE_COUNT)
+    ]
+    individual: list[str] = []
+    for i, (left, right) in enumerate(data["factor"]["raw_edges"]):
+        individual.append(f'''theorem tropicalComponentBRawFactorEdgeProduct8_{i:03d}
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
     (tropicalComponentBRawFactor8 {left}).factorValue
         (tropicalSupportWeight8 W) *
       (tropicalComponentBRawFactor8 {right}).factorValue
-        (tropicalSupportWeight8 W) = 0 :=
-  factorValues_mul_eq_zero_of_certificate
-    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-    tropicalComponentBCharacter8
-    (tropicalComponentBQuotientRelation8 {quotient_id})
-    (tropicalComponentBRawFactor8 {left})
-    (tropicalComponentBRawFactor8 {right})
-    {cert_name} hChars
-    (tropicalComponentBQuotientRelations8_hold hSupport hEq hChars {quotient_id})
-'''
-    return result + FOOTER
-
-
-def emit_factor_aggregator() -> str:
-    imports = [
-        f"MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Factor.E{i:03d}"
-        for i in range(RAW_EDGE_COUNT)
-    ]
+        (tropicalSupportWeight8 W) = 0 := by
+  simpa [tropicalComponentBRawFactor8,
+    {stage_namespace("Factor", i)}.leftFactor,
+    {stage_namespace("Factor", i)}.rightFactor] using
+    {stage_namespace("Factor", i)}.product hSupport hEq hChars
+''')
     cases = "\n".join(
         f"  · simpa [tropicalComponentBRawFactorEdgePair8] using\n"
-        f"      tropicalComponentBRawFactorEdgeProduct8_{i:03d} hSupport hEq hChars"
+        f"      tropicalComponentBRawFactorEdgeProduct8_{i:03d} "
+        "hSupport hEq hChars"
         for i in range(RAW_EDGE_COUNT)
     )
     return module_header(
-        imports,
-        f"# All {RAW_EDGE_COUNT} Component-B raw factor products",
-    ) + f'''/-- Product vanishing for every explicitly indexed raw edge. -/
+        imports, f"# Public collector for all {RAW_EDGE_COUNT} factor edges"
+    ) + "\n".join(individual) + f'''\n/-- Product vanishing for every explicitly indexed raw edge. -/
 theorem tropicalComponentBRawFactorEdgeProductsByIndex8
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
@@ -938,9 +1523,9 @@ def emit_graph_exact() -> str:
         for raw in range(RAW_VERTEX_COUNT)
     )
     return module_header(
-        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Factor"],
-        f"# Exact raw/class graph quotient\n\nEach row is checked separately so the {RAW_VERTEX_COUNT}-by-{RAW_VERTEX_COUNT} finite equality is not one\nmonolithic kernel reduction.",
-    ) + "\n".join(row_theorems) + f'''\n/-- The class graph is the exact adjacency quotient of the {RAW_EDGE_COUNT} raw edges. -/
+        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.GraphData"],
+        "# Exact raw/class graph quotient over lightweight tables",
+    ) + "\n".join(row_theorems) + f'''\n/-- The class graph is the exact adjacency quotient of the raw edges. -/
 theorem tropicalComponentBRawFactorEdge8_iff_classEdge
     (r s : Fin {RAW_VERTEX_COUNT}) :
     tropicalComponentBRawFactorEdge8 r s ↔
@@ -967,9 +1552,14 @@ def emit_graph() -> str:
         for class_id in range(CLASS_COUNT)
     )
     return module_header(
-        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.GraphExact"],
+        [
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.GraphExact",
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Factor",
+        ],
         "# Component-B false-twin classes and cover dispatch",
-    ) + "\n".join(membership) + f'''\n/-- Exact membership characterization for all {CLASS_COUNT} false-twin classes. -/
+    ) + '''open MonochromaticQuantumGraphs.FactorCoverCertificate
+
+''' + "\n".join(membership) + f'''\n/-- Exact membership characterization for all false-twin classes. -/
 theorem tropicalComponentBClassMembers8_iff
     (c : Fin {CLASS_COUNT}) (r : Fin {RAW_VERTEX_COUNT}) :
     r ∈ tropicalComponentBClassMembers8 c ↔
@@ -977,8 +1567,7 @@ theorem tropicalComponentBClassMembers8_iff
   fin_cases c
 {member_cases}
 
-/-- Every existing class edge expands to a complete bipartite raw graph, with
-membership and adjacency both checked from their exact finite tables. -/
+/-- Every class edge expands to a complete bipartite raw graph. -/
 theorem tropicalComponentBCompleteBipartiteQuotient8 :
     IsCompleteBipartiteQuotient
       tropicalComponentBRawFactorEdge8 componentBFactorEdge8
@@ -991,8 +1580,7 @@ theorem tropicalComponentBCompleteBipartiteQuotient8 :
   rw [tropicalComponentBRawFactorEdge8_iff_classEdge]
   simpa [hrc', hsd'] using hcd
 
-/-- Exact Component-B dispatch to the already checked {COVER_COUNT}-row class-cover
-table.  The cover table is imported and is not duplicated here. -/
+/-- Exact dispatch to the existing {COVER_COUNT}-row class-cover table. -/
 theorem tropicalComponentB_allZero_class_cover8
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
@@ -1012,7 +1600,9 @@ theorem tropicalComponentB_allZero_class_cover8
 
 
 def emit_umbrella() -> str:
-    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Graph
+    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Quotient
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Graph
 
 /-!
 # Complete Component-B tropical factor semantics
@@ -1025,6 +1615,123 @@ the sound all-zero dispatch through the existing {COVER_COUNT}-cover table.
 '''
 
 
+def audit_generated(
+    output: Path, umbrella: Path, generated: Sequence[Path]
+) -> None:
+    lean_paths = [path for path in generated if path != umbrella]
+    expected_count = (
+        SOURCE_COUNT * 13
+        + QUOTIENT_COUNT * 20
+        + RAW_VERTEX_COUNT
+        + RAW_EDGE_COUNT * 11
+        + 8
+    )
+    if len(lean_paths) != expected_count:
+        fail(
+            f"Component-B generated module count changed: "
+            f"{len(lean_paths)} != {expected_count}"
+        )
+
+    contents = {path.relative_to(output): path.read_text() for path in lean_paths}
+    proof_tree = {
+        path: text
+        for path, text in contents.items()
+        if path.parts[0] in {"Source", "Quotient", "Factor"}
+    }
+    forbidden = (
+        "apply SignedCharacterRow.ext <;> decide",
+        "Quot.lift",
+        ".support.val",
+        "\n  decide\n",
+        "native_decide",
+    )
+    for path, text in proof_tree.items():
+        for token in forbidden:
+            if token in text:
+                fail(f"forbidden resource-heavy proof token {token!r} in {path}")
+        for heartbeat in re.findall(r"set_option maxHeartbeats (\d+)", text):
+            if int(heartbeat) > 8_000_000:
+                fail(f"heartbeat ceiling exceeded in {path}")
+
+    source_umbrella = (
+        "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source\n"
+    )
+    quotient_umbrella = (
+        "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Quotient\n"
+    )
+    for path, text in contents.items():
+        if path.parts[0] == "Quotient" and source_umbrella in text:
+            fail(f"quotient leaf imports the full source collector: {path}")
+        if path.parts[0] == "Factor" and quotient_umbrella in text:
+            fail(f"factor leaf imports the full quotient collector: {path}")
+
+    for quotient_id in range(QUOTIENT_COUNT):
+        data_path = Path(f"Quotient/Q{quotient_id:03d}/Data.lean")
+        hold_path = Path(f"Quotient/Q{quotient_id:03d}/Hold.lean")
+        data_imports = re.findall(
+            r"^import .*TropicalFactorB8\.Source\.S\d{3}\.Data$",
+            contents[data_path], re.MULTILINE,
+        )
+        hold_imports = re.findall(
+            r"^import .*TropicalFactorB8\.Source\.S\d{3}\.Hold$",
+            contents[hold_path], re.MULTILINE,
+        )
+        if len(data_imports) != 2 or len(hold_imports) != 2:
+            fail(f"quotient {quotient_id} does not have exactly two local sources")
+
+    for edge_id in range(RAW_EDGE_COUNT):
+        data_path = Path(f"Factor/E{edge_id:03d}/Data.lean")
+        hold_path = Path(f"Factor/E{edge_id:03d}/Hold.lean")
+        data_imports = re.findall(
+            r"^import .*TropicalFactorB8\.Quotient\.Q\d{3}\.Data$",
+            contents[data_path], re.MULTILINE,
+        )
+        hold_imports = re.findall(
+            r"^import .*TropicalFactorB8\.Quotient\.Q\d{3}\.Hold$",
+            contents[hold_path], re.MULTILINE,
+        )
+        if len(data_imports) != 1 or len(hold_imports) != 1:
+            fail(f"factor edge {edge_id} does not have one local quotient source")
+
+    retained_aggregate = (
+        "import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8\n"
+    )
+    for path, text in contents.items():
+        if retained_aggregate in text and not (
+            len(path.parts) == 3
+            and path.parts[0] == "Source"
+            and path.parts[2] == "Hold.lean"
+        ):
+            fail(f"retained aggregate escaped a source Hold leaf: {path}")
+    if "TropicalFactorB8.Factor" in contents[Path("GraphExact.lean")]:
+        fail("GraphExact imports the heavy factor collector")
+
+    required_public = {
+        Path("Data.lean"): (
+            "def tropicalComponentBQuotientRelation8",
+            "def tropicalComponentBRawFactor8",
+        ),
+        Path("Quotient.lean"): (
+            "theorem tropicalComponentBQuotientRelations8_hold",
+        ),
+        Path("Factor.lean"): (
+            "theorem tropicalComponentBRawFactorProducts8",
+        ),
+        Path("GraphExact.lean"): (
+            "theorem tropicalComponentBRawFactorEdge8_iff_classEdge",
+        ),
+        Path("Graph.lean"): (
+            "theorem tropicalComponentBClassMembers8_iff",
+            "theorem tropicalComponentBCompleteBipartiteQuotient8",
+            "theorem tropicalComponentB_allZero_class_cover8",
+        ),
+    }
+    for path, declarations in required_public.items():
+        for declaration in declarations:
+            if declaration not in contents[path]:
+                fail(f"missing public declaration {declaration!r} in {path}")
+
+
 def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
     generated: list[Path] = []
 
@@ -1033,20 +1740,114 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
         write(path, contents)
         generated.append(path)
 
-    put("Data.lean", emit_data(data))
+    put("Core.lean", emit_core())
+    put("GraphData.lean", emit_graph_data(data))
+
     for source_id in range(SOURCE_COUNT):
-        put(f"Source/S{source_id:03d}.lean", emit_source_module(data, source_id))
-    put("Source.lean", emit_source_aggregator())
+        source = data["quotient"]["source_reductions"][source_id]
+        uses = source["certificate"]["reduction"]["use"]
+        base = f"Source/S{source_id:03d}"
+        put(f"{base}/Data.lean", emit_source_data(data, source_id))
+        for use_index, use in enumerate(uses):
+            put(
+                f"{base}/Monomial/M{use_index:02d}.lean",
+                emit_monomial_leaf("Source", source_id, use_index, use),
+            )
+        put(f"{base}/Uses.lean", emit_uses_module("Source", source_id, uses))
+        put(f"{base}/SourceEq.lean", emit_source_source_eq(data, source_id))
+        put(
+            f"{base}/TargetEq.lean",
+            emit_target_eq(
+                "Source", source_id, 6, source["certificate"]["unit"], "reduced"
+            ),
+        )
+        put(
+            f"{base}/Certificate.lean",
+            emit_source_certificate(data, source_id),
+        )
+        put(f"{base}/Hold.lean", emit_source_hold(data, source_id))
+        put(f"Source/S{source_id:03d}.lean", emit_source_row_collector(source_id))
+
     for quotient_id in range(QUOTIENT_COUNT):
-        put(f"Quotient/Q{quotient_id:03d}.lean", emit_quotient_module(data, quotient_id))
-    put("Quotient.lean", emit_quotient_aggregator())
+        row = data["quotient"]["rows"][quotient_id]
+        payload = row["combination_reduction"]
+        uses = payload["reduction"]["use"]
+        base = f"Quotient/Q{quotient_id:03d}"
+        put(f"{base}/Data.lean", emit_quotient_data(data, quotient_id))
+        put(
+            f"{base}/ShiftedEq.lean",
+            emit_quotient_shifted_eq(data, quotient_id),
+        )
+        for use_index, use in enumerate(uses):
+            put(
+                f"{base}/Monomial/M{use_index:02d}.lean",
+                emit_monomial_leaf("Quotient", quotient_id, use_index, use),
+            )
+        put(
+            f"{base}/Uses.lean",
+            emit_uses_module("Quotient", quotient_id, uses),
+        )
+        put(
+            f"{base}/SourceEq.lean",
+            emit_quotient_source_eq(data, quotient_id),
+        )
+        put(
+            f"{base}/TargetEq.lean",
+            emit_target_eq(
+                "Quotient", quotient_id, 12, payload["unit"], "relation"
+            ),
+        )
+        put(
+            f"{base}/Certificate.lean",
+            emit_quotient_certificate(data, quotient_id),
+        )
+        put(f"{base}/Hold.lean", emit_quotient_hold(data, quotient_id))
+        put(
+            f"Quotient/Q{quotient_id:03d}.lean",
+            emit_quotient_row_collector(quotient_id),
+        )
+
+    for vertex_id in range(RAW_VERTEX_COUNT):
+        put(f"Factor/Vertex/V{vertex_id:03d}.lean", emit_vertex(data, vertex_id))
+
     for edge_id in range(RAW_EDGE_COUNT):
-        put(f"Factor/E{edge_id:03d}.lean", emit_factor_module(data, edge_id))
-    put("Factor.lean", emit_factor_aggregator())
+        witness = data["factor"]["edge_witnesses"][edge_id]
+        uses = witness["factor_certificate"]["reduction"]["use"]
+        base = f"Factor/E{edge_id:03d}"
+        put(f"{base}/Data.lean", emit_factor_data(data, edge_id))
+        for use_index, use in enumerate(uses):
+            put(
+                f"{base}/Monomial/M{use_index:02d}.lean",
+                emit_monomial_leaf("Factor", edge_id, use_index, use),
+            )
+        put(f"{base}/Uses.lean", emit_uses_module("Factor", edge_id, uses))
+        put(
+            f"{base}/SourceEq.lean", emit_factor_source_eq(data, edge_id)
+        )
+        put(
+            f"{base}/TargetEq.lean", emit_factor_target_eq(data, edge_id)
+        )
+        put(
+            f"{base}/Certificate.lean",
+            emit_factor_certificate(data, edge_id),
+        )
+        put(f"{base}/Hold.lean", emit_factor_hold(data, edge_id))
+        put(f"Factor/E{edge_id:03d}.lean", emit_factor_row_collector(edge_id))
+
+    put("Data.lean", emit_public_data(data))
+    put("Source.lean", emit_source_aggregator())
+    put("Quotient.lean", emit_quotient_aggregator())
+    put("Factor.lean", emit_factor_aggregator(data))
     put("GraphExact.lean", emit_graph_exact())
     put("Graph.lean", emit_graph())
     write(umbrella, emit_umbrella())
     generated.append(umbrella)
+
+    audit_generated(output, umbrella, generated)
+    expected = {path.resolve() for path in generated if path != umbrella}
+    for stale in output.rglob("*.lean"):
+        if stale.resolve() not in expected:
+            stale.unlink()
     return generated
 
 

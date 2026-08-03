@@ -1,3 +1,5 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Quotient
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Graph
 
 /-!
