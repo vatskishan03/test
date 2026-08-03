@@ -59,8 +59,7 @@ theorem tropicalOverlapSourceIExponent8_replay_row99 (j : Fin 6) :
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row99.sourceI)
           (tropicalBaseMatching8 j) =
       tropicalOverlapSourceIExponent8Row99 j := by
-  revert j
-  decide
+  fin_cases j <;> decide
 
 set_option maxHeartbeats 10000000 in
 /-- Kernel replay of the six shifted `B_j` exponents in row 99. -/
@@ -70,8 +69,7 @@ theorem tropicalOverlapSourceJExponent8_replay_row99 (j : Fin 6) :
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row99.sourceJ)
           (tropicalBaseMatching8 j) =
       tropicalOverlapSourceJExponent8Row99 j := by
-  revert j
-  decide
+  fin_cases j <;> decide
 
 /-- The exact translated-source combination after exponent replay. -/
 def tropicalOverlapSourceCombination8Row99 :
