@@ -41,10 +41,10 @@ structure LaurentNestedFaceCertificate
   faceScalar_ne_zero : faceScalar ≠ 0
   faceShift : LaurentExponent ι
   leftReduction :
-    CharacterReductionCertificate (κ := κLeft) chars leftSource
+    NormalizedCharacterReductionCertificate (κ := κLeft) chars leftSource
       (Finsupp.single omittedExponent omittedCoefficient + face)
   rightReduction :
-    CharacterReductionCertificate (κ := κRight) chars rightSource
+    NormalizedCharacterReductionCertificate (κ := κRight) chars rightSource
       rightReduced
   faceReduction :
     CharacterReductionCertificate (κ := κFace) chars
@@ -102,10 +102,10 @@ theorem false_of_laurentNestedFaceCertificate
       LaurentPolynomial.Holds x
         (Finsupp.single cert.omittedExponent cert.omittedCoefficient +
           cert.face) :=
-    holds_of_characterReductionCertificate
+    holds_of_normalizedCharacterReductionCertificate
       x hx chars leftSource _ cert.leftReduction hchars hleftSource
   have hrightReduced : cert.rightReduced.Holds x :=
-    holds_of_characterReductionCertificate
+    holds_of_normalizedCharacterReductionCertificate
       x hx chars rightSource cert.rightReduced cert.rightReduction
         hchars hrightSource
   have hcompatibility := nestedFaceCompatibility_holds

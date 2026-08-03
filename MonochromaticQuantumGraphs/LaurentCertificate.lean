@@ -85,6 +85,38 @@ def Holds {ι : Type*} [Fintype ι] (x : ι → ℂ)
     (row : SignedCharacterRow ι) : Prop :=
   laurentEval x row.exponent = (-1 : ℂ) ^ row.signExponent
 
+/-- The universally valid signed row `1 = (-1) ^ 2`.  Exact integer-lattice
+witnesses use this row to record even changes in the sign exponent instead of
+silently reducing signs modulo two. -/
+def parityGenerator (ι : Type*) : SignedCharacterRow ι where
+  exponent := 0
+  signExponent := 2
+
+/-- Append the universal parity generator to a declared character basis. -/
+def withParityGenerator {ι χ : Type*}
+    (rows : χ → SignedCharacterRow ι) :
+    Sum χ Unit → SignedCharacterRow ι
+  | .inl c => rows c
+  | .inr _ => parityGenerator ι
+
+/-- The parity generator holds at every Laurent point. -/
+theorem parityGenerator_holds
+    {ι : Type*} [Fintype ι] (x : ι → ℂ) :
+    (parityGenerator ι).Holds x := by
+  norm_num [Holds, parityGenerator]
+
+/-- Validity of a character basis extends to the basis with its universal
+parity row. -/
+theorem withParityGenerator_holds
+    {ι χ : Type*} [Fintype ι]
+    (x : ι → ℂ) (rows : χ → SignedCharacterRow ι)
+    (hrows : ∀ c, (rows c).Holds x) :
+    ∀ c, (withParityGenerator rows c).Holds x := by
+  intro c
+  cases c with
+  | inl c => exact hrows c
+  | inr _ => exact parityGenerator_holds x
+
 /-- Raw integer linear combination of signed character rows. -/
 def linearCombination {ι κ : Type*} [Fintype κ]
     (rows : κ → SignedCharacterRow ι) (coeff : κ → ℤ) :

@@ -157,7 +157,8 @@ structure MonomialReductionCertificate
     (chars : χ → SignedCharacterRow ι)
     (sourceExponent targetExponent : LaurentExponent ι) where
   signExponent : ℤ
-  implication : SignedCharacterRow.ImplicationCertificate chars
+  implication : SignedCharacterRow.ImplicationCertificate
+    (SignedCharacterRow.withParityGenerator chars)
     (differenceRow sourceExponent targetExponent signExponent)
 
 /-- Semantic replay of an exact monomial-reduction certificate. -/
@@ -171,9 +172,10 @@ theorem laurentEval_eq_sign_mul_of_reduction
     laurentEval x sourceExponent =
       (-1 : ℂ) ^ cert.signExponent * laurentEval x targetExponent := by
   have hdiff := SignedCharacterRow.holds_of_implicationCertificate
-    x hx chars
+    x hx (SignedCharacterRow.withParityGenerator chars)
       (differenceRow sourceExponent targetExponent cert.signExponent)
-      cert.implication hchars
+      cert.implication
+      (SignedCharacterRow.withParityGenerator_holds x chars hchars)
   change laurentEval x (sourceExponent - targetExponent) =
     (-1 : ℂ) ^ cert.signExponent at hdiff
   rw [laurentEval_sub x hx] at hdiff
@@ -276,6 +278,38 @@ theorem holds_of_characterReductionCertificate
     x hx chars source target cert hchars]
   exact hsource
 
+/-- An exact character reduction whose normalized target differs from the
+checked aggregate by a nonzero integer unit. -/
+structure NormalizedCharacterReductionCertificate
+    {ι χ κ : Type*} [Fintype χ] [Fintype κ]
+    (chars : χ → SignedCharacterRow ι)
+    (source target : LaurentPolynomial ι) where
+  unit : ℤ
+  unit_ne_zero : unit ≠ 0
+  reduction : CharacterReductionCertificate (κ := κ) chars source
+    (unit • target)
+
+/-- A valid source relation forces the normalized target relation, with the
+nonzero integer normalization cancelled inside Lean. -/
+theorem holds_of_normalizedCharacterReductionCertificate
+    {ι χ κ : Type*} [Fintype ι] [Fintype χ] [Fintype κ]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (chars : χ → SignedCharacterRow ι)
+    (source target : LaurentPolynomial ι)
+    (cert : NormalizedCharacterReductionCertificate
+      (κ := κ) chars source target)
+    (hchars : ∀ c, (chars c).Holds x)
+    (hsource : source.Holds x) :
+    target.Holds x := by
+  have hscaled : (cert.unit • target).Holds x :=
+    holds_of_characterReductionCertificate
+      x hx chars source _ cert.reduction hchars hsource
+  unfold LaurentPolynomial.Holds at hscaled ⊢
+  rw [LaurentPolynomial.eval_zsmul] at hscaled
+  simp only [← Int.cast_smul_eq_zsmul ℂ, smul_eq_mul] at hscaled
+  exact (mul_eq_zero.mp hscaled).resolve_left
+    (Int.cast_ne_zero.mpr cert.unit_ne_zero)
+
 namespace SignedCharacterRow
 
 /-- The actual pointwise factor represented by a signed character. -/
@@ -339,6 +373,51 @@ theorem eval_factorProductPolynomial
       simp [signedCoefficient, hl, hr] <;> ring
 
 end SignedCharacterRow
+
+/-- A known source relation reduces to a nonzero integer and Laurent-monomial
+multiple of one signed-character factor. -/
+structure LaurentCharacterCertificate
+    {ι χ κ : Type*} [Fintype χ] [Fintype κ]
+    (chars : χ → SignedCharacterRow ι)
+    (source : LaurentPolynomial ι)
+    (target : SignedCharacterRow ι) where
+  unit : ℤ
+  unit_ne_zero : unit ≠ 0
+  shift : LaurentExponent ι
+  reduction : CharacterReductionCertificate (κ := κ) chars source
+    (unit • LaurentPolynomial.translate shift target.factorPolynomial)
+
+/-- Pointwise kernel replay of a one-factor character certificate. -/
+theorem holds_of_laurentCharacterCertificate
+    {ι χ κ : Type*} [Fintype ι] [Fintype χ] [Fintype κ]
+    (x : ι → ℂ) (hx : ∀ i, x i ≠ 0)
+    (chars : χ → SignedCharacterRow ι)
+    (source : LaurentPolynomial ι)
+    (target : SignedCharacterRow ι)
+    (cert : LaurentCharacterCertificate
+      (κ := κ) chars source target)
+    (hchars : ∀ c, (chars c).Holds x)
+    (hsource : source.Holds x) :
+    target.Holds x := by
+  have htarget :
+      LaurentPolynomial.Holds x
+        (cert.unit • LaurentPolynomial.translate cert.shift
+          target.factorPolynomial) :=
+    holds_of_characterReductionCertificate
+      x hx chars source _ cert.reduction hchars hsource
+  unfold LaurentPolynomial.Holds at htarget
+  rw [LaurentPolynomial.eval_zsmul,
+    LaurentPolynomial.eval_translate x hx,
+    SignedCharacterRow.eval_factorPolynomial] at htarget
+  simp only [← Int.cast_smul_eq_zsmul ℂ, smul_eq_mul] at htarget
+  have hunit : (cert.unit : ℂ) ≠ 0 :=
+    Int.cast_ne_zero.mpr cert.unit_ne_zero
+  have hshift : laurentEval x cert.shift ≠ 0 :=
+    laurentEval_ne_zero x hx cert.shift
+  have hfactor : target.factorValue x = 0 :=
+    (mul_eq_zero.mp
+      ((mul_eq_zero.mp htarget).resolve_left hunit)).resolve_left hshift
+  exact (SignedCharacterRow.factorValue_eq_zero_iff x target).mp hfactor
 
 /-- A known source relation reduces, modulo the declared signed characters,
 to a nonzero integer and Laurent-monomial multiple of one raw factor
