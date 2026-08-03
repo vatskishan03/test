@@ -23,159 +23,159 @@ theorem shifted_eq :
       LaurentPolynomial.translate (shiftedUse k).shift
         (shiftedSources (shiftedUse k).source)) =
       intermediate := by
-  have h00 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
+  have h00 : (((Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (19 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (119 : Fin 144) (1 : ℤ)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (119 : Fin 144) (1 : ℤ)) := by
+        Pi.single (119 : Fin 144) (1 : ℤ))) := by
     abel
-  have h01 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
+  have h01 : (((Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (19 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (122 : Fin 144) (1 : ℤ)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (70 : Fin 144) (1 : ℤ) +
         Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (122 : Fin 144) (1 : ℤ)) := by
+        Pi.single (122 : Fin 144) (1 : ℤ))) := by
     abel
-  have h02 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
+  have h02 : (((Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (111 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (111 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) := by
-    abel
-  have h03 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (102 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (102 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)) := by
-    abel
-  have h04 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (114 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (114 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) := by
-    abel
-  have h05 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (105 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (105 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)) := by
-    abel
-  have h06 : (0 : LaurentExponent (Fin 144)) + (Pi.single (19 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (119 : Fin 144) (1 : ℤ)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (87 : Fin 144) (1 : ℤ) +
-        Pi.single (119 : Fin 144) (1 : ℤ)) := by
-    abel
-  have h07 : (0 : LaurentExponent (Fin 144)) + (Pi.single (19 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (122 : Fin 144) (1 : ℤ)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (86 : Fin 144) (1 : ℤ) +
-        Pi.single (122 : Fin 144) (1 : ℤ)) := by
-    abel
-  have h08 : (0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (111 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ))) := by
+    abel
+  have h03 : (((Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (102 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ))) := by
+    abel
+  have h04 : (((Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ))) := by
+    abel
+  have h05 : (((Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (105 : Fin 144) (1 : ℤ) +
+        Pi.single (138 : Fin 144) (1 : ℤ))) := by
+    abel
+  have h06 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (119 : Fin 144) (1 : ℤ))) := by
+    abel
+  have h07 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (19 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (86 : Fin 144) (1 : ℤ) +
+        Pi.single (122 : Fin 144) (1 : ℤ))) := by
+    abel
+  have h08 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (111 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) := by
+        Pi.single (129 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (-1 : ℤ) +
+        Pi.single (49 : Fin 144) (1 : ℤ) +
+        Pi.single (58 : Fin 144) (1 : ℤ) +
+        Pi.single (87 : Fin 144) (1 : ℤ) +
+        Pi.single (111 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ))) := by
     abel
-  have h09 : (0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+  have h09 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (86 : Fin 144) (1 : ℤ) +
         Pi.single (114 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (86 : Fin 144) (1 : ℤ) +
         Pi.single (114 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) := by
+        Pi.single (129 : Fin 144) (1 : ℤ))) := by
     abel
-  have h10 : (0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+  have h10 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (102 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (102 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)) := by
+        Pi.single (141 : Fin 144) (1 : ℤ))) := by
     abel
-  have h11 : (0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
+  have h11 : (((0 : LaurentExponent (Fin 144)) + (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (86 : Fin 144) (1 : ℤ) +
         Pi.single (105 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (141 : Fin 144) (1 : ℤ)) : LaurentExponent (Fin 144)) = (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (86 : Fin 144) (1 : ℤ) +
         Pi.single (105 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)) := by
+        Pi.single (141 : Fin 144) (1 : ℤ))) := by
     abel
   simp [shiftedUse, shiftedSources, TropicalFactorA8.Internal.Source033.reduced,
     TropicalFactorA8.Internal.Source064.reduced, intermediate,

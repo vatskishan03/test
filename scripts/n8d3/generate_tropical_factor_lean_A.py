@@ -52,6 +52,7 @@ CLASS_COUNT = 15
 MONOMIAL_REPLAY_COUNT = (
     SOURCE_COUNT * 6 + QUOTIENT_COUNT * 12 + RAW_EDGE_COUNT * 4
 )
+SHIFTED_EXPONENT_REPLAY_COUNT = QUOTIENT_COUNT * 12
 
 # These are the five exponent rows unfolded by
 # `tropicalComponentACharacter8`.  Keeping the local-coordinate shapes here
@@ -1235,7 +1236,9 @@ def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
             target = exponent(use["sourceExponent"], f"quotient {quotient_id} source use {flat_index}")
             term_exp = exponent(term_rows, f"quotient {quotient_id} reduced term {term_index}")
             have_lines.append(
-                f"  have h{flat_index:02d} : {shift} + {term_exp} = {target} := by\n"
+                f"  have h{flat_index:02d} : "
+                f"(({shift} + {term_exp} : LaurentExponent (Fin 144)) = "
+                f"{target}) := by\n"
                 "    abel"
             )
             flat_index += 1
@@ -1985,6 +1988,28 @@ def validate_generated_layout(
         fail(
             "generated bounded use-leaf count changed: "
             f"{checked_use_leaves} != {MONOMIAL_REPLAY_COUNT}"
+        )
+
+    checked_shifted_exponents = 0
+    for quotient_id in range(QUOTIENT_COUNT):
+        shifted_path = Path(f"Quotient/Q{quotient_id:03d}/ShiftedEq.lean")
+        shifted_text = contents[shifted_path]
+        helper_indices = re.findall(
+            r"^  have h(\d{2}) : \(\(", shifted_text, re.MULTILINE
+        )
+        expected_indices = [f"{index:02d}" for index in range(12)]
+        if helper_indices != expected_indices:
+            fail(f"shifted exponent helper order changed: {shifted_path}")
+        typed_helpers = shifted_text.count(
+            ": LaurentExponent (Fin 144)) ="
+        )
+        if typed_helpers != 12:
+            fail(f"shifted exponent helper lacks expected type: {shifted_path}")
+        checked_shifted_exponents += typed_helpers
+    if checked_shifted_exponents != SHIFTED_EXPONENT_REPLAY_COUNT:
+        fail(
+            "generated typed shifted-exponent count changed: "
+            f"{checked_shifted_exponents} != {SHIFTED_EXPONENT_REPLAY_COUNT}"
         )
 
     source_umbrella = (
