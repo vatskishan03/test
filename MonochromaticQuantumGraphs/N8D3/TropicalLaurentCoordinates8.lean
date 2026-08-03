@@ -1,16 +1,13 @@
 import MonochromaticQuantumGraphs.LaurentCertificate
+import MonochromaticQuantumGraphs.N8D3.TropicalSupportCoordinates8
 import MonochromaticQuantumGraphs.N8D3.TropicalNonattainmentOffCube8
 
 /-!
 # Support-local Laurent coordinates for the canonical N8D3 support
 
-This file is the transparent boundary between the canonical certificate's
-`Fin 144` coordinate order and the official `WeightsN 8 3 ℂ` coordinates.
-The local order is the increasing order of the 252-bit support mask.  The
-decoder below is inverse to the bundle's global coordinate convention
-`9 * edgeIndex + 3 * leftColor + rightColor`.
-
-The final tables are precisely the five Component A and two Component B
+The support-coordinate bridge is isolated in `TropicalSupportCoordinates8`
+so its finite decoder checks compile independently.  This module adds the
+five Component A and two Component B
 signed characters used by the exact lattice replay.  Their semantic lemmas
 are derived from the already-proved determinant components, rather than
 being assumed as certificate input.
@@ -24,105 +21,6 @@ open scoped BigOperators Matrix
 noncomputable section
 
 set_option maxRecDepth 100000
-
-/-- The canonical bundle's support-local to global-coordinate map.  It is the
-increasing enumeration of exactly the 144 set bits in `tropicalSupportMask8`.
--/
-def tropicalSupportGlobalCoordinate8 : Fin 144 → Fin 252 :=
-![
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 39, 40, 41, 49, 62, 67,
-  78, 79, 80, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100,
-  101, 102, 103, 104, 105, 106, 107, 108, 117, 118, 119, 120, 121,
-  122, 123, 124, 125, 129, 130, 131, 135, 136, 137, 138, 139, 140,
-  141, 142, 143, 144, 155, 158, 161, 162, 163, 164, 165, 166, 167,
-  168, 169, 170, 171, 172, 173, 180, 183, 186, 193, 198, 199, 200,
-  201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213,
-  214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 233, 234,
-  235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247,
-  248, 249, 250, 251
-]
-
-/-- Lexicographic inverse table for `tropicalEdgeIndex8` on physical edges. -/
-def tropicalPhysicalEdgeOfIndex8 : Fin 28 → Fin 8 × Fin 8 :=
-![
-  (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7),
-  (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),
-  (2, 3), (2, 4), (2, 5), (2, 6), (2, 7),
-  (3, 4), (3, 5), (3, 6), (3, 7),
-  (4, 5), (4, 6), (4, 7),
-  (5, 6), (5, 7),
-  (6, 7)
-]
-
-/-- Decode a global coordinate into the corresponding official edge record. -/
-def tropicalEdgeOfGlobalCoordinate8 (x : Fin 252) : EdgeN 8 3 :=
-  let edgeIndex : Fin 28 := ⟨x.val / 9, by omega⟩
-  let leftColor : Fin 3 := ⟨(x.val % 9) / 3, by omega⟩
-  let rightColor : Fin 3 := ⟨x.val % 3, by omega⟩
-  let edge := tropicalPhysicalEdgeOfIndex8 edgeIndex
-  mkEdge edge.1 edge.2 leftColor rightColor
-
-/-- Decoding and then re-encoding a global coordinate is the identity. -/
-theorem tropicalCoordinate8_edgeOfGlobalCoordinate8 (x : Fin 252) :
-    let e := tropicalEdgeOfGlobalCoordinate8 x
-    tropicalCoordinate8 e.u e.v e.i e.j = x := by
-  revert x
-  decide
-
-/-- The decoder is also a left inverse on every canonically ordered edge. -/
-theorem tropicalEdgeOfGlobalCoordinate8_coordinate8
-    {u v : Fin 8} (huv : u < v) (a b : Fin 3) :
-    tropicalEdgeOfGlobalCoordinate8 (tropicalCoordinate8 u v a b) =
-      mkEdge u v a b := by
-  revert u v a b
-  decide
-
-/-- Support lookup commutes with the global-coordinate decoder. -/
-theorem tropicalEdgeSupported8_edgeOfGlobalCoordinate8 (x : Fin 252) :
-    tropicalEdgeSupported8 (tropicalEdgeOfGlobalCoordinate8 x) =
-      tropicalSupportCoord8 x := by
-  revert x
-  decide
-
-/-- Every entry in the explicit local table is a declared support coordinate. -/
-theorem tropicalSupportGlobalCoordinate8_supported (i : Fin 144) :
-    tropicalSupportCoord8 (tropicalSupportGlobalCoordinate8 i) = true := by
-  revert i
-  decide
-
-/-- The explicit local table contains no repeated global coordinate. -/
-theorem tropicalSupportGlobalCoordinate8_injective :
-    Function.Injective tropicalSupportGlobalCoordinate8 := by
-  decide
-
-/-- The local table is exactly the support mask, not merely a 144-element
-subset of it. -/
-theorem tropicalSupportGlobalCoordinate8_mem_iff (x : Fin 252) :
-    tropicalSupportCoord8 x = true ↔
-      ∃ i : Fin 144, tropicalSupportGlobalCoordinate8 i = x := by
-  revert x
-  decide
-
-/-- The official edge represented by one support-local coordinate. -/
-def tropicalSupportEdge8 (i : Fin 144) : EdgeN 8 3 :=
-  tropicalEdgeOfGlobalCoordinate8 (tropicalSupportGlobalCoordinate8 i)
-
-/-- Restriction of official weights to the canonical support-local order. -/
-def tropicalSupportWeight8 (W : WeightsN 8 3 ℂ) : Fin 144 → ℂ :=
-  fun i ↦ W (tropicalSupportEdge8 i)
-
-/-- Exact support makes every one of the 144 local Laurent coordinates
-nonzero. -/
-theorem tropicalSupportWeight8_ne_zero
-    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W) :
-    ∀ i, tropicalSupportWeight8 W i ≠ 0 := by
-  intro i
-  apply (hSupport _).2
-  change tropicalEdgeSupported8
-    (tropicalEdgeOfGlobalCoordinate8 (tropicalSupportGlobalCoordinate8 i)) = true
-  rw [tropicalEdgeSupported8_edgeOfGlobalCoordinate8]
-  exact tropicalSupportGlobalCoordinate8_supported i
 
 /-- A four-coordinate binomial character `x_a x_b = x_c x_d`, encoded as a
 raw Laurent exponent row with sign exponent zero. -/
