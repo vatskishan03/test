@@ -1,4 +1,4 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Data
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q008.Data
 
 /-!
 # Component-A quotient 8, monomial 2
@@ -44,9 +44,9 @@ def monomial02 :
       (0 : ℤ),
       (0 : ℤ),
       (0 : ℤ)
-]
+],
     combination_eq := by
-      apply SignedCharacterRow.ext
+      apply TropicalFactorA8.Internal.signedCharacterRow_eq_of_fields
       · simp [SignedCharacterRow.linearCombination,
         Fintype.sum_sum_type, Fin.sum_univ_succ,
         tropicalComponentAWithParityCoefficients8,
@@ -60,7 +60,7 @@ def monomial02 :
         SignedCharacterRow.withParityGenerator,
         SignedCharacterRow.parityGenerator,
         tropicalComponentACharacter8, tropicalBinomialCharacter8,
-        differenceRow]
+        differenceRow, Fin.last]
   }
 
 end TropicalFactorA8.Internal.Quotient008

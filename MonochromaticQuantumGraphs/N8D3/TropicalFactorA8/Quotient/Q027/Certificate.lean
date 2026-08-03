@@ -24,34 +24,32 @@ namespace TropicalFactorA8.Internal.Quotient027
 shifted combination for quotient row 27. -/
 def shiftedCertificate :
     LaurentPolynomial.ShiftedCombinationCertificate (κ := Fin 2)
-      tropicalComponentAQuotientReducedSource8
-      (tropicalComponentAQuotientIntermediate8 27) where
+      shiftedSources intermediate where
   use := shiftedUse
   combination_eq := shifted_eq
+
+/-- Exact normalized character reduction for quotient row 27. -/
+def reductionCertificate :
+    NormalizedCharacterReductionCertificate (κ := Fin 12)
+      tropicalComponentACharacter8 intermediate relation where
+  unit := (1 : ℤ)
+  unit_ne_zero := by norm_num
+  reduction := {
+    use := use,
+    source_eq := source_eq,
+    target_eq := target_eq
+  }
 
 
 end TropicalFactorA8.Internal.Quotient027
 
-/-- Exact two-source shifted combination for quotient row 27. -/
-def tropicalComponentAQuotientShiftedCertificate8_027 :
-    LaurentPolynomial.ShiftedCombinationCertificate (κ := Fin 2)
-      tropicalComponentAQuotientReducedSource8
-      (tropicalComponentAQuotientIntermediate8 27) :=
+/-- Public shifted-certificate API for quotient row 27. -/
+def tropicalComponentAQuotientShiftedCertificate8_027 :=
   TropicalFactorA8.Internal.Quotient027.shiftedCertificate
 
-/-- Exact normalized character reduction for quotient row 27. -/
-def tropicalComponentAQuotientReductionCertificate8_027 :
-    NormalizedCharacterReductionCertificate (κ := Fin 12)
-      tropicalComponentACharacter8
-      (tropicalComponentAQuotientIntermediate8 27)
-      (tropicalComponentAQuotientRelation8 27) where
-  unit := (1 : ℤ)
-  unit_ne_zero := by norm_num
-  reduction := {
-    use := TropicalFactorA8.Internal.Quotient027.use
-    source_eq := TropicalFactorA8.Internal.Quotient027.source_eq
-    target_eq := TropicalFactorA8.Internal.Quotient027.target_eq
-  }
+/-- Public reduction-certificate API for quotient row 27. -/
+def tropicalComponentAQuotientReductionCertificate8_027 :=
+  TropicalFactorA8.Internal.Quotient027.reductionCertificate
 
 end
 

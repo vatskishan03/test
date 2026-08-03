@@ -1,8 +1,9 @@
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q033.Certificate
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source.S034.Hold
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source.S065.Hold
 
 /-!
-# Component-A quotient row 33: semantic hold
+# Component-A quotient row 33: exactly two source holds
 -/
 
 namespace MonochromaticQuantumGraphs.N8D3
@@ -17,27 +18,41 @@ noncomputable section
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 
+namespace TropicalFactorA8.Internal.Quotient033
+
+theorem hold
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W) :
+    relation.Holds (tropicalSupportWeight8 W) := by
+  have hsources : ∀ s : Fin 2,
+      (shiftedSources s).Holds (tropicalSupportWeight8 W) := by
+    intro s
+    fin_cases s
+    · simpa [shiftedSources] using
+        TropicalFactorA8.Internal.Source034.hold hSupport hEq hChars
+    · simpa [shiftedSources] using
+        TropicalFactorA8.Internal.Source065.hold hSupport hEq hChars
+  have hintermediate :
+      intermediate.Holds (tropicalSupportWeight8 W) :=
+    LaurentPolynomial.holds_of_shiftedCombinationCertificate
+      (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
+      shiftedSources intermediate
+      tropicalComponentAQuotientShiftedCertificate8_033
+      hsources
+  exact holds_of_normalizedCharacterReductionCertificate
+    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
+    tropicalComponentACharacter8 intermediate relation
+    tropicalComponentAQuotientReductionCertificate8_033
+    hChars hintermediate
+
+end TropicalFactorA8.Internal.Quotient033
+
+/-- Public quotient-hold API for row 33. -/
 theorem tropicalComponentAQuotientRelation8_033_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W) :
-    (tropicalComponentAQuotientRelation8 33).Holds
-      (tropicalSupportWeight8 W) := by
-  have hintermediate :
-      (tropicalComponentAQuotientIntermediate8 33).Holds
-        (tropicalSupportWeight8 W) :=
-    LaurentPolynomial.holds_of_shiftedCombinationCertificate
-      (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-      tropicalComponentAQuotientReducedSource8
-      (tropicalComponentAQuotientIntermediate8 33)
-      tropicalComponentAQuotientShiftedCertificate8_033
-      (tropicalComponentAQuotientReducedSources8_hold hSupport hEq hChars)
-  exact holds_of_normalizedCharacterReductionCertificate
-    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-    tropicalComponentACharacter8
-    (tropicalComponentAQuotientIntermediate8 33)
-    (tropicalComponentAQuotientRelation8 33)
-    tropicalComponentAQuotientReductionCertificate8_033
-    hChars hintermediate
+    TropicalFactorA8.Internal.Quotient033.relation.Holds (tropicalSupportWeight8 W) :=
+  TropicalFactorA8.Internal.Quotient033.hold hSupport hEq hChars
 
 end
 

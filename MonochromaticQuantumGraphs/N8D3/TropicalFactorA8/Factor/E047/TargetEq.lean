@@ -24,8 +24,7 @@ theorem target_eq :
         (signedCoefficient (use k).reduction.signExponent
           (use k).coefficient)) =
       (1 : ℤ) • LaurentPolynomial.translate shift
-        ((tropicalComponentARawFactor8 20).factorProductPolynomial
-          (tropicalComponentARawFactor8 36)) := by
+        (leftFactor.factorProductPolynomial rightFactor) := by
   have h00 : shift + ((Pi.single (64 : Fin 144) (1 : ℤ) +
         Pi.single (65 : Fin 144) (-1 : ℤ) +
         Pi.single (86 : Fin 144) (-1 : ℤ) +
@@ -74,7 +73,9 @@ theorem target_eq :
         Pi.single (138 : Fin 144) (1 : ℤ)) := by
     unfold shift
     abel
-  simp [use, monomial00, monomial01, monomial02, monomial03, shift, tropicalComponentARawFactor8,
+  simp [use, monomial00, monomial01, monomial02, monomial03, leftFactor, rightFactor,
+    TropicalFactorA8.Internal.Vertex020.row,
+    TropicalFactorA8.Internal.Vertex036.row,
     SignedCharacterRow.factorProductPolynomial, signedCoefficient,
     tropicalComponentATranslate_sub8, LaurentPolynomial.translate_add,
     LaurentPolynomial.translate_single, Fin.sum_univ_succ,

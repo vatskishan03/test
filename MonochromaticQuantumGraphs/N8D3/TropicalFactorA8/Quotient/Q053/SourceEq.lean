@@ -21,8 +21,8 @@ namespace TropicalFactorA8.Internal.Quotient053
 theorem source_eq :
     (∑ k : Fin 12,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
-      tropicalComponentAQuotientIntermediate8 53 := by
-  simp [use, tropicalComponentAQuotientIntermediate8, Fin.sum_univ_succ] <;> abel
+      intermediate := by
+  simp [use, intermediate, Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorA8.Internal.Quotient053
 

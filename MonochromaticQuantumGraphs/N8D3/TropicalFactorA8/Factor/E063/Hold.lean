@@ -1,8 +1,8 @@
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Factor.E063.Certificate
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q048.Hold
 
 /-!
-# Component-A factor edge 63: semantic hold
+# Component-A factor edge 63: exactly one quotient hold
 -/
 
 namespace MonochromaticQuantumGraphs.N8D3
@@ -17,21 +17,31 @@ noncomputable section
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 
+namespace TropicalFactorA8.Internal.Factor063
+
+theorem product
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W) :
+    leftFactor.factorValue (tropicalSupportWeight8 W) *
+      rightFactor.factorValue (tropicalSupportWeight8 W) = 0 :=
+  factorValues_mul_eq_zero_of_certificate
+    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
+    tropicalComponentACharacter8 sourceRelation leftFactor rightFactor
+    tropicalComponentAFactorCertificate8_063 hChars
+    (by
+      simpa [sourceRelation] using
+        TropicalFactorA8.Internal.Quotient048.hold
+          hSupport hEq hChars)
+
+end TropicalFactorA8.Internal.Factor063
+
+/-- Public product-vanishing API for raw factor edge 63. -/
 theorem tropicalComponentARawFactorEdgeProduct8_063
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W) :
-    (tropicalComponentARawFactor8 41).factorValue
-        (tropicalSupportWeight8 W) *
-      (tropicalComponentARawFactor8 53).factorValue
-        (tropicalSupportWeight8 W) = 0 :=
-  factorValues_mul_eq_zero_of_certificate
-    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-    tropicalComponentACharacter8
-    (tropicalComponentAQuotientRelation8 48)
-    (tropicalComponentARawFactor8 41)
-    (tropicalComponentARawFactor8 53)
-    tropicalComponentAFactorCertificate8_063 hChars
-    (tropicalComponentAQuotientRelations8_hold hSupport hEq hChars 48)
+    TropicalFactorA8.Internal.Factor063.leftFactor.factorValue (tropicalSupportWeight8 W) *
+      TropicalFactorA8.Internal.Factor063.rightFactor.factorValue (tropicalSupportWeight8 W) = 0 :=
+  TropicalFactorA8.Internal.Factor063.product hSupport hEq hChars
 
 end
 

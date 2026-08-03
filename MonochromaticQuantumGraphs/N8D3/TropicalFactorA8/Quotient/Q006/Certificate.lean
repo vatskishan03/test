@@ -24,34 +24,32 @@ namespace TropicalFactorA8.Internal.Quotient006
 shifted combination for quotient row 6. -/
 def shiftedCertificate :
     LaurentPolynomial.ShiftedCombinationCertificate (κ := Fin 2)
-      tropicalComponentAQuotientReducedSource8
-      (tropicalComponentAQuotientIntermediate8 6) where
+      shiftedSources intermediate where
   use := shiftedUse
   combination_eq := shifted_eq
+
+/-- Exact normalized character reduction for quotient row 6. -/
+def reductionCertificate :
+    NormalizedCharacterReductionCertificate (κ := Fin 12)
+      tropicalComponentACharacter8 intermediate relation where
+  unit := (1 : ℤ)
+  unit_ne_zero := by norm_num
+  reduction := {
+    use := use,
+    source_eq := source_eq,
+    target_eq := target_eq
+  }
 
 
 end TropicalFactorA8.Internal.Quotient006
 
-/-- Exact two-source shifted combination for quotient row 6. -/
-def tropicalComponentAQuotientShiftedCertificate8_006 :
-    LaurentPolynomial.ShiftedCombinationCertificate (κ := Fin 2)
-      tropicalComponentAQuotientReducedSource8
-      (tropicalComponentAQuotientIntermediate8 6) :=
+/-- Public shifted-certificate API for quotient row 6. -/
+def tropicalComponentAQuotientShiftedCertificate8_006 :=
   TropicalFactorA8.Internal.Quotient006.shiftedCertificate
 
-/-- Exact normalized character reduction for quotient row 6. -/
-def tropicalComponentAQuotientReductionCertificate8_006 :
-    NormalizedCharacterReductionCertificate (κ := Fin 12)
-      tropicalComponentACharacter8
-      (tropicalComponentAQuotientIntermediate8 6)
-      (tropicalComponentAQuotientRelation8 6) where
-  unit := (1 : ℤ)
-  unit_ne_zero := by norm_num
-  reduction := {
-    use := TropicalFactorA8.Internal.Quotient006.use
-    source_eq := TropicalFactorA8.Internal.Quotient006.source_eq
-    target_eq := TropicalFactorA8.Internal.Quotient006.target_eq
-  }
+/-- Public reduction-certificate API for quotient row 6. -/
+def tropicalComponentAQuotientReductionCertificate8_006 :=
+  TropicalFactorA8.Internal.Quotient006.reductionCertificate
 
 end
 

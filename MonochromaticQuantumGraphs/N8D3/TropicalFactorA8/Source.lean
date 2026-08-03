@@ -1,3 +1,4 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Data
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source.S000
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source.S001
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source.S002
@@ -139,122 +140,238 @@ theorem tropicalComponentAQuotientReducedSources8_hold
         (tropicalSupportWeight8 W) := by
   intro s
   fin_cases s
-  · exact tropicalComponentASourceReduced8_000_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_001_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_002_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_003_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_004_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_005_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_006_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_007_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_008_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_009_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_010_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_011_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_012_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_013_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_014_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_015_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_016_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_017_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_018_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_019_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_020_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_021_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_022_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_023_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_024_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_025_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_026_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_027_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_028_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_029_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_030_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_031_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_032_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_033_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_034_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_035_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_036_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_037_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_038_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_039_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_040_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_041_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_042_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_043_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_044_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_045_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_046_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_047_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_048_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_049_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_050_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_051_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_052_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_053_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_054_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_055_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_056_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_057_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_058_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_059_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_060_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_061_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_062_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_063_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_064_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_065_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_066_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_067_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_068_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_069_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_070_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_071_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_072_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_073_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_074_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_075_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_076_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_077_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_078_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_079_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_080_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_081_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_082_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_083_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_084_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_085_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_086_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_087_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_088_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_089_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_090_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_091_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_092_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_093_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_094_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_095_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_096_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_097_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_098_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_099_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_100_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_101_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_102_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_103_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_104_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_105_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_106_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_107_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_108_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_109_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_110_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_111_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_112_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_113_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_114_hold hSupport hEq hChars
-  · exact tropicalComponentASourceReduced8_115_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_000_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_001_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_002_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_003_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_004_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_005_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_006_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_007_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_008_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_009_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_010_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_011_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_012_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_013_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_014_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_015_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_016_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_017_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_018_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_019_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_020_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_021_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_022_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_023_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_024_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_025_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_026_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_027_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_028_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_029_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_030_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_031_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_032_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_033_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_034_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_035_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_036_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_037_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_038_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_039_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_040_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_041_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_042_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_043_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_044_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_045_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_046_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_047_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_048_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_049_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_050_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_051_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_052_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_053_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_054_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_055_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_056_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_057_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_058_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_059_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_060_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_061_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_062_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_063_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_064_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_065_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_066_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_067_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_068_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_069_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_070_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_071_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_072_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_073_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_074_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_075_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_076_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_077_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_078_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_079_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_080_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_081_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_082_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_083_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_084_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_085_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_086_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_087_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_088_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_089_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_090_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_091_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_092_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_093_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_094_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_095_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_096_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_097_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_098_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_099_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_100_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_101_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_102_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_103_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_104_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_105_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_106_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_107_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_108_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_109_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_110_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_111_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_112_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_113_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_114_hold hSupport hEq hChars
+  · simpa [tropicalComponentAQuotientReducedSource8] using
+      tropicalComponentASourceReduced8_115_hold hSupport hEq hChars
 
 end
 

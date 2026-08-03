@@ -1,7 +1,7 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Data
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.GraphData
 
 /-!
-# Exact raw/class graph quotient
+# Exact raw/class graph quotient over lightweight graph tables
 
 Each row is checked separately so the 59-by-59 finite equality is not one
 monolithic kernel reduction.

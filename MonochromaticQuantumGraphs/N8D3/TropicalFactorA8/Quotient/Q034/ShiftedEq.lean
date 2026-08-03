@@ -1,4 +1,4 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q034.Uses
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q034.Data
 
 /-!
 # Component-A quotient row 34: shifted-source equality
@@ -21,9 +21,8 @@ namespace TropicalFactorA8.Internal.Quotient034
 theorem shifted_eq :
     (∑ k : Fin 2, (shiftedUse k).scale •
       LaurentPolynomial.translate (shiftedUse k).shift
-        (tropicalComponentAQuotientReducedSource8
-          (shiftedUse k).source)) =
-      tropicalComponentAQuotientIntermediate8 34 := by
+        (shiftedSources (shiftedUse k).source)) =
+      intermediate := by
   have h00 : (Pi.single (48 : Fin 144) (-1 : ℤ) +
         Pi.single (49 : Fin 144) (1 : ℤ)) + (Pi.single (20 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
@@ -178,8 +177,9 @@ theorem shifted_eq :
         Pi.single (102 : Fin 144) (1 : ℤ) +
         Pi.single (141 : Fin 144) (1 : ℤ)) := by
     abel
-  simp [shiftedUse, tropicalComponentAQuotientReducedSource8,
-    tropicalComponentAQuotientIntermediate8, Fin.sum_univ_succ,
+  simp [shiftedUse, shiftedSources, TropicalFactorA8.Internal.Source036.reduced,
+    TropicalFactorA8.Internal.Source066.reduced, intermediate,
+    Fin.sum_univ_succ,
     LaurentPolynomial.translate_add, LaurentPolynomial.translate_single,
     h00, h01, h02, h03, h04, h05, h06, h07, h08, h09, h10, h11] <;> abel
 

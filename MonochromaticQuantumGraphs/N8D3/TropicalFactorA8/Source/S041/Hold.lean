@@ -1,8 +1,8 @@
 import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source.S041.Certificate
-import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard28.Row2
 
 /-!
-# Component-A source reduction 41: semantic hold
+# Component-A source reduction 41: row-local semantic hold
 -/
 
 namespace MonochromaticQuantumGraphs.N8D3
@@ -17,43 +17,40 @@ noncomputable section
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 
-private theorem tropicalComponentASourceOriginal8_041_eq_retained :
-    tropicalComponentAQuotientOriginalSource8 41 =
-      tropicalRetainedRelation8
-        (tropicalComponentAQuotientSourceIndex8 41) := by
-  change tropicalComponentAQuotientOriginalSource8 41 = tropicalOverlapRelation8Row142
-  simp [tropicalComponentAQuotientOriginalSource8, tropicalOverlapRelation8Row142,
-    tropicalOverlapDegreeFiveExponent8] <;> abel
+namespace TropicalFactorA8.Internal.Source041
 
-/-- Exact normalized reduction of retained source 41, preserving the
-public type of the original monolithic certificate. -/
-def tropicalComponentASourceReductionCertificate8_041 :
-    NormalizedCharacterReductionCertificate (κ := Fin 6)
-      tropicalComponentACharacter8
-      (tropicalRetainedRelation8 (tropicalComponentAQuotientSourceIndex8 41))
-      (tropicalComponentAQuotientReducedSource8 41) where
-  unit := TropicalFactorA8.Internal.Source041.certificate.unit
-  unit_ne_zero := TropicalFactorA8.Internal.Source041.certificate.unit_ne_zero
-  reduction := {
-    use := TropicalFactorA8.Internal.Source041.use
-    source_eq := TropicalFactorA8.Internal.Source041.source_eq.trans
-      tropicalComponentASourceOriginal8_041_eq_retained
-    target_eq := TropicalFactorA8.Internal.Source041.target_eq
-  }
+theorem hold
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W) :
+    reduced.Holds (tropicalSupportWeight8 W) := by
+  have hi := tropicalBaseRelations8_hold hSupport hEq
+    tropicalOverlapProvenance8Row142.sourceI
+  have hj := tropicalBaseRelations8_hold hSupport hEq
+    tropicalOverlapProvenance8Row142.sourceJ
+  have hsource : sourcePolynomial.Holds (tropicalSupportWeight8 W) := by
+    rw [sourcePolynomial, tropicalOverlapRelation8_provenance_row142]
+    unfold tropicalOverlapProvenancePolynomial8
+    unfold LaurentPolynomial.Holds at hi hj ⊢
+    rw [LaurentPolynomial.eval_zsmul, LaurentPolynomial.eval_sub,
+      LaurentPolynomial.eval_translate _
+        (tropicalSupportWeight8_ne_zero hSupport),
+      LaurentPolynomial.eval_translate _
+        (tropicalSupportWeight8_ne_zero hSupport), hi, hj]
+    simp
+  exact holds_of_normalizedCharacterReductionCertificate
+    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
+    tropicalComponentACharacter8 sourcePolynomial reduced
+    tropicalComponentASourceReductionCertificate8_041 hChars hsource
 
+end TropicalFactorA8.Internal.Source041
+
+/-- Public source-hold API for row 41. -/
 theorem tropicalComponentASourceReduced8_041_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W) :
-    (tropicalComponentAQuotientReducedSource8 41).Holds
+    TropicalFactorA8.Internal.Source041.reduced.Holds
       (tropicalSupportWeight8 W) :=
-  holds_of_normalizedCharacterReductionCertificate
-    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
-    tropicalComponentACharacter8
-    (tropicalRetainedRelation8 (tropicalComponentAQuotientSourceIndex8 41))
-    (tropicalComponentAQuotientReducedSource8 41)
-    tropicalComponentASourceReductionCertificate8_041 hChars
-    (tropicalRetainedRelations8_hold hSupport hEq
-      (tropicalComponentAQuotientSourceIndex8 41))
+  TropicalFactorA8.Internal.Source041.hold hSupport hEq hChars
 
 end
 

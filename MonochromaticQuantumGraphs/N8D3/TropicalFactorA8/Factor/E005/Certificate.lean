@@ -17,20 +17,27 @@ noncomputable section
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 
-/-- Exact Laurent factor certificate for raw edge 5. -/
-def tropicalComponentAFactorCertificate8_005 :
+namespace TropicalFactorA8.Internal.Factor005
+
+/-- Exact Laurent factor
+certificate for raw edge 5. -/
+def certificate :
     LaurentFactorCertificate (κ := Fin 4) tropicalComponentACharacter8
-      (tropicalComponentAQuotientRelation8 60)
-      (tropicalComponentARawFactor8 0)
-      (tropicalComponentARawFactor8 55) where
+      sourceRelation leftFactor rightFactor where
   unit := (1 : ℤ)
   unit_ne_zero := by norm_num
-  shift := TropicalFactorA8.Internal.Factor005.shift
+  shift := shift
   reduction := {
-    use := TropicalFactorA8.Internal.Factor005.use
-    source_eq := TropicalFactorA8.Internal.Factor005.source_eq
-    target_eq := TropicalFactorA8.Internal.Factor005.target_eq
+    use := use,
+    source_eq := source_eq,
+    target_eq := target_eq
   }
+
+end TropicalFactorA8.Internal.Factor005
+
+/-- Public factor-certificate API for raw edge 5. -/
+def tropicalComponentAFactorCertificate8_005 :=
+  TropicalFactorA8.Internal.Factor005.certificate
 
 end
 

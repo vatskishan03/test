@@ -24,17 +24,20 @@ certificate against the explicit source polynomial. -/
 def certificate :
     NormalizedCharacterReductionCertificate (κ := Fin 6)
       tropicalComponentACharacter8
-      (tropicalComponentAQuotientOriginalSource8 99)
-      (tropicalComponentAQuotientReducedSource8 99) where
+      sourcePolynomial reduced where
   unit := (-1 : ℤ)
   unit_ne_zero := by norm_num
   reduction := {
-    use := use
-    source_eq := source_eq
+    use := use,
+    source_eq := source_eq,
     target_eq := target_eq
   }
 
 end TropicalFactorA8.Internal.Source099
+
+/-- Public source-certificate API for row 99. -/
+def tropicalComponentASourceReductionCertificate8_099 :=
+  TropicalFactorA8.Internal.Source099.certificate
 
 end
 

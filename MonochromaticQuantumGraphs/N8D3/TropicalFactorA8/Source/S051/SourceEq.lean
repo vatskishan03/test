@@ -21,8 +21,9 @@ namespace TropicalFactorA8.Internal.Source051
 theorem source_eq :
     (∑ k : Fin 6,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
-      tropicalComponentAQuotientOriginalSource8 51 := by
-  simp [use, tropicalComponentAQuotientOriginalSource8, Fin.sum_univ_succ] <;> abel
+      sourcePolynomial := by
+  simp [use, monomial00, monomial01, monomial02, monomial03, monomial04, monomial05, sourcePolynomial, tropicalOverlapRelation8Row172,
+    tropicalOverlapDegreeFiveExponent8, Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorA8.Internal.Source051
 

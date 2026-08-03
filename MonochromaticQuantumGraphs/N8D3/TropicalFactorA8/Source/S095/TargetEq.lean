@@ -23,8 +23,8 @@ theorem target_eq :
       Finsupp.single (use k).targetExponent
         (signedCoefficient (use k).reduction.signExponent
           (use k).coefficient)) =
-      (-1 : ℤ) • tropicalComponentAQuotientReducedSource8 95 := by
-  simp [use, monomial00, monomial01, monomial02, monomial03, monomial04, monomial05, tropicalComponentAQuotientReducedSource8,
+      (-1 : ℤ) • reduced := by
+  simp [use, monomial00, monomial01, monomial02, monomial03, monomial04, monomial05, reduced,
     signedCoefficient, Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorA8.Internal.Source095

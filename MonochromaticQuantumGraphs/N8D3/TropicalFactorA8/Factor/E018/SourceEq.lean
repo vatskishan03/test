@@ -21,8 +21,10 @@ namespace TropicalFactorA8.Internal.Factor018
 theorem source_eq :
     (∑ k : Fin 4,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
-      tropicalComponentAQuotientRelation8 64 := by
-  simp [use, tropicalComponentAQuotientRelation8, Fin.sum_univ_succ] <;> abel
+      sourceRelation := by
+  simp [use, sourceRelation,
+    TropicalFactorA8.Internal.Quotient064.relation,
+    Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorA8.Internal.Factor018
 
