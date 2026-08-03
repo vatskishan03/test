@@ -773,6 +773,10 @@ def monomial_names(use_count: int) -> str:
     return ",\n    ".join(f"monomial{i:02d}" for i in range(use_count))
 
 
+def use_names(use_count: int) -> str:
+    return ",\n    ".join(f"use{i:02d}" for i in range(use_count))
+
+
 def emit_core() -> str:
     return module_header(
         [
@@ -819,6 +823,29 @@ theorem tropicalComponentBTranslateSub8
         LaurentPolynomial.translate shift q := by
   exact LinearMap.map_sub (LaurentPolynomial.translateLinear shift) p q
 ''' + FOOTER
+
+
+def emit_use_core() -> str:
+    return module_header(
+        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core"],
+        "# Lightweight Component-B reduction-use packaging",
+    ) + namespace_block(
+        "TropicalFactorB8.Internal",
+        '''/-- Package an already-compiled monomial certificate as one reduction use.
+The large source and target exponents are inferred from the certificate type,
+so use leaves do not elaborate a second copy of either expression. -/
+def useOfReduction
+    (coefficient : ℤ)
+    {sourceExponent targetExponent : LaurentExponent (Fin 144)}
+    (reduction : MonomialReductionCertificate tropicalComponentBCharacter8
+      sourceExponent targetExponent) :
+    CharacterReductionUse tropicalComponentBCharacter8 where
+  coefficient := coefficient
+  sourceExponent := sourceExponent
+  targetExponent := targetExponent
+  reduction := reduction
+''',
+    ) + FOOTER
 
 
 def emit_graph_data(data: dict[str, Any]) -> str:
@@ -985,22 +1012,39 @@ def monomial{use_index:02d} :
     ) + namespace_block(namespace, body) + FOOTER
 
 
-def emit_uses_module(
+def emit_use_module(
     stage: str,
     index: int,
-    uses: Sequence[dict[str, Any]],
+    use_index: int,
+    use: dict[str, Any],
 ) -> str:
+    """Emit one bounded dependent record after its monomial has compiled."""
     namespace = stage_namespace(stage, index)
     module = stage_module(stage, index)
-    imports = [f"{module}.Monomial.M{i:02d}" for i in range(len(uses))]
-    items = []
-    for use_index, use in enumerate(uses):
-        items.append(f'''{{ coefficient := {z(integer(use["coefficient"], "use coefficient"))},
-      sourceExponent := {exponent(use["sourceExponent"], "use source")},
-      targetExponent := {exponent(use["targetExponent"], "use target")},
-      reduction := monomial{use_index:02d} }}''')
-    body = f'''/-- Decision-free collector of row-local monomial certificates. -/
-def uses : Fin {len(uses)} →
+    body = f'''/-- One row-local reduction use, isolated after its monomial proof. -/
+def use{use_index:02d} :
+    CharacterReductionUse tropicalComponentBCharacter8 :=
+  TropicalFactorB8.Internal.useOfReduction
+    {z(integer(use["coefficient"], "use coefficient"))}
+    monomial{use_index:02d}
+'''
+    return module_header(
+        [
+            f"{module}.Monomial.M{use_index:02d}",
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.UseCore",
+        ],
+        f"# {stage} {index}, reduction use {use_index}",
+    ) + namespace_block(namespace, body) + FOOTER
+
+
+def emit_uses_module(stage: str, index: int, use_count: int) -> str:
+    """Collect already-compiled uniform use records without rebuilding them."""
+    namespace = stage_namespace(stage, index)
+    module = stage_module(stage, index)
+    imports = [f"{module}.Use.U{i:02d}" for i in range(use_count)]
+    items = [f"use{i:02d}" for i in range(use_count)]
+    body = f'''/-- Decision-free dispatcher over row-local reduction uses. -/
+def uses : Fin {use_count} →
     CharacterReductionUse tropicalComponentBCharacter8 :=
 {vector(items, "  ")}
 '''
@@ -1093,7 +1137,8 @@ theorem source_eq :
     (∑ k : Fin 6,
       Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
       sourcePolynomial := by
-{proof_prefix}  simp [uses, {monomial_names(6)}, sourcePolynomial,
+{proof_prefix}  simp [uses, {use_names(6)},
+    TropicalFactorB8.Internal.useOfReduction, sourcePolynomial,
     tropicalBaseRelation8, Fin.sum_univ_succ{extra_simp}] <;> abel
 '''
     return module_header(
@@ -1118,7 +1163,9 @@ theorem target_eq :
         (signedCoefficient (uses k).reduction.signExponent
           (uses k).coefficient)) =
       {z(unit)} • {target} := by
-  simp [uses, {monomial_names(use_count)}, {target},
+  simp [uses, {use_names(use_count)},
+    TropicalFactorB8.Internal.useOfReduction,
+    {monomial_names(use_count)}, {target},
     signedCoefficient, Fin.sum_univ_succ] <;> abel
 '''
     return module_header(
@@ -1333,7 +1380,8 @@ theorem source_eq :
     (∑ k : Fin 12,
       Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
       intermediate := by
-  simp [uses, {monomial_names(12)}, intermediate,
+  simp [uses, {use_names(12)},
+    TropicalFactorB8.Internal.useOfReduction, intermediate,
     Fin.sum_univ_succ] <;> abel
 '''
     return module_header(
@@ -1526,7 +1574,8 @@ theorem source_eq :
     (∑ k : Fin 4,
       Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
       sourceRelation := by
-  simp [uses, {monomial_names(4)}, sourceRelation,
+  simp [uses, {use_names(4)},
+    TropicalFactorB8.Internal.useOfReduction, sourceRelation,
     {stage_namespace("Quotient", quotient_id)}.relation,
     Fin.sum_univ_succ] <;> abel
 '''
@@ -1567,7 +1616,9 @@ theorem target_eq :
       {z(payload["unit"])} • LaurentPolynomial.translate shift
         (leftFactor.factorProductPolynomial rightFactor) := by
 {chr(10).join(exponent_lemmas)}
-  simp [uses, {monomial_names(4)}, leftFactor, rightFactor,
+  simp [uses, {use_names(4)},
+    TropicalFactorB8.Internal.useOfReduction,
+    {monomial_names(4)}, leftFactor, rightFactor,
     TropicalFactorB8.Internal.Vertex{left:03d}.row,
     TropicalFactorB8.Internal.Vertex{right:03d}.row,
     SignedCharacterRow.factorProductPolynomial,
@@ -1884,11 +1935,11 @@ def audit_generated(
 ) -> None:
     lean_paths = [path for path in generated if path != umbrella]
     expected_count = (
-        SOURCE_COUNT * 13
-        + QUOTIENT_COUNT * 20
+        SOURCE_COUNT * 19
+        + QUOTIENT_COUNT * 32
         + RAW_VERTEX_COUNT
-        + RAW_EDGE_COUNT * 11
-        + 8
+        + RAW_EDGE_COUNT * 15
+        + 9
     )
     if len(lean_paths) != expected_count:
         fail(
@@ -1937,6 +1988,8 @@ def audit_generated(
     )
     for path, text in proof_tree.items():
         if "Monomial" in path.parts:
+            if "TropicalFactorB8.UseCore" in text:
+                fail(f"monomial leaf depends on downstream UseCore: {path}")
             if structural_ext not in text:
                 fail(f"monomial leaf does not use structural row equality: {path}")
             if pointwise_exponent_normalization not in text:
@@ -1949,6 +2002,114 @@ def audit_generated(
                 or text.count(finite_vector_normalization) != 1
             ):
                 fail(f"monomial leaf lacks bounded vector normalization: {path}")
+
+    if "useOfReduction" in contents[Path("Core.lean")]:
+        fail("reduction-use helper escaped into monomial-critical Core")
+    use_core = contents[Path("UseCore.lean")]
+    if (
+        re.findall(r"^import (.+)$", use_core, re.MULTILINE)
+        != ["MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Core"]
+        or "def useOfReduction" not in use_core
+    ):
+        fail("UseCore does not isolate the reduction-use helper")
+
+    use_core_module = (
+        "MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.UseCore"
+    )
+    stage_specs = (
+        ("Source", "S", SOURCE_COUNT, 6),
+        ("Quotient", "Q", QUOTIENT_COUNT, 12),
+        ("Factor", "E", RAW_EDGE_COUNT, 4),
+    )
+    for stage, prefix, row_count, use_count in stage_specs:
+        for row_index in range(row_count):
+            row = f"{prefix}{row_index:03d}"
+            module = stage_module(stage, row_index)
+            expected_use_imports = []
+            expected_refs = []
+            for use_index in range(use_count):
+                suffix = f"{use_index:02d}"
+                use_path = Path(f"{stage}/{row}/Use/U{suffix}.lean")
+                use_text = contents[use_path]
+                expected_imports = [
+                    f"{module}.Monomial.M{suffix}",
+                    use_core_module,
+                ]
+                actual_imports = re.findall(
+                    r"^import (.+)$", use_text, re.MULTILINE
+                )
+                if actual_imports != expected_imports:
+                    fail(
+                        f"use leaf does not import only its monomial and UseCore: "
+                        f"{use_path}"
+                    )
+                if (
+                    f"def use{suffix} :" not in use_text
+                    or use_text.count("TropicalFactorB8.Internal.useOfReduction") != 1
+                    or set(re.findall(r"\bmonomial\d{2}\b", use_text))
+                    != {f"monomial{suffix}"}
+                ):
+                    fail(f"use leaf does not package exactly one monomial: {use_path}")
+                expected_use_imports.append(f"{module}.Use.U{suffix}")
+                expected_refs.append(suffix)
+
+            uses_path = Path(f"{stage}/{row}/Uses.lean")
+            uses_text = contents[uses_path]
+            actual_use_imports = re.findall(
+                r"^import (.+)$", uses_text, re.MULTILINE
+            )
+            dispatcher_refs = re.findall(
+                r"^  use(\d{2}),?$", uses_text, re.MULTILINE
+            )
+            if (
+                actual_use_imports != expected_use_imports
+                or dispatcher_refs != expected_refs
+                or f"def uses : Fin {use_count} →" not in uses_text
+                or "Monomial" in uses_text
+                or "coefficient :=" in uses_text
+                or "sourceExponent :=" in uses_text
+                or "targetExponent :=" in uses_text
+            ):
+                fail(f"use dispatcher rebuilds dependent records: {uses_path}")
+
+            source_eq_path = Path(f"{stage}/{row}/SourceEq.lean")
+            source_eq_text = contents[source_eq_path]
+            expected_source_api = (
+                "theorem source_eq :\n"
+                f"    (∑ k : Fin {use_count},\n"
+                "      Finsupp.single (uses k).sourceExponent "
+                "(uses k).coefficient) ="
+            )
+            if (
+                re.search(r"\bmonomial\d{2}\b", source_eq_text)
+                or "TropicalFactorB8.Internal.useOfReduction" not in source_eq_text
+                or any(f"use{suffix}" not in source_eq_text for suffix in expected_refs)
+                or expected_source_api not in source_eq_text
+            ):
+                fail(
+                    f"source equality unfolds a monomial instead of use metadata: "
+                    f"{source_eq_path}"
+                )
+
+            target_eq_path = Path(f"{stage}/{row}/TargetEq.lean")
+            target_eq_text = contents[target_eq_path]
+            expected_target_api = (
+                "theorem target_eq :\n"
+                f"    (∑ k : Fin {use_count},\n"
+                "      Finsupp.single (uses k).targetExponent\n"
+                "        (signedCoefficient (uses k).reduction.signExponent\n"
+                "          (uses k).coefficient)) ="
+            )
+            if (
+                expected_target_api not in target_eq_text
+                or "TropicalFactorB8.Internal.useOfReduction" not in target_eq_text
+                or any(f"use{suffix}" not in target_eq_text for suffix in expected_refs)
+                or any(
+                    f"monomial{suffix}" not in target_eq_text
+                    for suffix in expected_refs
+                )
+            ):
+                fail(f"target equality API or sign replay changed: {target_eq_path}")
 
     emitted_base_coordinate_equalities = sum(
         text.count("(by decide)")
@@ -2062,6 +2223,7 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
         generated.append(path)
 
     put("Core.lean", emit_core())
+    put("UseCore.lean", emit_use_core())
     put("GraphData.lean", emit_graph_data(data))
 
     for source_id in range(SOURCE_COUNT):
@@ -2074,7 +2236,11 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
                 f"{base}/Monomial/M{use_index:02d}.lean",
                 emit_monomial_leaf("Source", source_id, use_index, use),
             )
-        put(f"{base}/Uses.lean", emit_uses_module("Source", source_id, uses))
+            put(
+                f"{base}/Use/U{use_index:02d}.lean",
+                emit_use_module("Source", source_id, use_index, use),
+            )
+        put(f"{base}/Uses.lean", emit_uses_module("Source", source_id, len(uses)))
         put(f"{base}/SourceEq.lean", emit_source_source_eq(data, source_id))
         put(
             f"{base}/TargetEq.lean",
@@ -2104,9 +2270,13 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
                 f"{base}/Monomial/M{use_index:02d}.lean",
                 emit_monomial_leaf("Quotient", quotient_id, use_index, use),
             )
+            put(
+                f"{base}/Use/U{use_index:02d}.lean",
+                emit_use_module("Quotient", quotient_id, use_index, use),
+            )
         put(
             f"{base}/Uses.lean",
-            emit_uses_module("Quotient", quotient_id, uses),
+            emit_uses_module("Quotient", quotient_id, len(uses)),
         )
         put(
             f"{base}/SourceEq.lean",
@@ -2141,7 +2311,11 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
                 f"{base}/Monomial/M{use_index:02d}.lean",
                 emit_monomial_leaf("Factor", edge_id, use_index, use),
             )
-        put(f"{base}/Uses.lean", emit_uses_module("Factor", edge_id, uses))
+            put(
+                f"{base}/Use/U{use_index:02d}.lean",
+                emit_use_module("Factor", edge_id, use_index, use),
+            )
+        put(f"{base}/Uses.lean", emit_uses_module("Factor", edge_id, len(uses)))
         put(
             f"{base}/SourceEq.lean", emit_factor_source_eq(data, edge_id)
         )

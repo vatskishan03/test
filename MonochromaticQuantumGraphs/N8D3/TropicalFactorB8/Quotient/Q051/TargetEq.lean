@@ -24,7 +24,20 @@ theorem target_eq :
         (signedCoefficient (uses k).reduction.signExponent
           (uses k).coefficient)) =
       (1 : ℤ) • relation := by
-  simp [uses, monomial00,
+  simp [uses, use00,
+    use01,
+    use02,
+    use03,
+    use04,
+    use05,
+    use06,
+    use07,
+    use08,
+    use09,
+    use10,
+    use11,
+    TropicalFactorB8.Internal.useOfReduction,
+    monomial00,
     monomial01,
     monomial02,
     monomial03,

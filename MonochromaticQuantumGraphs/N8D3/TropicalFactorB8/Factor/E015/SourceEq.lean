@@ -22,10 +22,11 @@ theorem source_eq :
     (∑ k : Fin 4,
       Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
       sourceRelation := by
-  simp [uses, monomial00,
-    monomial01,
-    monomial02,
-    monomial03, sourceRelation,
+  simp [uses, use00,
+    use01,
+    use02,
+    use03,
+    TropicalFactorB8.Internal.useOfReduction, sourceRelation,
     TropicalFactorB8.Internal.Quotient079.relation,
     Fin.sum_univ_succ] <;> abel
 

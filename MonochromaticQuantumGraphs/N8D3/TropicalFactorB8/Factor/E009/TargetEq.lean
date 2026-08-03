@@ -82,7 +82,12 @@ theorem target_eq :
         Pi.single (120 : Fin 144) (1 : ℤ)) := by
     unfold shift
     abel
-  simp [uses, monomial00,
+  simp [uses, use00,
+    use01,
+    use02,
+    use03,
+    TropicalFactorB8.Internal.useOfReduction,
+    monomial00,
     monomial01,
     monomial02,
     monomial03, leftFactor, rightFactor,

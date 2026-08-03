@@ -22,18 +22,19 @@ theorem source_eq :
     (∑ k : Fin 12,
       Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
       intermediate := by
-  simp [uses, monomial00,
-    monomial01,
-    monomial02,
-    monomial03,
-    monomial04,
-    monomial05,
-    monomial06,
-    monomial07,
-    monomial08,
-    monomial09,
-    monomial10,
-    monomial11, intermediate,
+  simp [uses, use00,
+    use01,
+    use02,
+    use03,
+    use04,
+    use05,
+    use06,
+    use07,
+    use08,
+    use09,
+    use10,
+    use11,
+    TropicalFactorB8.Internal.useOfReduction, intermediate,
     Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorB8.Internal.Quotient038

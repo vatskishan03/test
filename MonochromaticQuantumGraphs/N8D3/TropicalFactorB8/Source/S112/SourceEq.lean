@@ -22,12 +22,13 @@ theorem source_eq :
     (∑ k : Fin 6,
       Finsupp.single (uses k).sourceExponent (uses k).coefficient) =
       sourcePolynomial := by
-  simp [uses, monomial00,
-    monomial01,
-    monomial02,
-    monomial03,
-    monomial04,
-    monomial05, sourcePolynomial,
+  simp [uses, use00,
+    use01,
+    use02,
+    use03,
+    use04,
+    use05,
+    TropicalFactorB8.Internal.useOfReduction, sourcePolynomial,
     tropicalBaseRelation8, Fin.sum_univ_succ, tropicalOverlapRelation8Row267] <;> abel
 
 end TropicalFactorB8.Internal.Source112

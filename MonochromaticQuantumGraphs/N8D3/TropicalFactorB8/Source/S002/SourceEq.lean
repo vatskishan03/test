@@ -79,12 +79,13 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 2990) 40 26 48 75 117
       (by decide) (by decide) (by decide) (by decide)]
-  simp [uses, monomial00,
-    monomial01,
-    monomial02,
-    monomial03,
-    monomial04,
-    monomial05, sourcePolynomial,
+  simp [uses, use00,
+    use01,
+    use02,
+    use03,
+    use04,
+    use05,
+    TropicalFactorB8.Internal.useOfReduction, sourcePolynomial,
     tropicalBaseRelation8, Fin.sum_univ_succ, hcolor, hexp0, hexp1, hexp2, hexp3, hexp4, hexp5, tropicalBaseMatching8] <;> abel
 
 end TropicalFactorB8.Internal.Source002
