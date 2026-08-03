@@ -201,6 +201,46 @@ def canonical_sparse_rows(rows: Iterable[dict[str, Any]]) -> tuple[Any, ...]:
     return tuple(sorted(canonical))
 
 
+def sparse_polynomial_map(value: Any) -> dict[tuple[tuple[int, int], ...], int]:
+    """Canonicalize a sparse polynomial, combining duplicate exponents."""
+    result: dict[tuple[tuple[int, int], ...], int] = {}
+    for row in polynomial_rows(value):
+        exponent = tuple(
+            sorted(
+                (int(item["local"]), int(item["exp"]))
+                for item in row["exponent"]
+                if int(item["exp"])
+            )
+        )
+        result[exponent] = result.get(exponent, 0) + int(row["coefficient"])
+    return {exponent: coefficient for exponent, coefficient in result.items() if coefficient}
+
+
+def add_polynomial_maps(
+    *scaled_maps: tuple[int, dict[tuple[tuple[int, int], ...], int]]
+) -> dict[tuple[tuple[int, int], ...], int]:
+    result: dict[tuple[tuple[int, int], ...], int] = {}
+    for scalar, polynomial in scaled_maps:
+        for exponent, coefficient in polynomial.items():
+            result[exponent] = result.get(exponent, 0) + scalar * coefficient
+    return {exponent: coefficient for exponent, coefficient in result.items() if coefficient}
+
+
+def translate_polynomial_map(
+    polynomial: dict[tuple[tuple[int, int], ...], int],
+    shift: Sequence[dict[str, Any]],
+) -> dict[tuple[tuple[int, int], ...], int]:
+    result: dict[tuple[tuple[int, int], ...], int] = {}
+    for exponent, coefficient in polynomial.items():
+        shifted = add_exponent_rows(
+            shift,
+            [{"local": local, "exp": value} for local, value in exponent],
+        )
+        key = tuple((int(row["local"]), int(row["exp"])) for row in shifted)
+        result[key] = result.get(key, 0) + coefficient
+    return {exponent: coefficient for exponent, coefficient in result.items() if coefficient}
+
+
 def validate_semantics(
     semantics: dict[str, Any], official_payloads: dict[int, list[dict[str, Any]]]
 ) -> None:
@@ -317,6 +357,20 @@ def exponent_expr(rows: Sequence[dict[str, Any]]) -> str:
     return "(" + " + ".join(terms) + ")"
 
 
+def add_exponent_rows(*groups: Sequence[dict[str, Any]]) -> list[dict[str, int]]:
+    """Add sparse Laurent exponents and return increasing local coordinates."""
+    totals: dict[int, int] = {}
+    for group in groups:
+        for row in group:
+            local = int(row["local"])
+            totals[local] = totals.get(local, 0) + int(row["exp"])
+    return [
+        {"local": local, "exp": exponent}
+        for local, exponent in sorted(totals.items())
+        if exponent
+    ]
+
+
 def polynomial_rows(value: Any) -> list[dict[str, Any]]:
     if isinstance(value, dict) and set(value) == {"lhs", "rhs"}:
         return polynomial_rows(value["rhs"])
@@ -390,104 +444,6 @@ def implication_expr(
         f"{indent}  combination_eq := by\n"
         f"{indent}    apply SignedCharacterRow.ext <;> decide }}"
     )
-
-
-def reduction_use_expr(
-    use: dict[str, Any], basis_count: int, *, indent: str
-) -> str:
-    reduction = use["reduction"]
-    implication = implication_expr(
-        reduction["implication"], basis_count, indent=indent + "    "
-    )
-    return (
-        "{ coefficient := "
-        + lean_int(int(use["coefficient"]))
-        + "\n"
-        + f"{indent}  sourceExponent := {exponent_expr(use['sourceExponent'])}\n"
-        + f"{indent}  targetExponent := {exponent_expr(use['targetExponent'])}\n"
-        + f"{indent}  reduction :=\n"
-        + f"{indent}    {{ signExponent := {lean_int(int(reduction['signExponent']))}\n"
-        + f"{indent}      implication := {implication} }} }}"
-    )
-
-
-def character_reduction_expr(
-    reduction: dict[str, Any],
-    basis_count: int,
-    *,
-    source_eq_proof: str = "by decide",
-    indent: str = "",
-) -> tuple[str, int]:
-    uses = reduction["use"]
-    if not isinstance(uses, list) or not uses:
-        fail("character reduction has no finite use table")
-    use_values = [
-        reduction_use_expr(use, basis_count, indent=indent + "    ") for use in uses
-    ]
-    use_vector = vector_expr(use_values, indent=indent + "  ", per_line=1)
-    expression = (
-        "{ use := "
-        + use_vector
-        + "\n"
-        + f"{indent}  source_eq := {source_eq_proof}\n"
-        + f"{indent}  target_eq := by decide }}"
-    )
-    return expression, len(uses)
-
-
-def normalized_reduction_def(
-    name: str,
-    chars: str,
-    source: str,
-    target: str,
-    payload: dict[str, Any],
-    basis_count: int,
-    *,
-    source_eq_proof: str = "by decide",
-) -> str:
-    reduction, use_count = character_reduction_expr(
-        payload["reduction"],
-        basis_count,
-        source_eq_proof=source_eq_proof,
-        indent="  ",
-    )
-    unit = int(payload["unit"])
-    if payload.get("unit_ne_zero") is not True or unit == 0:
-        fail(f"{name} normalization unit is zero")
-    return f'''/-- Explicit normalized reduction from the frozen terminal semantics. -/
-def {name} :
-    NormalizedCharacterReductionCertificate (\u03ba := Fin {use_count})
-      {chars} {source} {target} :=
-{{ unit := {lean_int(unit)}
-  unit_ne_zero := by norm_num
-  reduction :=
-  {reduction}
-}}
-'''
-
-
-def character_reduction_def(
-    name: str,
-    chars: str,
-    source: str,
-    target: str,
-    payload: dict[str, Any],
-    basis_count: int,
-    *,
-    source_eq_proof: str = "by decide",
-) -> str:
-    reduction, use_count = character_reduction_expr(
-        payload,
-        basis_count,
-        source_eq_proof=source_eq_proof,
-        indent="",
-    )
-    return f'''/-- Exact sparse character reduction from the frozen terminal semantics. -/
-def {name} :
-    CharacterReductionCertificate (\u03ba := Fin {use_count})
-      {chars} {source} {target} :=
-{reduction}
-'''
 
 
 def relation_data_file(official_payloads: dict[int, list[dict[str, Any]]]) -> str:
@@ -847,140 +803,27 @@ def source_explicit_theorem(official_index: int) -> str:
     return f"tropicalTerminalRelation{official_index}_8_explicit"
 
 
-def family_file(
-    semantics: dict[str, Any], config: dict[str, Any]
-) -> tuple[Path, str]:
-    family = semantics["historical_cover_family_certificates"][config["json_name"]]
-    nested = family["nested_face_contradiction"]
-    basis = family["initial_basis_sources"]
-    basis_count = len(basis)
-    raw_sources = []
-    source_values = []
-    expected_characters = []
-    for expected_index, row in enumerate(basis):
-        if row.get("character_index") != expected_index:
-            fail(f"{config['json_name']} basis ordering changed")
-        sources = row.get("sources")
-        if not isinstance(sources, list) or len(sources) != 1:
-            fail(f"{config['json_name']} basis source is not unique")
-        source = sources[0]
-        if source.get("kind") == "component_base_character":
-            base_index = int(source["base_character_index"])
-            source_values.append(f".base {base_index}")
-        elif source.get("kind") == "raw_factor_vertex":
-            if int(source["class_id"]) != config["class_id"]:
-                fail(f"{config['json_name']} raw basis source has the wrong class")
-            raw_id = int(source["raw_factor_vertex_id"])
-            raw_position = len(raw_sources)
-            raw_sources.append(raw_id)
-            source_values.append(f".raw {raw_position}")
-        else:
-            fail(f"{config['json_name']} has an unknown basis source")
-        character = row["character"]
-        expected_characters.append(
-            "{ exponent := "
-            + exponent_expr(character["row"])
-            + ", signExponent := "
-            + lean_int(int(character["bit"]))
-            + " }"
-        )
-    if [value for value in source_values[:5]] != [f".base {i}" for i in range(5)]:
-        fail(f"{config['json_name']} does not begin with the five base characters")
-    raw_count = len(raw_sources)
-    if raw_count != basis_count - 5 or raw_count == 0:
-        fail(f"{config['json_name']} raw basis source count changed")
-
-    stem = config["stem"]
-    raw_id_name = f"{stem}RawFactorId8"
-    source_name = f"{stem}BasisSource8"
-    row_name = f"{stem}BasisRow8"
-    left_name = source_relation_name(config["left_row"])
-    right_name = source_relation_name(config["right_row"])
-
-    left_target_name = f"{stem}LeftReduced8"
-    right_target_name = f"{stem}RightReduced8"
-    full_target_name = f"{stem}FullDifferenceReduced8"
-    pairing_source_name = f"{stem}PairingSource8"
-    full_source_name = f"{stem}FullDifferenceSource8"
-    face_name = f"{stem}LeftFace8"
-
-    left_target = nested["left_relation_reduction"]["provenance"]["normalized_target"]
-    right_target = nested["right_relation_reduction"]["provenance"]["normalized_target"]
-    full_target = nested["left_minus_translated_right_reduction"]["provenance"][
-        "normalized_target"
-    ]
-    pairing_source = nested["translated_right_minus_left_face_reduces_to_zero"][
-        "reduction"
-    ]["source_eq"]["rhs"]
-    full_source = nested["left_minus_translated_right_reduction"]["reduction"][
-        "source_eq"
-    ]["rhs"]
-    left_source_rows = polynomial_rows(nested["left_relation_source"]["relation"])
-    omitted_index = int(nested["omitted_source_term_index"])
-    face_rows = [
-        row for index, row in enumerate(left_source_rows) if index != omitted_index
-    ]
-    omitted_exponent = nested["omitted_exponent"]
-    shift = nested["right_to_left_face_translation_shift"]
-    scalar = int(nested["face_integer_scalar"])
-
-    left_reduction = normalized_reduction_def(
-        f"{stem}LeftReduction8",
-        row_name,
-        left_name,
-        left_target_name,
-        nested["left_relation_reduction"],
-        basis_count,
-        source_eq_proof=(
-            f"by rw [{source_explicit_theorem(config['left_row'])}]; decide"
-        ),
+def family_module_name(config: dict[str, Any], suffix: str = "") -> str:
+    family = "Pair1213_874" if config["left_row"] == 874 else "Pair437_65"
+    module = (
+        "MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8."
+        + family
     )
-    right_reduction = normalized_reduction_def(
-        f"{stem}RightReduction8",
-        row_name,
-        right_name,
-        right_target_name,
-        nested["right_relation_reduction"],
-        basis_count,
-        source_eq_proof=(
-            f"by rw [{source_explicit_theorem(config['right_row'])}]; decide"
-        ),
-    )
-    pairing_reduction = character_reduction_def(
-        f"{stem}PairingReduction8",
-        row_name,
-        pairing_source_name,
-        "0",
-        nested["translated_right_minus_left_face_reduces_to_zero"]["reduction"],
-        basis_count,
-    )
-    full_reduction = normalized_reduction_def(
-        f"{stem}FullDifferenceReduction8",
-        row_name,
-        full_source_name,
-        full_target_name,
-        nested["left_minus_translated_right_reduction"],
-        basis_count,
-    )
+    return module if not suffix else module + "." + suffix
 
-    raw_ids = vector_expr([str(value) for value in raw_sources], per_line=10)
-    basis_sources = vector_expr(source_values, per_line=6)
-    expected_rows = vector_expr(expected_characters, per_line=1)
-    class_id = config["class_id"]
-    omitted_coefficient = int(nested["omitted_coefficient"][0])
-    pair_use_count = len(
-        nested["translated_right_minus_left_face_reduces_to_zero"]["reduction"]["use"]
-    )
 
-    text = f'''import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Data
+def family_relative_dir(config: dict[str, Any]) -> Path:
+    family = "Pair1213_874" if config["left_row"] == 874 else "Pair437_65"
+    return Path(family)
 
-/-!
-# Frozen Component-A terminal family {config["title"]}
 
-The basis contains the five Component-A characters followed only by raw
-factor rows from false-twin class {class_id}.  All source tags and exact row
-identities are checked before the nested-face replay.
--/
+def component_leaf_file(
+    imports: Sequence[str], title: str, body: str
+) -> str:
+    import_text = "\n".join(f"import {module}" for module in imports)
+    return f'''{import_text}
+
+/-! {title} -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -993,7 +836,350 @@ noncomputable section
 set_option maxRecDepth 100000
 set_option maxHeartbeats 10000000
 
-/-- Raw-factor IDs appearing in the frozen basis provenance. -/
+{body.rstrip()}
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
+'''
+
+
+def split_reduction_artifacts(
+    config: dict[str, Any],
+    label: str,
+    basis_count: int,
+    row_name: str,
+    source_name: str,
+    target_name: str,
+    reduction: dict[str, Any],
+    *,
+    normalized_unit: int = 0,
+    source_explicit: str = "",
+) -> dict[Path, str]:
+    """Emit one bounded module per use and per aggregate equality."""
+    family_dir = family_relative_dir(config)
+    data_module = family_module_name(config, "Data")
+    uses = reduction["use"]
+    if not isinstance(uses, list) or not uses:
+        fail(f"{config['json_name']} {label} reduction has no uses")
+    use_count = len(uses)
+    source_use_rows = [
+        {
+            "coefficient": int(use["coefficient"]),
+            "exponent": use["sourceExponent"],
+        }
+        for use in uses
+    ]
+    target_use_rows = [
+        {
+            "coefficient": (
+                int(use["coefficient"])
+                if int(use["reduction"]["signExponent"]) % 2 == 0
+                else -int(use["coefficient"])
+            ),
+            "exponent": use["targetExponent"],
+        }
+        for use in uses
+    ]
+    source_lhs = sparse_polynomial_map(reduction["source_eq"]["lhs"])
+    source_rhs = sparse_polynomial_map(reduction["source_eq"]["rhs"])
+    target_lhs = sparse_polynomial_map(reduction["target_eq"]["lhs"])
+    target_rhs_checked = sparse_polynomial_map(reduction["target_eq"]["rhs"])
+    if sparse_polynomial_map(source_use_rows) != source_lhs or source_lhs != source_rhs:
+        fail(f"{config['json_name']} {label} source aggregate changed")
+    if sparse_polynomial_map(target_use_rows) != target_lhs or target_lhs != target_rhs_checked:
+        fail(f"{config['json_name']} {label} target aggregate changed")
+    prefix = f"{config['stem']}{label}Reduction"
+    use_vector_name = f"{prefix}Use8"
+    source_eq_name = f"{prefix}_source_eq"
+    target_eq_name = f"{prefix}_target_eq"
+    certificate_name = f"{config['stem']}{label}Reduction8"
+    artifacts: dict[Path, str] = {}
+    use_names = []
+
+    for index, use in enumerate(uses):
+        monomial_name = f"{prefix}Monomial{index:03}8"
+        use_name = f"{prefix}Use{index:03}8"
+        use_names.append(use_name)
+        reduction_payload = use["reduction"]
+        implication = implication_expr(
+            reduction_payload["implication"], basis_count, indent="    "
+        )
+        source_exponent = exponent_expr(use["sourceExponent"])
+        target_exponent = exponent_expr(use["targetExponent"])
+        coefficient = lean_int(int(use["coefficient"]))
+        sign_exponent = lean_int(int(reduction_payload["signExponent"]))
+        body = f'''/-- Bounded monomial implication {index} for the {label} reduction. -/
+def {monomial_name} :
+    MonomialReductionCertificate {row_name}
+      {source_exponent} {target_exponent} :=
+{{ signExponent := {sign_exponent}
+  implication :=
+    {implication}
+}}
+
+/-- The exact coefficient and exponent payload of use {index}. -/
+def {use_name} : CharacterReductionUse {row_name} :=
+{{ coefficient := {coefficient}
+  sourceExponent := {source_exponent}
+  targetExponent := {target_exponent}
+  reduction := {monomial_name}
+}}
+
+@[simp] theorem {use_name}_coefficient :
+    {use_name}.coefficient = {coefficient} := rfl
+
+@[simp] theorem {use_name}_sourceExponent :
+    {use_name}.sourceExponent = {source_exponent} := rfl
+
+@[simp] theorem {use_name}_targetExponent :
+    {use_name}.targetExponent = {target_exponent} := rfl
+
+@[simp] theorem {use_name}_signExponent :
+    {use_name}.reduction.signExponent = {sign_exponent} := rfl
+'''
+        artifacts[
+            COMPONENT_DIR / family_dir / label / f"Use{index:03}.lean"
+        ] = component_leaf_file(
+            [data_module],
+            f"Bounded {config['title']} {label} reduction use {index}",
+            body,
+        )
+
+    use_imports = [
+        family_module_name(config, f"{label}.Use{index:03}")
+        for index in range(use_count)
+    ]
+    use_vector = vector_expr(use_names, per_line=3)
+    uses_body = f'''/-- Decision-free collection of the bounded {label} uses. -/
+def {use_vector_name} : Fin {use_count} → CharacterReductionUse {row_name} :=
+  {use_vector}
+'''
+    artifacts[COMPONENT_DIR / family_dir / label / "Uses.lean"] = component_leaf_file(
+        use_imports,
+        f"Collected {config['title']} {label} reduction uses",
+        uses_body,
+    )
+
+    source_proof_lines = []
+    source_simp_defs = [use_vector_name, "Fin.sum_univ_succ"]
+    if source_explicit:
+        source_proof_lines.append(f"  rw [{source_explicit}]")
+        source_simp_defs.append("tropicalTerminalExplicitRelation8")
+    else:
+        source_simp_defs.append(source_name)
+    source_proof_lines.extend(
+        [
+            "  simp [" + ", ".join(source_simp_defs) + "]",
+            "  <;> abel",
+        ]
+    )
+    source_body = f'''/-- Structural reconstruction of the {label} reduction source. -/
+theorem {source_eq_name} :
+    (∑ k : Fin {use_count},
+      Finsupp.single ({use_vector_name} k).sourceExponent
+        ({use_vector_name} k).coefficient) = {source_name} := by
+{chr(10).join(source_proof_lines)}
+'''
+    artifacts[
+        COMPONENT_DIR / family_dir / label / "SourceEq.lean"
+    ] = component_leaf_file(
+        [family_module_name(config, f"{label}.Uses")],
+        f"Structural {config['title']} {label} source equality",
+        source_body,
+    )
+
+    target_rhs = (
+        f"({lean_int(normalized_unit)} : ℤ) • {target_name}"
+        if normalized_unit
+        else target_name
+    )
+    target_simp_defs = [
+        use_vector_name,
+        "Fin.sum_univ_succ",
+        "signedCoefficient",
+    ]
+    if target_name != "0":
+        target_simp_defs.append(target_name)
+    target_body = f'''/-- Structural reconstruction of the {label} reduction target. -/
+theorem {target_eq_name} :
+    (∑ k : Fin {use_count},
+      Finsupp.single ({use_vector_name} k).targetExponent
+        (signedCoefficient ({use_vector_name} k).reduction.signExponent
+          ({use_vector_name} k).coefficient)) = {target_rhs} := by
+  simp [{", ".join(target_simp_defs)}]
+  <;> abel
+'''
+    artifacts[
+        COMPONENT_DIR / family_dir / label / "TargetEq.lean"
+    ] = component_leaf_file(
+        [family_module_name(config, f"{label}.Uses")],
+        f"Structural {config['title']} {label} target equality",
+        target_body,
+    )
+
+    if normalized_unit:
+        certificate_body = f'''/-- Frozen normalized {label} reduction. -/
+def {certificate_name} :
+    NormalizedCharacterReductionCertificate (κ := Fin {use_count})
+      {row_name} {source_name} {target_name} :=
+{{ unit := {lean_int(normalized_unit)}
+  unit_ne_zero := by norm_num
+  reduction :=
+  {{ use := {use_vector_name}
+    source_eq := {source_eq_name}
+    target_eq := {target_eq_name}
+  }}
+}}
+'''
+    else:
+        certificate_body = f'''/-- Frozen exact {label} character reduction. -/
+def {certificate_name} :
+    CharacterReductionCertificate (κ := Fin {use_count})
+      {row_name} {source_name} {target_name} :=
+{{ use := {use_vector_name}
+  source_eq := {source_eq_name}
+  target_eq := {target_eq_name}
+}}
+'''
+    artifacts[
+        COMPONENT_DIR / family_dir / f"{label}.lean"
+    ] = component_leaf_file(
+        [
+            family_module_name(config, f"{label}.SourceEq"),
+            family_module_name(config, f"{label}.TargetEq"),
+        ],
+        f"Collected {config['title']} {label} reduction certificate",
+        certificate_body,
+    )
+    return artifacts
+
+
+def split_family_artifacts(
+    semantics: dict[str, Any], config: dict[str, Any]
+) -> dict[Path, str]:
+    """Emit one bounded proof tree for a frozen Component-A pair."""
+    family = semantics["historical_cover_family_certificates"][config["json_name"]]
+    nested = family["nested_face_contradiction"]
+    basis = family["initial_basis_sources"]
+    basis_count = len(basis)
+    raw_sources: list[int] = []
+    source_values: list[str] = []
+    expected_characters: list[str] = []
+    for expected_index, row in enumerate(basis):
+        if row.get("character_index") != expected_index:
+            fail(f"{config['json_name']} basis ordering changed")
+        sources = row.get("sources")
+        if not isinstance(sources, list) or len(sources) != 1:
+            fail(f"{config['json_name']} basis source is not unique")
+        source = sources[0]
+        if source.get("kind") == "component_base_character":
+            source_values.append(f".base {int(source['base_character_index'])}")
+        elif source.get("kind") == "raw_factor_vertex":
+            if int(source["class_id"]) != config["class_id"]:
+                fail(f"{config['json_name']} raw basis source has the wrong class")
+            raw_position = len(raw_sources)
+            raw_sources.append(int(source["raw_factor_vertex_id"]))
+            source_values.append(f".raw {raw_position}")
+        else:
+            fail(f"{config['json_name']} has an unknown basis source")
+        character = row["character"]
+        expected_characters.append(
+            "{ exponent := "
+            + exponent_expr(character["row"])
+            + ", signExponent := "
+            + lean_int(int(character["bit"]))
+            + " }"
+        )
+    if source_values[:5] != [f".base {i}" for i in range(5)]:
+        fail(f"{config['json_name']} does not begin with the five base characters")
+    raw_count = len(raw_sources)
+    if raw_count != basis_count - 5 or raw_count == 0:
+        fail(f"{config['json_name']} raw basis source count changed")
+
+    stem = config["stem"]
+    family_dir = family_relative_dir(config)
+    shared_data_module = (
+        "MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Data"
+    )
+    data_module = family_module_name(config, "Data")
+    raw_id_name = f"{stem}RawFactorId8"
+    source_name = f"{stem}BasisSource8"
+    row_name = f"{stem}BasisRow8"
+    frozen_row_name = f"{stem}FrozenBasisRow8"
+    left_name = source_relation_name(config["left_row"])
+    right_name = source_relation_name(config["right_row"])
+    left_target_name = f"{stem}LeftReduced8"
+    right_target_name = f"{stem}RightReduced8"
+    full_target_name = f"{stem}FullDifferenceReduced8"
+    face_name = f"{stem}LeftFace8"
+    pairing_source_name = f"{stem}PairingSource8"
+    full_source_name = f"{stem}FullDifferenceSource8"
+    left_target = nested["left_relation_reduction"]["provenance"][
+        "normalized_target"
+    ]
+    right_target = nested["right_relation_reduction"]["provenance"][
+        "normalized_target"
+    ]
+    full_target = nested["left_minus_translated_right_reduction"]["provenance"][
+        "normalized_target"
+    ]
+    pairing_source = nested[
+        "translated_right_minus_left_face_reduces_to_zero"
+    ]["reduction"]["source_eq"]["rhs"]
+    full_source = nested["left_minus_translated_right_reduction"]["reduction"][
+        "source_eq"
+    ]["rhs"]
+    left_source_rows = polynomial_rows(nested["left_relation_source"]["relation"])
+    right_source_rows = polynomial_rows(nested["right_relation_source"]["relation"])
+    omitted_index = int(nested["omitted_source_term_index"])
+    face_rows = [
+        row for index, row in enumerate(left_source_rows) if index != omitted_index
+    ]
+    omitted_exponent = nested["omitted_exponent"]
+    omitted_coefficient = int(nested["omitted_coefficient"][0])
+    shift = nested["right_to_left_face_translation_shift"]
+    scalar = int(nested["face_integer_scalar"])
+    if len(right_source_rows) != 8:
+        fail(f"{config['json_name']} right source is not eight terms")
+    reduction_keys = (
+        "left_relation_reduction",
+        "right_relation_reduction",
+        "translated_right_minus_left_face_reduces_to_zero",
+        "left_minus_translated_right_reduction",
+    )
+    for key in reduction_keys:
+        wrapper = nested[key]
+        if wrapper.get("unit_ne_zero") is not True or int(wrapper["unit"]) == 0:
+            fail(f"{config['json_name']} {key} normalization unit is zero")
+
+    left_map = sparse_polynomial_map(left_source_rows)
+    right_map = sparse_polynomial_map(right_source_rows)
+    face_map = sparse_polynomial_map(face_rows)
+    pairing_map = sparse_polynomial_map(pairing_source)
+    full_map = sparse_polynomial_map(full_source)
+    translated_right_map = translate_polynomial_map(right_map, shift)
+    omitted_row_map = sparse_polynomial_map([left_source_rows[omitted_index]])
+    omitted_expected_map = sparse_polynomial_map(
+        [{"coefficient": omitted_coefficient, "exponent": omitted_exponent}]
+    )
+    if omitted_row_map != omitted_expected_map:
+        fail(f"{config['json_name']} omitted monomial payload changed")
+    if left_map != add_polynomial_maps((1, omitted_expected_map), (1, face_map)):
+        fail(f"{config['json_name']} left face decomposition changed")
+    if pairing_map != add_polynomial_maps(
+        (scalar, translated_right_map), (-1, face_map)
+    ):
+        fail(f"{config['json_name']} pairing raw-source identity changed")
+    if full_map != add_polynomial_maps(
+        (1, left_map), (-scalar, translated_right_map)
+    ):
+        fail(f"{config['json_name']} full raw-source identity changed")
+
+    raw_ids = vector_expr([str(value) for value in raw_sources], per_line=10)
+    basis_sources = vector_expr(source_values, per_line=6)
+    expected_rows = vector_expr(expected_characters, per_line=1)
+    data_body = f'''/-- Raw-factor IDs appearing in the frozen basis provenance. -/
 def {raw_id_name} : Fin {raw_count} → Fin 59 :=
   {raw_ids}
 
@@ -1008,17 +1194,96 @@ def {row_name} : Fin {basis_count} → SignedCharacterRow (Fin 144) :=
     tropicalComponentACharacter8
     (fun r ↦ tropicalComponentARawFactor8 ({raw_id_name} r))
 
-/-- The provenance interpretation is exactly the frozen signed-row basis. -/
+/-- Frozen signed rows, separated from their bounded equality replays. -/
+def {frozen_row_name} : Fin {basis_count} → SignedCharacterRow (Fin 144) :=
+  {expected_rows}
+
+/-- Frozen normalized left target. -/
+def {left_target_name} : LaurentPolynomial (Fin 144) :=
+  {polynomial_expr(left_target)}
+
+/-- Frozen normalized right target. -/
+def {right_target_name} : LaurentPolynomial (Fin 144) :=
+  {polynomial_expr(right_target)}
+
+/-- Frozen one-monomial target of the full source subtraction. -/
+def {full_target_name} : LaurentPolynomial (Fin 144) :=
+  {polynomial_expr(full_target)}
+
+/-- Raw left-source face after omitting source term {omitted_index}. -/
+def {face_name} : LaurentPolynomial (Fin 144) :=
+  {polynomial_expr(face_rows)}
+
+/-- Raw translated-right-minus-left-face polynomial. -/
+def {pairing_source_name} : LaurentPolynomial (Fin 144) :=
+  {polynomial_expr(pairing_source)}
+
+/-- Raw left-minus-translated-right polynomial. -/
+def {full_source_name} : LaurentPolynomial (Fin 144) :=
+  {polynomial_expr(full_source)}
+'''
+    artifacts: dict[Path, str] = {
+        COMPONENT_DIR / family_dir / "Data.lean": component_leaf_file(
+            [shared_data_module],
+            f"Frozen Component-A terminal data for {config['title']}",
+            data_body,
+        )
+    }
+
+    basis_row_theorems = []
+    raw_mem_theorems = []
+    for index in range(basis_count):
+        row_theorem = f"{row_name}_eq_frozen_row{index:03}"
+        basis_row_theorems.append(row_theorem)
+        raw_body = ""
+        if index >= 5:
+            raw_position = index - 5
+            raw_theorem = f"{raw_id_name}_mem_row{raw_position:03}"
+            raw_mem_theorems.append(raw_theorem)
+            raw_body = f'''
+
+/-- Bounded class-membership replay for raw basis row {raw_position}. -/
+theorem {raw_theorem} :
+    {raw_id_name} ({raw_position} : Fin {raw_count}) ∈
+      tropicalComponentAClassMembers8 {config["class_id"]} := by
+  decide
+'''
+        basis_body = f'''/-- Bounded frozen-basis replay for row {index}. -/
+theorem {row_theorem} :
+    {row_name} ({index} : Fin {basis_count}) =
+      {frozen_row_name} ({index} : Fin {basis_count}) := by
+  apply SignedCharacterRow.ext <;> decide{raw_body}
+'''
+        artifacts[
+            COMPONENT_DIR / family_dir / "Basis" / f"Row{index:03}.lean"
+        ] = component_leaf_file(
+            [data_module],
+            f"Bounded {config['title']} frozen basis row {index}",
+            basis_body,
+        )
+
+    basis_imports = [
+        family_module_name(config, f"Basis.Row{index:03}")
+        for index in range(basis_count)
+    ]
+    basis_dispatch = "\n".join(
+        f"  · exact {theorem}" for theorem in basis_row_theorems
+    )
+    raw_dispatch = "\n".join(
+        f"  · exact {theorem}" for theorem in raw_mem_theorems
+    )
+    basis_body = f'''/-- Decision-free collection of all frozen basis rows. -/
 theorem {row_name}_eq_frozen (i : Fin {basis_count}) :
     {row_name} i = {expected_rows} i := by
-  revert i
-  decide
+  change {row_name} i = {frozen_row_name} i
+  fin_cases i
+{basis_dispatch}
 
-/-- Every provenance-tagged raw row is a member of class {class_id}. -/
+/-- Every provenance-tagged raw row is a member of class {config["class_id"]}. -/
 theorem {raw_id_name}_mem (r : Fin {raw_count}) :
-    {raw_id_name} r ∈ tropicalComponentAClassMembers8 {class_id} := by
-  revert r
-  decide
+    {raw_id_name} r ∈ tropicalComponentAClassMembers8 {config["class_id"]} := by
+  fin_cases r
+{raw_dispatch}
 
 /-- An all-zero class supplies exactly the declared terminal basis. -/
 theorem {row_name}_holds
@@ -1026,7 +1291,7 @@ theorem {row_name}_holds
     (hChars : TropicalComponentACharacters8 W)
     (hzero : AllZeroInClass tropicalComponentAClassMembers8
       (fun r ↦ (tropicalComponentARawFactor8 r).factorValue
-        (tropicalSupportWeight8 W)) {class_id}) :
+        (tropicalSupportWeight8 W)) {config["class_id"]}) :
     ∀ i, ({row_name} i).Holds (tropicalSupportWeight8 W) := by
   have hraw : ∀ r : Fin {raw_count},
       (tropicalComponentARawFactor8 ({raw_id_name} r)).Holds
@@ -1040,68 +1305,183 @@ theorem {row_name}_holds
     (tropicalSupportWeight8 W) tropicalComponentACharacter8
     (fun r ↦ tropicalComponentARawFactor8 ({raw_id_name} r))
     hChars hraw ({source_name} i)
+'''
+    artifacts[COMPONENT_DIR / family_dir / "Basis.lean"] = component_leaf_file(
+        basis_imports,
+        f"Decision-free {config['title']} basis collector",
+        basis_body,
+    )
 
-/-- Frozen normalized left target. -/
-def {left_target_name} : LaurentPolynomial (Fin 144) :=
-  {polynomial_expr(left_target)}
+    reduction_specs = [
+        (
+            "Left",
+            left_name,
+            left_target_name,
+            nested["left_relation_reduction"]["reduction"],
+            int(nested["left_relation_reduction"]["unit"]),
+            source_explicit_theorem(config["left_row"]),
+        ),
+        (
+            "Right",
+            right_name,
+            right_target_name,
+            nested["right_relation_reduction"]["reduction"],
+            int(nested["right_relation_reduction"]["unit"]),
+            source_explicit_theorem(config["right_row"]),
+        ),
+        (
+            "Pairing",
+            pairing_source_name,
+            "0",
+            nested["translated_right_minus_left_face_reduces_to_zero"][
+                "reduction"
+            ],
+            0,
+            "",
+        ),
+        (
+            "FullDifference",
+            full_source_name,
+            full_target_name,
+            nested["left_minus_translated_right_reduction"]["reduction"],
+            int(nested["left_minus_translated_right_reduction"]["unit"]),
+            "",
+        ),
+    ]
+    for label, reduction_source, reduction_target, reduction, unit, explicit in reduction_specs:
+        artifacts.update(
+            split_reduction_artifacts(
+                config,
+                label,
+                basis_count,
+                row_name,
+                reduction_source,
+                reduction_target,
+                reduction,
+                normalized_unit=unit,
+                source_explicit=explicit,
+            )
+        )
 
-/-- Frozen normalized right target. -/
-def {right_target_name} : LaurentPolynomial (Fin 144) :=
-  {polynomial_expr(right_target)}
+    translated_imports = []
+    for index, row in enumerate(right_source_rows):
+        theorem_name = f"{stem}TranslatedRightExponent8_term{index:03}"
+        translated_imports.append(
+            family_module_name(config, f"Algebra.TranslatedRight.Term{index:03}")
+        )
+        translated_exponent = add_exponent_rows(shift, row["exponent"])
+        translated_body = f'''/-- Bounded shifted-exponent identity for right-source term {index}. -/
+@[simp] theorem {theorem_name} :
+    {exponent_expr(shift)} + {exponent_expr(row["exponent"])} =
+      {exponent_expr(translated_exponent)} := by
+  abel
+'''
+        artifacts[
+            COMPONENT_DIR
+            / family_dir
+            / "Algebra"
+            / "TranslatedRight"
+            / f"Term{index:03}.lean"
+        ] = component_leaf_file(
+            [data_module],
+            f"Bounded {config['title']} shifted exponent {index}",
+            translated_body,
+        )
+    artifacts[
+        COMPONENT_DIR / family_dir / "Algebra" / "TranslatedRight.lean"
+    ] = component_leaf_file(
+        translated_imports,
+        f"Decision-free {config['title']} shifted-exponent collector",
+        "/-- All eight shifted-exponent leaves are available from this module. -/",
+    )
 
-/-- Frozen one-monomial target of full source subtraction. -/
-def {full_target_name} : LaurentPolynomial (Fin 144) :=
-  {polynomial_expr(full_target)}
-
-/-- The eight raw left-source terms after omitting source term {omitted_index}. -/
-def {face_name} : LaurentPolynomial (Fin 144) :=
-  {polynomial_expr(face_rows)}
-
-/-- Raw translated-right-minus-left-face polynomial from the JSON certificate. -/
-def {pairing_source_name} : LaurentPolynomial (Fin 144) :=
-  {polynomial_expr(pairing_source)}
-
-/-- Raw left-minus-translated-right polynomial from the JSON certificate. -/
-def {full_source_name} : LaurentPolynomial (Fin 144) :=
-  {polynomial_expr(full_source)}
-
-{left_reduction}
-{right_reduction}
-{pairing_reduction}
-{full_reduction}
-/-- The pairing polynomial has exactly the frozen raw-source interpretation. -/
-theorem {pairing_source_name}_eq :
+    algebra_import = family_module_name(config, "Algebra.TranslatedRight")
+    pairing_eq_name = f"{pairing_source_name}_eq"
+    pairing_eq_body = f'''/-- Structural raw-source interpretation of the pairing polynomial. -/
+theorem {pairing_eq_name} :
     {pairing_source_name} =
       ({scalar} : ℤ) • LaurentPolynomial.translate {exponent_expr(shift)}
         {right_name} - {face_name} := by
-  rw [{source_explicit_theorem(config['right_row'])}]
-  decide
+  rw [{source_explicit_theorem(config["right_row"])}]
+  simp [tropicalTerminalExplicitRelation8, {pairing_source_name}, {face_name},
+    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single]
+  <;> abel
+'''
+    artifacts[
+        COMPONENT_DIR / family_dir / "Algebra" / "PairingSourceEq.lean"
+    ] = component_leaf_file(
+        [algebra_import],
+        f"Structural {config['title']} pairing-source equality",
+        pairing_eq_body,
+    )
 
-/-- The full subtraction likewise records both official source equations. -/
-theorem {full_source_name}_eq :
+    full_eq_name = f"{full_source_name}_eq"
+    full_eq_body = f'''/-- Structural raw-source interpretation of the full subtraction. -/
+theorem {full_eq_name} :
     {full_source_name} = {left_name} -
       ({scalar} : ℤ) • LaurentPolynomial.translate {exponent_expr(shift)}
         {right_name} := by
-  rw [{source_explicit_theorem(config['left_row'])},
-    {source_explicit_theorem(config['right_row'])}]
-  decide
+  rw [{source_explicit_theorem(config["left_row"])},
+    {source_explicit_theorem(config["right_row"])}]
+  simp [tropicalTerminalExplicitRelation8, {full_source_name},
+    LaurentPolynomial.translate_add, LaurentPolynomial.translate_single]
+  <;> abel
+'''
+    artifacts[
+        COMPONENT_DIR / family_dir / "Algebra" / "FullDifferenceSourceEq.lean"
+    ] = component_leaf_file(
+        [algebra_import],
+        f"Structural {config['title']} full-source equality",
+        full_eq_body,
+    )
 
-/-- Complete frozen raw-source nested-face certificate. -/
+    left_eq_name = f"{stem}LeftSource8_eq"
+    left_eq_body = f'''/-- Structural decomposition into the omitted monomial and left face. -/
+theorem {left_eq_name} :
+    {left_name} =
+      Finsupp.single {exponent_expr(omitted_exponent)}
+        ({lean_int(omitted_coefficient)} : ℤ) + {face_name} := by
+  rw [{source_explicit_theorem(config["left_row"])}]
+  simp [tropicalTerminalExplicitRelation8, {face_name}]
+  <;> abel
+'''
+    artifacts[
+        COMPONENT_DIR / family_dir / "Algebra" / "LeftSourceEq.lean"
+    ] = component_leaf_file(
+        [data_module],
+        f"Structural {config['title']} omitted-face equality",
+        left_eq_body,
+    )
+
+    artifacts[COMPONENT_DIR / family_dir / "Algebra.lean"] = component_leaf_file(
+        [
+            family_module_name(config, "Algebra.PairingSourceEq"),
+            family_module_name(config, "Algebra.FullDifferenceSourceEq"),
+            family_module_name(config, "Algebra.LeftSourceEq"),
+        ],
+        f"Decision-free {config['title']} algebra collector",
+        "/-- The three structural polynomial identities are exported here. -/",
+    )
+
+    pair_use_count = len(
+        nested["translated_right_minus_left_face_reduces_to_zero"]["reduction"][
+            "use"
+        ]
+    )
+    pair_body = f'''/-- Complete frozen raw-source nested-face certificate. -/
 def {stem}NestedFace8 :
     TropicalTerminalRawNestedFaceCertificate8 (κ := Fin {pair_use_count})
       {row_name} {left_name} {right_name} :=
 {{ omittedExponent := {exponent_expr(omitted_exponent)}
-  omittedCoefficient := {omitted_coefficient}
+  omittedCoefficient := {lean_int(omitted_coefficient)}
   omittedCoefficient_ne_zero := by norm_num
   face := {face_name}
-  faceScalar := {scalar}
+  faceScalar := {lean_int(scalar)}
   faceScalar_ne_zero := by norm_num
   faceShift := {exponent_expr(shift)}
-  left_eq := by
-    rw [{source_explicit_theorem(config['left_row'])}]
-    decide
+  left_eq := {left_eq_name}
   pairingSource := {pairing_source_name}
-  pairingSource_eq := {pairing_source_name}_eq
+  pairingSource_eq := {pairing_eq_name}
   pairingReduction := {stem}PairingReduction8
 }}
 
@@ -1111,20 +1491,29 @@ theorem {stem}_impossible8
     (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentACharacters8 W)
     (hzero : AllZeroInClass tropicalComponentAClassMembers8
       (fun r ↦ (tropicalComponentARawFactor8 r).factorValue
-        (tropicalSupportWeight8 W)) {class_id}) : False := by
+        (tropicalSupportWeight8 W)) {config["class_id"]}) : False := by
   exact false_of_tropicalTerminalRawNestedFaceCertificate8
     (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
     {row_name} {left_name} {right_name} {stem}NestedFace8
     ({row_name}_holds hChars hzero)
-    (tropicalTerminalRelation{config['left_row']}_8_hold hSupport hEq)
-    (tropicalTerminalRelation{config['right_row']}_8_hold hSupport hEq)
-
-end
-
-end MonochromaticQuantumGraphs.N8D3
+    (tropicalTerminalRelation{config["left_row"]}_8_hold hSupport hEq)
+    (tropicalTerminalRelation{config["right_row"]}_8_hold hSupport hEq)
 '''
-    filename = "Pair1213_874.lean" if config["left_row"] == 874 else "Pair437_65.lean"
-    return COMPONENT_DIR / filename, text
+    pair_imports = [
+        family_module_name(config, "Basis"),
+        family_module_name(config, "Left"),
+        family_module_name(config, "Right"),
+        family_module_name(config, "Pairing"),
+        family_module_name(config, "FullDifference"),
+        family_module_name(config, "Algebra"),
+    ]
+    pair_filename = "Pair1213_874.lean" if config["left_row"] == 874 else "Pair437_65.lean"
+    artifacts[COMPONENT_DIR / pair_filename] = component_leaf_file(
+        pair_imports,
+        f"Frozen Component-A terminal family {config['title']}",
+        pair_body,
+    )
+    return artifacts
 
 
 def component_main_file() -> str:
@@ -1178,8 +1567,7 @@ def generated_artifacts(
         COMPONENT_MAIN: component_main_file(),
     }
     for config in FAMILY_CONFIGS:
-        path, text = family_file(semantics, config)
-        artifacts[path] = text
+        artifacts.update(split_family_artifacts(semantics, config))
     return artifacts
 
 

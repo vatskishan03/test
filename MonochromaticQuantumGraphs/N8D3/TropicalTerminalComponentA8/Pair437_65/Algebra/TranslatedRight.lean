@@ -1,0 +1,27 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term000
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term001
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term002
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term003
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term004
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term005
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term006
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Algebra.TranslatedRight.Term007
+
+/-! Decision-free 437/65 shifted-exponent collector -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+open MonochromaticQuantumGraph
+open FactorCoverCertificate
+open scoped BigOperators Matrix
+
+noncomputable section
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 10000000
+
+/-- All eight shifted-exponent leaves are available from this module. -/
+
+end
+
+end MonochromaticQuantumGraphs.N8D3

@@ -1,0 +1,45 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use000
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use001
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use002
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use003
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use004
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use005
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use006
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use007
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use008
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use009
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use010
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use011
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use012
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use013
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use014
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use015
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.FullDifference.Use016
+
+/-! Collected 437/65 FullDifference reduction uses -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+open MonochromaticQuantumGraph
+open FactorCoverCertificate
+open scoped BigOperators Matrix
+
+noncomputable section
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 10000000
+
+/-- Decision-free collection of the bounded FullDifference uses. -/
+def terminalA437_65FullDifferenceReductionUse8 : Fin 17 → CharacterReductionUse terminalA437_65BasisRow8 :=
+  ![
+    terminalA437_65FullDifferenceReductionUse0008, terminalA437_65FullDifferenceReductionUse0018, terminalA437_65FullDifferenceReductionUse0028,
+    terminalA437_65FullDifferenceReductionUse0038, terminalA437_65FullDifferenceReductionUse0048, terminalA437_65FullDifferenceReductionUse0058,
+    terminalA437_65FullDifferenceReductionUse0068, terminalA437_65FullDifferenceReductionUse0078, terminalA437_65FullDifferenceReductionUse0088,
+    terminalA437_65FullDifferenceReductionUse0098, terminalA437_65FullDifferenceReductionUse0108, terminalA437_65FullDifferenceReductionUse0118,
+    terminalA437_65FullDifferenceReductionUse0128, terminalA437_65FullDifferenceReductionUse0138, terminalA437_65FullDifferenceReductionUse0148,
+    terminalA437_65FullDifferenceReductionUse0158, terminalA437_65FullDifferenceReductionUse0168
+  ]
+
+end
+
+end MonochromaticQuantumGraphs.N8D3

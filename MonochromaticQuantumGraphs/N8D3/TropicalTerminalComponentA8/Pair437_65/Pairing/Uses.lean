@@ -1,0 +1,44 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use000
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use001
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use002
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use003
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use004
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use005
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use006
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use007
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use008
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use009
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use010
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use011
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use012
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use013
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use014
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalComponentA8.Pair437_65.Pairing.Use015
+
+/-! Collected 437/65 Pairing reduction uses -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+open MonochromaticQuantumGraph
+open FactorCoverCertificate
+open scoped BigOperators Matrix
+
+noncomputable section
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 10000000
+
+/-- Decision-free collection of the bounded Pairing uses. -/
+def terminalA437_65PairingReductionUse8 : Fin 16 → CharacterReductionUse terminalA437_65BasisRow8 :=
+  ![
+    terminalA437_65PairingReductionUse0008, terminalA437_65PairingReductionUse0018, terminalA437_65PairingReductionUse0028,
+    terminalA437_65PairingReductionUse0038, terminalA437_65PairingReductionUse0048, terminalA437_65PairingReductionUse0058,
+    terminalA437_65PairingReductionUse0068, terminalA437_65PairingReductionUse0078, terminalA437_65PairingReductionUse0088,
+    terminalA437_65PairingReductionUse0098, terminalA437_65PairingReductionUse0108, terminalA437_65PairingReductionUse0118,
+    terminalA437_65PairingReductionUse0128, terminalA437_65PairingReductionUse0138, terminalA437_65PairingReductionUse0148,
+    terminalA437_65PairingReductionUse0158
+  ]
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
