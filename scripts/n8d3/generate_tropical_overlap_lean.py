@@ -162,7 +162,7 @@ def add_translated(
 
 def validate_rows(
     data: dict[str, Any], support: list[int]
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     base = data.get("base", {})
     overlap = data.get("first_overlap", {})
     retained = data.get("retained_factor_pipeline", {})
@@ -199,6 +199,12 @@ def validate_rows(
         )
         if len(polynomial) != 6:
             fail(f"base row {index} is not an exact six-term polynomial")
+        for term_index, term in enumerate(row["relation"]):
+            if term["coef"] != [1, 1]:
+                fail(f"base row {index} term {term_index} is not monic")
+            monomial = term["monomial"]
+            if len(monomial) != 4 or any(entry["exp"] != 1 for entry in monomial):
+                fail(f"base row {index} term {term_index} is not squarefree degree four")
         base_polynomials.append(polynomial)
 
     rows = overlap["rows"]
@@ -267,7 +273,7 @@ def validate_rows(
         if provenance_shift != expected_shift:
             fail(f"{context}: ratio provenance disagrees with normalized shifts")
 
-    return rows
+    return rows, base["rows"]
 
 
 def lean_vector(values: list[str], indent: str = "  ") -> str:
@@ -297,18 +303,45 @@ def lean_term(term: dict[str, Any]) -> str:
     if len(coordinates) != 5:
         fail("internal error: non-degree-five term reached Lean rendering")
     coefficient = term["coef"][0]
-    coefficient_text = "1" if coefficient == 1 else "(-1)"
-    return (
+    single = (
         "Finsupp.single\n"
         "      (tropicalOverlapDegreeFiveExponent8 "
         + " ".join(coordinates)
-        + f") {coefficient_text}"
+        + ") 1"
     )
+    return single if coefficient == 1 else f"(-{single})"
 
 
 def lean_relation(row: dict[str, Any]) -> str:
     terms = [lean_term(term) for term in row["relation"]]
     return (" +\n    ").join(terms)
+
+
+def lean_shifted_source_exponent(
+    use: dict[str, Any], term: dict[str, Any]
+) -> str:
+    coordinates = [entry["local"] for entry in term["monomial"]]
+    coordinates.append(local_of_single_shift(use))
+    if len(set(coordinates)) != 5:
+        fail("shifted base monomial is not squarefree degree five")
+    coordinates.sort()
+    return "tropicalOverlapDegreeFiveExponent8 " + " ".join(map(str, coordinates))
+
+
+def lean_shifted_source_table(
+    rows: list[dict[str, Any]], base_rows: list[dict[str, Any]], use_index: int
+) -> str:
+    rendered_rows: list[str] = []
+    for row in rows:
+        use = row["exact_source_uses"][use_index]
+        source = base_rows[use["source_index"]]["relation"]
+        rendered_rows.append(
+            lean_vector(
+                [lean_shifted_source_exponent(use, term) for term in source],
+                indent="    ",
+            )
+        )
+    return lean_vector(rendered_rows)
 
 
 def generate_data() -> str:
@@ -353,6 +386,37 @@ def tropicalOverlapProvenancePolynomial8
       LaurentPolynomial.translate (Pi.single p.coordinateA (1 : ℤ))
         (tropicalBaseRelation8 p.sourceJ))
 
+/-- Expand a translated reconstructed base relation without inspecting the
+quotient-based support representation of `Finsupp`. -/
+theorem tropicalOverlapTranslateBaseRelation8
+    (shift : LaurentExponent (Fin 144)) (r : Fin 200) :
+    LaurentPolynomial.translate shift (tropicalBaseRelation8 r) =
+      ∑ j : Fin 6,
+        Finsupp.single
+          (shift + tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+            (tropicalBaseMatching8 j)) 1 := by
+  classical
+  unfold tropicalBaseRelation8
+  calc
+    LaurentPolynomial.translate shift
+        (∑ j : Fin 6,
+          Finsupp.single
+            (tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+              (tropicalBaseMatching8 j)) 1) =
+      ∑ j : Fin 6,
+        LaurentPolynomial.translate shift
+          (Finsupp.single
+            (tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+              (tropicalBaseMatching8 j)) 1) := by
+        exact map_sum (LaurentPolynomial.translateLinear shift) _ Finset.univ
+    _ = ∑ j : Fin 6,
+        Finsupp.single
+          (shift + tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+            (tropicalBaseMatching8 j)) 1 := by
+      apply Finset.sum_congr rfl
+      intro j _
+      exact LaurentPolynomial.translate_single shift _ 1
+
 /-- Global row represented by one of 72 five-row overlap shards. -/
 def tropicalOverlapIndex8 (shard : Fin 72) (row : Fin 5) : Fin 360 :=
   ⟨5 * shard.val + row.val, by omega⟩
@@ -379,11 +443,17 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def generate_shard(shard: int, rows: list[dict[str, Any]]) -> str:
+def generate_shard(
+    shard: int,
+    rows: list[dict[str, Any]],
+    base_rows: list[dict[str, Any]],
+) -> str:
     if len(rows) != ROWS_PER_SHARD:
         fail(f"internal error: shard {shard} does not contain five rows")
     provenance = lean_vector([lean_provenance(row) for row in rows])
     relations = lean_vector([lean_relation(row) for row in rows])
+    source_i_exponents = lean_shifted_source_table(rows, base_rows, 0)
+    source_j_exponents = lean_shifted_source_table(rows, base_rows, 1)
     return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data
 
 /-! Kernel replay for first-overlap rows {shard * 5}--{shard * 5 + 4}. -/
@@ -404,15 +474,77 @@ def tropicalOverlapRelation8Shard{shard} :
     Fin 5 → LaurentPolynomial (Fin 144) :=
 {relations}
 
+/-- Explicit shifted exponents of the six monomials from source `B_i`. -/
+def tropicalOverlapSourceIExponent8Shard{shard} :
+    Fin 5 → Fin 6 → LaurentExponent (Fin 144) :=
+{source_i_exponents}
+
+/-- Explicit shifted exponents of the six monomials from source `B_j`. -/
+def tropicalOverlapSourceJExponent8Shard{shard} :
+    Fin 5 → Fin 6 → LaurentExponent (Fin 144) :=
+{source_j_exponents}
+
 set_option maxHeartbeats 10000000 in
-/-- Kernel replay of `T_r = epsilon_r * (x_b B_i - x_a B_j)` for shard
-{shard}. -/
+/-- Kernel replay of all 30 shifted `B_i` exponents in shard {shard}. -/
+theorem tropicalOverlapSourceIExponent8_replay_shard{shard}
+    (i : Fin 5) (j : Fin 6) :
+    Pi.single (tropicalOverlapProvenance8Shard{shard} i).coordinateB (1 : ℤ) +
+        tropicalMatchingLocalExponent8
+          (tropicalBaseColoring8
+            (tropicalOverlapProvenance8Shard{shard} i).sourceI)
+          (tropicalBaseMatching8 j) =
+      tropicalOverlapSourceIExponent8Shard{shard} i j := by
+  revert i j
+  decide
+
+set_option maxHeartbeats 10000000 in
+/-- Kernel replay of all 30 shifted `B_j` exponents in shard {shard}. -/
+theorem tropicalOverlapSourceJExponent8_replay_shard{shard}
+    (i : Fin 5) (j : Fin 6) :
+    Pi.single (tropicalOverlapProvenance8Shard{shard} i).coordinateA (1 : ℤ) +
+        tropicalMatchingLocalExponent8
+          (tropicalBaseColoring8
+            (tropicalOverlapProvenance8Shard{shard} i).sourceJ)
+          (tropicalBaseMatching8 j) =
+      tropicalOverlapSourceJExponent8Shard{shard} i j := by
+  revert i j
+  decide
+
+/-- The exact translated-source combination after exponent replay. -/
+def tropicalOverlapSourceCombination8Shard{shard}
+    (i : Fin 5) : LaurentPolynomial (Fin 144) :=
+  (tropicalOverlapProvenance8Shard{shard} i).epsilon •
+    ((∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceIExponent8Shard{shard} i j) 1) -
+      ∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceJExponent8Shard{shard} i j) 1)
+
+/-- Coefficientwise cancellation of the three common translated faces. -/
+private theorem tropicalOverlapRelation8_sourceCombination_shard{shard}
+    (i : Fin 5) :
+    tropicalOverlapRelation8Shard{shard} i =
+      tropicalOverlapSourceCombination8Shard{shard} i := by
+  fin_cases i <;>
+    simp [tropicalOverlapRelation8Shard{shard},
+      tropicalOverlapSourceCombination8Shard{shard},
+      tropicalOverlapProvenance8Shard{shard},
+      tropicalOverlapSourceIExponent8Shard{shard},
+      tropicalOverlapSourceJExponent8Shard{shard}, Fin.sum_univ_succ] <;>
+    abel
+
+/-- Staged kernel replay of `T_r = epsilon_r * (x_b B_i - x_a B_j)` for
+shard {shard}. -/
 theorem tropicalOverlapRelation8_provenance_shard{shard} (i : Fin 5) :
     tropicalOverlapRelation8Shard{shard} i =
       tropicalOverlapProvenancePolynomial8
         (tropicalOverlapProvenance8Shard{shard} i) := by
-  revert i
-  decide
+  rw [tropicalOverlapRelation8_sourceCombination_shard{shard}]
+  unfold tropicalOverlapSourceCombination8Shard{shard}
+  unfold tropicalOverlapProvenancePolynomial8
+  rw [tropicalOverlapTranslateBaseRelation8,
+    tropicalOverlapTranslateBaseRelation8]
+  simp_rw [tropicalOverlapSourceIExponent8_replay_shard{shard},
+    tropicalOverlapSourceJExponent8_replay_shard{shard}]
 
 end
 
@@ -560,12 +692,18 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def generated_files(rows: list[dict[str, Any]]) -> dict[Path, str]:
+def generated_files(
+    rows: list[dict[str, Any]], base_rows: list[dict[str, Any]]
+) -> dict[Path, str]:
     result = {DATA_PATH: generate_data(), AGGREGATE_PATH: generate_aggregate()}
     for shard in range(SHARD_COUNT):
         start = shard * ROWS_PER_SHARD
         path = SHARD_DIR / f"Shard{shard}.lean"
-        result[path] = generate_shard(shard, rows[start : start + ROWS_PER_SHARD])
+        result[path] = generate_shard(
+            shard,
+            rows[start : start + ROWS_PER_SHARD],
+            base_rows,
+        )
     return result
 
 
@@ -600,8 +738,8 @@ def main() -> None:
 
     data = read_pinned_json()
     support = read_support(data)
-    rows = validate_rows(data, support)
-    files = generated_files(rows)
+    rows, base_rows = validate_rows(data, support)
+    files = generated_files(rows, base_rows)
     forbidden = ("sorry", "admit", "axiom", "unsafe", "native_decide", "Lean.ofReduceBool")
     for path, text in files.items():
         for token in forbidden:

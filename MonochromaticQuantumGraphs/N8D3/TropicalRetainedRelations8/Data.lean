@@ -39,6 +39,37 @@ def tropicalOverlapProvenancePolynomial8
       LaurentPolynomial.translate (Pi.single p.coordinateA (1 : ℤ))
         (tropicalBaseRelation8 p.sourceJ))
 
+/-- Expand a translated reconstructed base relation without inspecting the
+quotient-based support representation of `Finsupp`. -/
+theorem tropicalOverlapTranslateBaseRelation8
+    (shift : LaurentExponent (Fin 144)) (r : Fin 200) :
+    LaurentPolynomial.translate shift (tropicalBaseRelation8 r) =
+      ∑ j : Fin 6,
+        Finsupp.single
+          (shift + tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+            (tropicalBaseMatching8 j)) 1 := by
+  classical
+  unfold tropicalBaseRelation8
+  calc
+    LaurentPolynomial.translate shift
+        (∑ j : Fin 6,
+          Finsupp.single
+            (tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+              (tropicalBaseMatching8 j)) 1) =
+      ∑ j : Fin 6,
+        LaurentPolynomial.translate shift
+          (Finsupp.single
+            (tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+              (tropicalBaseMatching8 j)) 1) := by
+        exact map_sum (LaurentPolynomial.translateLinear shift) _ Finset.univ
+    _ = ∑ j : Fin 6,
+        Finsupp.single
+          (shift + tropicalMatchingLocalExponent8 (tropicalBaseColoring8 r)
+            (tropicalBaseMatching8 j)) 1 := by
+      apply Finset.sum_congr rfl
+      intro j _
+      exact LaurentPolynomial.translate_single shift _ 1
+
 /-- Global row represented by one of 72 five-row overlap shards. -/
 def tropicalOverlapIndex8 (shard : Fin 72) (row : Fin 5) : Fin 360 :=
   ⟨5 * shard.val + row.val, by omega⟩
