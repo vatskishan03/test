@@ -69,7 +69,8 @@ theorem target_eq :
         Pi.single (119 : Fin 144) (1 : ℤ)) := by
     unfold shift
     abel
-  simp [use, monomial00, monomial01, monomial02, monomial03, leftFactor, rightFactor,
+  simp [use, use00, use01, use02, use03, TropicalFactorA8.Internal.useOfReduction,
+    monomial00, monomial01, monomial02, monomial03, leftFactor, rightFactor,
     TropicalFactorA8.Internal.Vertex005.row,
     TropicalFactorA8.Internal.Vertex034.row,
     SignedCharacterRow.factorProductPolynomial, signedCoefficient,

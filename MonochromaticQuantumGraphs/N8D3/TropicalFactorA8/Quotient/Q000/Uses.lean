@@ -1,18 +1,18 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M00
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M01
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M02
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M03
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M04
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M05
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M06
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M07
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M08
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M09
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M10
-import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Monomial.M11
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U00
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U01
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U02
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U03
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U04
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U05
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U06
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U07
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U08
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U09
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U10
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Quotient.Q000.Use.U11
 
 /-!
-# Component-A quotient row 0: reduction-use vector
+# Component-A quotient row 0: reduction-use dispatcher
 -/
 
 namespace MonochromaticQuantumGraphs.N8D3
@@ -32,182 +32,18 @@ namespace TropicalFactorA8.Internal.Quotient000
 def use :
     Fin 12 → CharacterReductionUse tropicalComponentACharacter8 :=
 ![
-  { coefficient := (1 : ℤ),
-      sourceExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (69 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (126 : Fin 144) (-1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (69 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (126 : Fin 144) (-1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      reduction := monomial00 },
-  { coefficient := (-1 : ℤ),
-      sourceExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (69 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (126 : Fin 144) (-1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (69 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (126 : Fin 144) (-1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      reduction := monomial01 },
-  { coefficient := (1 : ℤ),
-      sourceExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      reduction := monomial02 },
-  { coefficient := (-1 : ℤ),
-      sourceExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      reduction := monomial03 },
-  { coefficient := (1 : ℤ),
-      sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      reduction := monomial04 },
-  { coefficient := (-1 : ℤ),
-      sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      reduction := monomial05 },
-  { coefficient := (-1 : ℤ),
-      sourceExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      reduction := monomial06 },
-  { coefficient := (1 : ℤ),
-      sourceExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (25 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (116 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      reduction := monomial07 },
-  { coefficient := (-1 : ℤ),
-      sourceExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      reduction := monomial08 },
-  { coefficient := (1 : ℤ),
-      sourceExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (15 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (85 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      reduction := monomial09 },
-  { coefficient := (-1 : ℤ),
-      sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (48 : Fin 144) (-1 : ℤ) +
-        Pi.single (49 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (138 : Fin 144) (1 : ℤ)),
-      reduction := monomial10 },
-  { coefficient := (1 : ℤ),
-      sourceExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      targetExponent := (Pi.single (7 : Fin 144) (1 : ℤ) +
-        Pi.single (58 : Fin 144) (1 : ℤ) +
-        Pi.single (108 : Fin 144) (1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ) +
-        Pi.single (141 : Fin 144) (1 : ℤ)),
-      reduction := monomial11 }
+  use00,
+  use01,
+  use02,
+  use03,
+  use04,
+  use05,
+  use06,
+  use07,
+  use08,
+  use09,
+  use10,
+  use11
 ]
 
 end TropicalFactorA8.Internal.Quotient000

@@ -705,17 +705,37 @@ def emit_monomial_module(
 ''' + internal_end(kind, row_id) + FOOTER
 
 
-def emit_use_vector(uses: Sequence[dict[str, Any]], name: str, context: str) -> str:
-    items = []
-    for use_index, use in enumerate(uses):
-        use_context = f"{context} use {use_index}"
-        items.append(f'''{{ coefficient := {z(integer(use["coefficient"], use_context + " coefficient"))},
-      sourceExponent := {exponent(use["sourceExponent"], use_context + " source")},
-      targetExponent := {exponent(use["targetExponent"], use_context + " target")},
-      reduction := monomial{use_index:02d} }}''')
+def emit_use_module(
+    use: dict[str, Any], kind: str, row_id: int, use_index: int
+) -> str:
+    """Emit one bounded dependent record after its monomial has compiled."""
+    context = f"Component-A {kind} {row_id} use {use_index}"
+    module = {
+        "Source": source_base,
+        "Quotient": quotient_base,
+        "Factor": factor_base,
+    }[kind](row_id)
+    name = f"use{use_index:02d}"
+    return module_header(
+        [
+            f"{module}.Monomial.M{use_index:02d}",
+            "MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.UseCore",
+        ],
+        f"# Component-A {kind.lower()} {row_id}, reduction use {use_index}\n\n"
+        "One dependent reduction-use record, isolated after its monomial proof.",
+    ) + internal_begin(kind, row_id) + f'''def {name} :
+    CharacterReductionUse tropicalComponentACharacter8 :=
+  TropicalFactorA8.Internal.useOfReduction
+    {z(integer(use["coefficient"], context + " coefficient"))}
+    monomial{use_index:02d}
+''' + internal_end(kind, row_id) + FOOTER
+
+
+def emit_use_dispatch(use_count: int, name: str = "use") -> str:
+    """Collect already-compiled uniform use records without rebuilding them."""
     return f'''def {name} :
-    Fin {len(uses)} → CharacterReductionUse tropicalComponentACharacter8 :=
-{vector(items, "  ")}
+    Fin {use_count} → CharacterReductionUse tropicalComponentACharacter8 :=
+{vector([f"use{i:02d}" for i in range(use_count)], "  ")}
 '''
 
 
@@ -764,6 +784,30 @@ theorem tropicalComponentATranslate_sub8
       LaurentPolynomial.translate shift p -
         LaurentPolynomial.translate shift q := by
   exact LinearMap.map_sub (LaurentPolynomial.translateLinear shift) p q
+''' + FOOTER
+
+
+def emit_use_core() -> str:
+    return module_header(
+        ["MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Core"],
+        "# Lightweight constructor for sharded Component-A reduction uses",
+    ) + '''namespace TropicalFactorA8.Internal
+
+/-- Package an already-compiled monomial certificate as one reduction use.
+The large source and target exponents are inferred from the certificate type,
+so use leaves do not elaborate a second copy of either expression. -/
+def useOfReduction
+    (coefficient : ℤ)
+    {sourceExponent targetExponent : LaurentExponent (Fin 144)}
+    (reduction : MonomialReductionCertificate tropicalComponentACharacter8
+      sourceExponent targetExponent) :
+    CharacterReductionUse tropicalComponentACharacter8 where
+  coefficient := coefficient
+  sourceExponent := sourceExponent
+  targetExponent := targetExponent
+  reduction := reduction
+
+end TropicalFactorA8.Internal
 ''' + FOOTER
 
 
@@ -932,18 +976,18 @@ def reduced : LaurentPolynomial (Fin 144) :=
 
 def emit_source_uses(data: dict[str, Any], source_id: int) -> str:
     uses = data["quotient"]["source_reductions"][source_id]["certificate"]["reduction"]["use"]
-    imports = [f"{source_base(source_id)}.Monomial.M{i:02d}" for i in range(len(uses))]
+    imports = [f"{source_base(source_id)}.Use.U{i:02d}" for i in range(len(uses))]
     return module_header(
         imports,
-        f"# Component-A source reduction {source_id}: use vector",
-    ) + internal_begin("Source", source_id) + emit_use_vector(
-        uses, "use", f"Component-A source {source_id}"
+        f"# Component-A source reduction {source_id}: use dispatcher",
+    ) + internal_begin("Source", source_id) + emit_use_dispatch(
+        len(uses)
     ) + internal_end("Source", source_id) + FOOTER
 
 
 def emit_source_eq(data: dict[str, Any], source_id: int) -> str:
     _, row_name, _ = source_overlap_module(data, source_id)
-    monomials = ", ".join(f"monomial{i:02d}" for i in range(6))
+    use_defs = ", ".join(f"use{i:02d}" for i in range(6))
     return module_header(
         [f"{source_base(source_id)}.Uses"],
         f"# Component-A source reduction {source_id}: original polynomial equality",
@@ -951,7 +995,8 @@ def emit_source_eq(data: dict[str, Any], source_id: int) -> str:
     (∑ k : Fin 6,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
       sourcePolynomial := by
-  simp [use, {monomials}, sourcePolynomial, {row_name},
+  simp [use, {use_defs}, TropicalFactorA8.Internal.useOfReduction,
+    sourcePolynomial, {row_name},
     tropicalOverlapDegreeFiveExponent8, Fin.sum_univ_succ] <;> abel_nf
 ''' + internal_end("Source", source_id) + FOOTER
 
@@ -959,6 +1004,7 @@ def emit_source_eq(data: dict[str, Any], source_id: int) -> str:
 def emit_source_target_eq(data: dict[str, Any], source_id: int) -> str:
     payload = data["quotient"]["source_reductions"][source_id]["certificate"]
     monomials = ", ".join(f"monomial{i:02d}" for i in range(6))
+    use_defs = ", ".join(f"use{i:02d}" for i in range(6))
     return module_header(
         [f"{source_base(source_id)}.Uses"],
         f"# Component-A source reduction {source_id}: normalized target equality",
@@ -968,7 +1014,8 @@ def emit_source_target_eq(data: dict[str, Any], source_id: int) -> str:
         (signedCoefficient (use k).reduction.signExponent
           (use k).coefficient)) =
       {z(payload["unit"])} • reduced := by
-  simp [use, {monomials}, reduced,
+  simp [use, {use_defs}, TropicalFactorA8.Internal.useOfReduction,
+    {monomials}, reduced,
     signedCoefficient, Fin.sum_univ_succ] <;> abel
 ''' + internal_end("Source", source_id) + FOOTER
 
@@ -1124,18 +1171,19 @@ def relation : LaurentPolynomial (Fin 144) :=
 def emit_quotient_uses(data: dict[str, Any], quotient_id: int) -> str:
     uses = data["quotient"]["rows"][quotient_id]["combination_reduction"]["reduction"]["use"]
     imports = [
-        f"{quotient_base(quotient_id)}.Monomial.M{i:02d}"
+        f"{quotient_base(quotient_id)}.Use.U{i:02d}"
         for i in range(len(uses))
     ]
     return module_header(
         imports,
-        f"# Component-A quotient row {quotient_id}: reduction-use vector",
-    ) + internal_begin("Quotient", quotient_id) + emit_use_vector(
-        uses, "use", f"Component-A quotient {quotient_id}"
+        f"# Component-A quotient row {quotient_id}: reduction-use dispatcher",
+    ) + internal_begin("Quotient", quotient_id) + emit_use_dispatch(
+        len(uses)
     ) + internal_end("Quotient", quotient_id) + FOOTER
 
 
 def emit_quotient_source_eq(data: dict[str, Any], quotient_id: int) -> str:
+    use_defs = ", ".join(f"use{i:02d}" for i in range(12))
     return module_header(
         [f"{quotient_base(quotient_id)}.Uses"],
         f"# Component-A quotient row {quotient_id}: intermediate source equality",
@@ -1143,13 +1191,15 @@ def emit_quotient_source_eq(data: dict[str, Any], quotient_id: int) -> str:
     (∑ k : Fin 12,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
       intermediate := by
-  simp [use, intermediate, Fin.sum_univ_succ] <;> abel
+  simp [use, {use_defs}, TropicalFactorA8.Internal.useOfReduction,
+    intermediate, Fin.sum_univ_succ] <;> abel
 ''' + internal_end("Quotient", quotient_id) + FOOTER
 
 
 def emit_quotient_target_eq(data: dict[str, Any], quotient_id: int) -> str:
     payload = data["quotient"]["rows"][quotient_id]["combination_reduction"]
     monomials = ", ".join(f"monomial{i:02d}" for i in range(12))
+    use_defs = ", ".join(f"use{i:02d}" for i in range(12))
     return module_header(
         [f"{quotient_base(quotient_id)}.Uses"],
         f"# Component-A quotient row {quotient_id}: normalized target equality",
@@ -1159,7 +1209,8 @@ def emit_quotient_target_eq(data: dict[str, Any], quotient_id: int) -> str:
     (signedCoefficient (use k).reduction.signExponent
           (use k).coefficient)) =
       {z(payload["unit"])} • relation := by
-  simp [use, {monomials}, relation,
+  simp [use, {use_defs}, TropicalFactorA8.Internal.useOfReduction,
+    {monomials}, relation,
     signedCoefficient, Fin.sum_univ_succ] <;> abel
 ''' + internal_end("Quotient", quotient_id) + FOOTER
 
@@ -1391,17 +1442,18 @@ def shift : LaurentExponent (Fin 144) :=
 def emit_factor_uses(data: dict[str, Any], edge_id: int) -> str:
     payload = data["factor"]["edge_witnesses"][edge_id]["factor_certificate"]
     uses = payload["reduction"]["use"]
-    imports = [f"{factor_base(edge_id)}.Monomial.M{i:02d}" for i in range(len(uses))]
+    imports = [f"{factor_base(edge_id)}.Use.U{i:02d}" for i in range(len(uses))]
     return module_header(
         imports,
-        f"# Component-A factor edge {edge_id}: reduction-use vector",
-    ) + internal_begin("Factor", edge_id) + emit_use_vector(
-        uses, "use", f"Component-A factor edge {edge_id}"
+        f"# Component-A factor edge {edge_id}: reduction-use dispatcher",
+    ) + internal_begin("Factor", edge_id) + emit_use_dispatch(
+        len(uses)
     ) + internal_end("Factor", edge_id) + FOOTER
 
 
 def emit_factor_source_eq(data: dict[str, Any], edge_id: int) -> str:
     quotient_id = data["factor"]["edge_witnesses"][edge_id]["source_quotient_index"]
+    use_defs = ", ".join(f"use{i:02d}" for i in range(4))
     return module_header(
         [f"{factor_base(edge_id)}.Uses"],
         f"# Component-A factor edge {edge_id}: quotient source equality",
@@ -1409,7 +1461,8 @@ def emit_factor_source_eq(data: dict[str, Any], edge_id: int) -> str:
     (∑ k : Fin 4,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
       sourceRelation := by
-  simp [use, sourceRelation,
+  simp [use, {use_defs}, TropicalFactorA8.Internal.useOfReduction,
+    sourceRelation,
     {internal_namespace("Quotient", quotient_id)}.relation,
     Fin.sum_univ_succ] <;> abel
 ''' + internal_end("Factor", edge_id) + FOOTER
@@ -1453,6 +1506,7 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
             "    abel"
         )
     monomials = ", ".join(f"monomial{i:02d}" for i in range(4))
+    use_defs = ", ".join(f"use{i:02d}" for i in range(4))
     return module_header(
         [f"{factor_base(edge_id)}.Uses"],
         f"# Component-A factor edge {edge_id}: translated product equality",
@@ -1464,7 +1518,8 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
       {z(payload["unit"])} • LaurentPolynomial.translate shift
         (leftFactor.factorProductPolynomial rightFactor) := by
 {chr(10).join(h_lines)}
-  simp [use, {monomials}, leftFactor, rightFactor,
+  simp [use, {use_defs}, TropicalFactorA8.Internal.useOfReduction,
+    {monomials}, leftFactor, rightFactor,
     TropicalFactorA8.Internal.Vertex{left:03d}.row,
     TropicalFactorA8.Internal.Vertex{right:03d}.row,
     SignedCharacterRow.factorProductPolynomial, signedCoefficient,
@@ -1805,7 +1860,8 @@ def validate_generated_layout(
         + QUOTIENT_COUNT * 20
         + RAW_VERTEX_COUNT
         + RAW_EDGE_COUNT * 11
-        + 8
+        + MONOMIAL_REPLAY_COUNT
+        + 9
     )
     lean_paths = [path for path in generated if path != umbrella]
     if len(lean_paths) != expected_lean_count:
@@ -1874,8 +1930,62 @@ def validate_generated_layout(
     for path, text in source_equalities.items():
         if "<;> abel_nf" not in text:
             fail(f"source equality lacks order-independent normalization: {path}")
+        if re.search(r"\bmonomial\d{2}\b", text):
+            fail(f"source equality unfolds a monomial proof body: {path}")
         if "tropicalMatchingLocalExponent8" in text:
             fail(f"source equality acquired positional matching replay: {path}")
+
+    use_families = (
+        ("Source", "S", SOURCE_COUNT, 6, source_base),
+        ("Quotient", "Q", QUOTIENT_COUNT, 12, quotient_base),
+        ("Factor", "E", RAW_EDGE_COUNT, 4, factor_base),
+    )
+    checked_use_leaves = 0
+    for family, prefix, row_count, use_count, base in use_families:
+        for row_id in range(row_count):
+            dispatcher_path = Path(f"{family}/{prefix}{row_id:03d}/Uses.lean")
+            dispatcher = contents[dispatcher_path]
+            expected_imports = [
+                f"import {base(row_id)}.Use.U{use_index:02d}"
+                for use_index in range(use_count)
+            ]
+            actual_imports = re.findall(r"^import \S+$", dispatcher, re.MULTILINE)
+            if actual_imports != expected_imports:
+                fail(f"use dispatcher imports changed: {dispatcher_path}")
+            expected_signature = (
+                "def use :\n"
+                f"    Fin {use_count} → CharacterReductionUse "
+                "tropicalComponentACharacter8 :="
+            )
+            if expected_signature not in dispatcher:
+                fail(f"use dispatcher API changed: {dispatcher_path}")
+            if "Monomial.M" in dispatcher:
+                fail(f"use dispatcher imports monomial proofs directly: {dispatcher_path}")
+            for use_index in range(use_count):
+                leaf_path = Path(
+                    f"{family}/{prefix}{row_id:03d}/Use/U{use_index:02d}.lean"
+                )
+                leaf = contents[leaf_path]
+                leaf_imports = re.findall(r"^import \S+$", leaf, re.MULTILINE)
+                expected_leaf_import = [
+                    f"import {base(row_id)}.Monomial.M{use_index:02d}",
+                    "import MonochromaticQuantumGraphs.N8D3."
+                    "TropicalFactorA8.UseCore",
+                ]
+                if leaf_imports != expected_leaf_import:
+                    fail(f"use leaf import changed: {leaf_path}")
+                if (
+                    f"def use{use_index:02d} :" not in leaf
+                    or "TropicalFactorA8.Internal.useOfReduction" not in leaf
+                    or f"monomial{use_index:02d}" not in leaf
+                ):
+                    fail(f"use leaf payload changed: {leaf_path}")
+                checked_use_leaves += 1
+    if checked_use_leaves != MONOMIAL_REPLAY_COUNT:
+        fail(
+            "generated bounded use-leaf count changed: "
+            f"{checked_use_leaves} != {MONOMIAL_REPLAY_COUNT}"
+        )
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source\n"
@@ -1945,25 +2055,31 @@ def validate_generated_layout(
     stage_counts = {
         "source data": len(list(output.glob("Source/S*/Data.lean"))),
         "source monomial": len(list(output.glob("Source/S*/Monomial/M*.lean"))),
+        "source use": len(list(output.glob("Source/S*/Use/U*.lean"))),
         "source equality": len(list(output.glob("Source/S*/*Eq.lean"))),
         "quotient data": len(list(output.glob("Quotient/Q*/Data.lean"))),
         "quotient monomial": len(list(output.glob("Quotient/Q*/Monomial/M*.lean"))),
+        "quotient use": len(list(output.glob("Quotient/Q*/Use/U*.lean"))),
         "quotient equality": len(list(output.glob("Quotient/Q*/*Eq.lean"))),
         "vertex data": len(list(output.glob("Factor/Vertex/V*.lean"))),
         "factor data": len(list(output.glob("Factor/E*/Data.lean"))),
         "factor monomial": len(list(output.glob("Factor/E*/Monomial/M*.lean"))),
+        "factor use": len(list(output.glob("Factor/E*/Use/U*.lean"))),
         "factor equality": len(list(output.glob("Factor/E*/*Eq.lean"))),
     }
     expected_stage_counts = {
         "source data": SOURCE_COUNT,
         "source monomial": SOURCE_COUNT * 6,
+        "source use": SOURCE_COUNT * 6,
         "source equality": SOURCE_COUNT * 2,
         "quotient data": QUOTIENT_COUNT,
         "quotient monomial": QUOTIENT_COUNT * 12,
+        "quotient use": QUOTIENT_COUNT * 12,
         "quotient equality": QUOTIENT_COUNT * 3,
         "vertex data": RAW_VERTEX_COUNT,
         "factor data": RAW_EDGE_COUNT,
         "factor monomial": RAW_EDGE_COUNT * 4,
+        "factor use": RAW_EDGE_COUNT * 4,
         "factor equality": RAW_EDGE_COUNT * 2,
     }
     if stage_counts != expected_stage_counts:
@@ -1984,6 +2100,7 @@ def validate_generated_layout(
 
     size_bounds = {
         Path("Core.lean"): 100,
+        Path("UseCore.lean"): 100,
         Path("GraphData.lean"): 500,
         Path("Data.lean"): 3000,
     }
@@ -2002,6 +2119,9 @@ def validate_generated_layout(
             "def tropicalComponentAWithParityCoefficients8",
             "theorem signedCharacterRow_eq_of_fields",
             "theorem tropicalComponentATranslate_sub8",
+        ),
+        Path("UseCore.lean"): (
+            "def useOfReduction",
         ),
         Path("GraphData.lean"): (
             "def tropicalComponentARawFactorEdgePair8",
@@ -2061,6 +2181,7 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
         generated.append(path)
 
     put("Core.lean", emit_core())
+    put("UseCore.lean", emit_use_core())
     put("GraphData.lean", emit_graph_data(data))
     for source_id in range(SOURCE_COUNT):
         uses = data["quotient"]["source_reductions"][source_id]["certificate"]["reduction"]["use"]
@@ -2069,6 +2190,10 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
             put(
                 f"Source/S{source_id:03d}/Monomial/M{use_index:02d}.lean",
                 emit_monomial_module(use, "Source", source_id, use_index),
+            )
+            put(
+                f"Source/S{source_id:03d}/Use/U{use_index:02d}.lean",
+                emit_use_module(use, "Source", source_id, use_index),
             )
         put(f"Source/S{source_id:03d}/Uses.lean", emit_source_uses(data, source_id))
         put(f"Source/S{source_id:03d}/SourceEq.lean", emit_source_eq(data, source_id))
@@ -2085,6 +2210,10 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
                 f"Quotient/Q{quotient_id:03d}/Monomial/M{use_index:02d}.lean",
                 emit_monomial_module(use, "Quotient", quotient_id, use_index),
             )
+            put(
+                f"Quotient/Q{quotient_id:03d}/Use/U{use_index:02d}.lean",
+                emit_use_module(use, "Quotient", quotient_id, use_index),
+            )
         put(f"Quotient/Q{quotient_id:03d}/Uses.lean", emit_quotient_uses(data, quotient_id))
         put(f"Quotient/Q{quotient_id:03d}/SourceEq.lean", emit_quotient_source_eq(data, quotient_id))
         put(f"Quotient/Q{quotient_id:03d}/TargetEq.lean", emit_quotient_target_eq(data, quotient_id))
@@ -2100,6 +2229,10 @@ def generate(data: dict[str, Any], output: Path, umbrella: Path) -> list[Path]:
             put(
                 f"Factor/E{edge_id:03d}/Monomial/M{use_index:02d}.lean",
                 emit_monomial_module(use, "Factor", edge_id, use_index),
+            )
+            put(
+                f"Factor/E{edge_id:03d}/Use/U{use_index:02d}.lean",
+                emit_use_module(use, "Factor", edge_id, use_index),
             )
         put(f"Factor/E{edge_id:03d}/Uses.lean", emit_factor_uses(data, edge_id))
         put(f"Factor/E{edge_id:03d}/SourceEq.lean", emit_factor_source_eq(data, edge_id))

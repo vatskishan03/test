@@ -24,7 +24,8 @@ theorem target_eq :
     (signedCoefficient (use k).reduction.signExponent
           (use k).coefficient)) =
       (1 : ℤ) • relation := by
-  simp [use, monomial00, monomial01, monomial02, monomial03, monomial04, monomial05, monomial06, monomial07, monomial08, monomial09, monomial10, monomial11, relation,
+  simp [use, use00, use01, use02, use03, use04, use05, use06, use07, use08, use09, use10, use11, TropicalFactorA8.Internal.useOfReduction,
+    monomial00, monomial01, monomial02, monomial03, monomial04, monomial05, monomial06, monomial07, monomial08, monomial09, monomial10, monomial11, relation,
     signedCoefficient, Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorA8.Internal.Quotient064

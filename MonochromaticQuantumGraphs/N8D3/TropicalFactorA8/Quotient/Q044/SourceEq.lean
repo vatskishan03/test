@@ -22,7 +22,8 @@ theorem source_eq :
     (∑ k : Fin 12,
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
       intermediate := by
-  simp [use, intermediate, Fin.sum_univ_succ] <;> abel
+  simp [use, use00, use01, use02, use03, use04, use05, use06, use07, use08, use09, use10, use11, TropicalFactorA8.Internal.useOfReduction,
+    intermediate, Fin.sum_univ_succ] <;> abel
 
 end TropicalFactorA8.Internal.Quotient044
 
