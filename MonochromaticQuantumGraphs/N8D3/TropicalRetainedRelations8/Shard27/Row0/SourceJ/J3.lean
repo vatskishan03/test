@@ -1,0 +1,23 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard27.Row0.Data
+
+/-! Source-J matching-3 exponent replay for first-overlap row 135. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
+
+set_option maxHeartbeats 10000000 in
+/-- Kernel replay of shifted `B_j` exponent 3 in row 135. -/
+theorem tropicalOverlapSourceJExponent8_replay_row135_j3 :
+    Pi.single tropicalOverlapProvenance8Row135.coordinateA (1 : ℤ) +
+        tropicalMatchingLocalExponent8
+          (tropicalBaseColoring8 tropicalOverlapProvenance8Row135.sourceJ)
+          (tropicalBaseMatching8 3) =
+      tropicalOverlapSourceJExponent8Row135 3 := by
+  decide
+
+end
+
+end MonochromaticQuantumGraphs.N8D3

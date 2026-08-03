@@ -533,10 +533,25 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def generate_row_source_i(shard: int, local_row: int, global_row: int) -> str:
+def source_side_coordinate(side: str) -> tuple[str, str, str]:
+    if side == "I":
+        return "coordinateB", "sourceI", "B_i"
+    if side == "J":
+        return "coordinateA", "sourceJ", "B_j"
+    fail(f"unknown overlap source side: {side}")
+
+
+def generate_row_source_case(
+    shard: int,
+    local_row: int,
+    global_row: int,
+    side: str,
+    matching: int,
+) -> str:
+    coordinate, source, label = source_side_coordinate(side)
     return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Data
 
-/-! Source-I exponent replay for first-overlap row {global_row}. -/
+/-! Source-{side} matching-{matching} exponent replay for first-overlap row {global_row}. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -545,14 +560,14 @@ noncomputable section
 set_option maxRecDepth 100000
 
 set_option maxHeartbeats 10000000 in
-/-- Kernel replay of the six shifted `B_i` exponents in row {global_row}. -/
-theorem tropicalOverlapSourceIExponent8_replay_row{global_row} (j : Fin 6) :
-    Pi.single tropicalOverlapProvenance8Row{global_row}.coordinateB (1 : ℤ) +
+/-- Kernel replay of shifted `{label}` exponent {matching} in row {global_row}. -/
+theorem tropicalOverlapSource{side}Exponent8_replay_row{global_row}_j{matching} :
+    Pi.single tropicalOverlapProvenance8Row{global_row}.{coordinate} (1 : ℤ) +
         tropicalMatchingLocalExponent8
-          (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.sourceI)
-          (tropicalBaseMatching8 j) =
-      tropicalOverlapSourceIExponent8Row{global_row} j := by
-  fin_cases j <;> decide
+          (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.{source})
+          (tropicalBaseMatching8 {matching}) =
+      tropicalOverlapSource{side}Exponent8Row{global_row} {matching} := by
+  decide
 
 end
 
@@ -560,10 +575,26 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def generate_row_source_j(shard: int, local_row: int, global_row: int) -> str:
-    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Data
+def generate_row_source_collector(
+    shard: int,
+    local_row: int,
+    global_row: int,
+    side: str,
+) -> str:
+    coordinate, source, label = source_side_coordinate(side)
+    imports = "\n".join(
+        "import MonochromaticQuantumGraphs.N8D3."
+        f"TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Source{side}.J{j}"
+        for j in range(6)
+    )
+    cases = "\n".join(
+        f"  · simpa using tropicalOverlapSource{side}Exponent8_replay_"
+        f"row{global_row}_j{j}"
+        for j in range(6)
+    )
+    return f'''{imports}
 
-/-! Source-J exponent replay for first-overlap row {global_row}. -/
+/-! Collect the six source-{side} exponent replays for first-overlap row {global_row}. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -571,15 +602,15 @@ noncomputable section
 
 set_option maxRecDepth 100000
 
-set_option maxHeartbeats 10000000 in
-/-- Kernel replay of the six shifted `B_j` exponents in row {global_row}. -/
-theorem tropicalOverlapSourceJExponent8_replay_row{global_row} (j : Fin 6) :
-    Pi.single tropicalOverlapProvenance8Row{global_row}.coordinateA (1 : ℤ) +
+/-- Kernel replay of all six shifted `{label}` exponents in row {global_row}. -/
+theorem tropicalOverlapSource{side}Exponent8_replay_row{global_row} (j : Fin 6) :
+    Pi.single tropicalOverlapProvenance8Row{global_row}.{coordinate} (1 : ℤ) +
         tropicalMatchingLocalExponent8
-          (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.sourceJ)
+          (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.{source})
           (tropicalBaseMatching8 j) =
-      tropicalOverlapSourceJExponent8Row{global_row} j := by
-  fin_cases j <;> decide
+      tropicalOverlapSource{side}Exponent8Row{global_row} j := by
+  fin_cases j
+{cases}
 
 end
 
@@ -872,12 +903,18 @@ def generated_files(
             result[row_path / "Data.lean"] = generate_row_data(
                 global_row, provenance, relation, source_i, source_j
             )
-            result[row_path / "SourceI.lean"] = generate_row_source_i(
-                shard, local_row, global_row
-            )
-            result[row_path / "SourceJ.lean"] = generate_row_source_j(
-                shard, local_row, global_row
-            )
+            for side in ("I", "J"):
+                result[row_path / f"Source{side}.lean"] = (
+                    generate_row_source_collector(
+                        shard, local_row, global_row, side
+                    )
+                )
+                for matching in range(6):
+                    result[
+                        row_path / f"Source{side}" / f"J{matching}.lean"
+                    ] = generate_row_source_case(
+                        shard, local_row, global_row, side, matching
+                    )
             result[row_path / "Cancellation.lean"] = generate_row_cancellation(
                 shard, local_row, global_row
             )
@@ -904,10 +941,27 @@ def write_or_check(files: dict[Path, str], check: bool) -> None:
     existing_row_parts = (
         set(SHARD_DIR.glob("Shard*/Row*/*.lean")) if SHARD_DIR.exists() else set()
     )
+    expected_source_cases = {
+        SHARD_DIR
+        / f"Shard{shard}"
+        / f"Row{row}"
+        / f"Source{side}"
+        / f"J{matching}.lean"
+        for shard in range(SHARD_COUNT)
+        for row in range(ROWS_PER_SHARD)
+        for side in ("I", "J")
+        for matching in range(6)
+    }
+    existing_source_cases = (
+        set(SHARD_DIR.glob("Shard*/Row*/Source[IJ]/J*.lean"))
+        if SHARD_DIR.exists()
+        else set()
+    )
     unexpected = sorted(
         (existing_shards - expected_shards)
         | (existing_rows - expected_rows)
         | (existing_row_parts - expected_row_parts)
+        | (existing_source_cases - expected_source_cases)
     )
     if unexpected:
         fail("unexpected generated shard files: " + ", ".join(map(str, unexpected)))

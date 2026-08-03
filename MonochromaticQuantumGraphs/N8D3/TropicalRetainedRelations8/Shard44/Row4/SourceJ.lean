@@ -1,6 +1,11 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.Data
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.SourceJ.J0
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.SourceJ.J1
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.SourceJ.J2
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.SourceJ.J3
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.SourceJ.J4
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard44.Row4.SourceJ.J5
 
-/-! Source-J exponent replay for first-overlap row 224. -/
+/-! Collect the six source-J exponent replays for first-overlap row 224. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -8,15 +13,20 @@ noncomputable section
 
 set_option maxRecDepth 100000
 
-set_option maxHeartbeats 10000000 in
-/-- Kernel replay of the six shifted `B_j` exponents in row 224. -/
+/-- Kernel replay of all six shifted `B_j` exponents in row 224. -/
 theorem tropicalOverlapSourceJExponent8_replay_row224 (j : Fin 6) :
     Pi.single tropicalOverlapProvenance8Row224.coordinateA (1 : ℤ) +
         tropicalMatchingLocalExponent8
           (tropicalBaseColoring8 tropicalOverlapProvenance8Row224.sourceJ)
           (tropicalBaseMatching8 j) =
       tropicalOverlapSourceJExponent8Row224 j := by
-  fin_cases j <;> decide
+  fin_cases j
+  · simpa using tropicalOverlapSourceJExponent8_replay_row224_j0
+  · simpa using tropicalOverlapSourceJExponent8_replay_row224_j1
+  · simpa using tropicalOverlapSourceJExponent8_replay_row224_j2
+  · simpa using tropicalOverlapSourceJExponent8_replay_row224_j3
+  · simpa using tropicalOverlapSourceJExponent8_replay_row224_j4
+  · simpa using tropicalOverlapSourceJExponent8_replay_row224_j5
 
 end
 
