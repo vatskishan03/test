@@ -9,6 +9,7 @@ import MonochromaticQuantumGraphs.N8D3.TropicalTerminalBranches8.State3.Branch1
 
 namespace MonochromaticQuantumGraphs.N8D3
 
+open MonochromaticQuantumGraph
 open MonochromaticQuantumGraphs
 open scoped BigOperators
 

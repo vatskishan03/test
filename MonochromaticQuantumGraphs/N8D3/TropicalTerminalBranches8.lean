@@ -14,6 +14,7 @@ derivative contradiction.
 
 namespace MonochromaticQuantumGraphs.N8D3
 
+open MonochromaticQuantumGraph
 open MonochromaticQuantumGraphs.FactorCoverCertificate
 
 /-- The Component B characters cannot hold at an exact GHZ solution on the
