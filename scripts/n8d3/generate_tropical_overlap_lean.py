@@ -443,20 +443,40 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def generate_shard(
+def generate_row(
     shard: int,
-    rows: list[dict[str, Any]],
+    local_row: int,
+    row: dict[str, Any],
     base_rows: list[dict[str, Any]],
 ) -> str:
-    if len(rows) != ROWS_PER_SHARD:
-        fail(f"internal error: shard {shard} does not contain five rows")
-    provenance = lean_vector([lean_provenance(row) for row in rows])
-    relations = lean_vector([lean_relation(row) for row in rows])
-    source_i_exponents = lean_shifted_source_table(rows, base_rows, 0)
-    source_j_exponents = lean_shifted_source_table(rows, base_rows, 1)
+    global_row = shard * ROWS_PER_SHARD + local_row
+    if row["index"] != global_row:
+        fail(f"internal error: expected overlap row {global_row}")
+    provenance = lean_provenance(row)
+    relation = lean_relation(row)
+    source_i_exponents = lean_vector(
+        [
+            lean_shifted_source_exponent(
+                row["exact_source_uses"][0], term
+            )
+            for term in base_rows[
+                row["exact_source_uses"][0]["source_index"]
+            ]["relation"]
+        ]
+    )
+    source_j_exponents = lean_vector(
+        [
+            lean_shifted_source_exponent(
+                row["exact_source_uses"][1], term
+            )
+            for term in base_rows[
+                row["exact_source_uses"][1]["source_index"]
+            ]["relation"]
+        ]
+    )
     return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data
 
-/-! Kernel replay for first-overlap rows {shard * 5}--{shard * 5 + 4}. -/
+/-! Kernel replay for first-overlap row {global_row}. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -464,87 +484,137 @@ noncomputable section
 
 set_option maxRecDepth 100000
 
-/-- Exact two-base-source provenance for overlap shard {shard}. -/
+/-- Exact two-base-source provenance for overlap row {global_row}. -/
+def tropicalOverlapProvenance8Row{global_row} : TropicalOverlapProvenance8 :=
+  {provenance}
+
+/-- The explicit sparse target polynomial in overlap row {global_row}. -/
+def tropicalOverlapRelation8Row{global_row} : LaurentPolynomial (Fin 144) :=
+  {relation}
+
+/-- Explicit shifted exponents of the six monomials from source `B_i`. -/
+def tropicalOverlapSourceIExponent8Row{global_row} :
+    Fin 6 → LaurentExponent (Fin 144) :=
+{source_i_exponents}
+
+/-- Explicit shifted exponents of the six monomials from source `B_j`. -/
+def tropicalOverlapSourceJExponent8Row{global_row} :
+    Fin 6 → LaurentExponent (Fin 144) :=
+{source_j_exponents}
+
+set_option maxHeartbeats 10000000 in
+/-- Kernel replay of the six shifted `B_i` exponents in row {global_row}. -/
+theorem tropicalOverlapSourceIExponent8_replay_row{global_row} (j : Fin 6) :
+    Pi.single tropicalOverlapProvenance8Row{global_row}.coordinateB (1 : ℤ) +
+        tropicalMatchingLocalExponent8
+          (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.sourceI)
+          (tropicalBaseMatching8 j) =
+      tropicalOverlapSourceIExponent8Row{global_row} j := by
+  revert j
+  decide
+
+set_option maxHeartbeats 10000000 in
+/-- Kernel replay of the six shifted `B_j` exponents in row {global_row}. -/
+theorem tropicalOverlapSourceJExponent8_replay_row{global_row} (j : Fin 6) :
+    Pi.single tropicalOverlapProvenance8Row{global_row}.coordinateA (1 : ℤ) +
+        tropicalMatchingLocalExponent8
+          (tropicalBaseColoring8 tropicalOverlapProvenance8Row{global_row}.sourceJ)
+          (tropicalBaseMatching8 j) =
+      tropicalOverlapSourceJExponent8Row{global_row} j := by
+  revert j
+  decide
+
+/-- The exact translated-source combination after exponent replay. -/
+def tropicalOverlapSourceCombination8Row{global_row} :
+    LaurentPolynomial (Fin 144) :=
+  tropicalOverlapProvenance8Row{global_row}.epsilon •
+    ((∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceIExponent8Row{global_row} j) 1) -
+      ∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceJExponent8Row{global_row} j) 1)
+
+/-- Coefficientwise cancellation of the three common translated faces. -/
+private theorem tropicalOverlapRelation8_sourceCombination_row{global_row} :
+    tropicalOverlapRelation8Row{global_row} =
+      tropicalOverlapSourceCombination8Row{global_row} := by
+  simp [tropicalOverlapRelation8Row{global_row},
+    tropicalOverlapSourceCombination8Row{global_row},
+    tropicalOverlapProvenance8Row{global_row},
+    tropicalOverlapSourceIExponent8Row{global_row},
+    tropicalOverlapSourceJExponent8Row{global_row}, Fin.sum_univ_succ]
+  abel
+
+/-- Staged kernel replay of `T_r = epsilon_r * (x_b B_i - x_a B_j)` for
+row {global_row}. -/
+theorem tropicalOverlapRelation8_provenance_row{global_row} :
+    tropicalOverlapRelation8Row{global_row} =
+      tropicalOverlapProvenancePolynomial8
+        tropicalOverlapProvenance8Row{global_row} := by
+  rw [tropicalOverlapRelation8_sourceCombination_row{global_row}]
+  unfold tropicalOverlapSourceCombination8Row{global_row}
+  unfold tropicalOverlapProvenancePolynomial8
+  rw [tropicalOverlapTranslateBaseRelation8,
+    tropicalOverlapTranslateBaseRelation8]
+  simp_rw [tropicalOverlapSourceIExponent8_replay_row{global_row},
+    tropicalOverlapSourceJExponent8_replay_row{global_row}]
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
+'''
+
+
+def shard_row_imports(shard: int) -> str:
+    return "\n".join(
+        "import MonochromaticQuantumGraphs.N8D3."
+        f"TropicalRetainedRelations8.Shard{shard}.Row{local_row}"
+        for local_row in range(ROWS_PER_SHARD)
+    )
+
+
+def generate_shard(shard: int) -> str:
+    global_rows = [shard * ROWS_PER_SHARD + i for i in range(ROWS_PER_SHARD)]
+    provenance = lean_vector(
+        [f"tropicalOverlapProvenance8Row{row}" for row in global_rows]
+    )
+    relations = lean_vector(
+        [f"tropicalOverlapRelation8Row{row}" for row in global_rows]
+    )
+    cases = "\n".join(
+        "  · simpa [tropicalOverlapRelation8Shard{shard},\n"
+        "      tropicalOverlapProvenance8Shard{shard}] using\n"
+        "      tropicalOverlapRelation8_provenance_row{row}".format(
+            shard=shard, row=row
+        )
+        for row in global_rows
+    )
+    return f'''{shard_row_imports(shard)}
+
+/-! Lightweight dispatch for first-overlap rows {global_rows[0]}--{global_rows[-1]}. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
+
+/-- Exact provenance for the five independently replayed rows in shard {shard}. -/
 def tropicalOverlapProvenance8Shard{shard} :
     Fin 5 → TropicalOverlapProvenance8 :=
 {provenance}
 
-/-- The five explicit sparse target polynomials in overlap shard {shard}. -/
+/-- Explicit targets for the five independently replayed rows in shard {shard}. -/
 def tropicalOverlapRelation8Shard{shard} :
     Fin 5 → LaurentPolynomial (Fin 144) :=
 {relations}
 
-/-- Explicit shifted exponents of the six monomials from source `B_i`. -/
-def tropicalOverlapSourceIExponent8Shard{shard} :
-    Fin 5 → Fin 6 → LaurentExponent (Fin 144) :=
-{source_i_exponents}
-
-/-- Explicit shifted exponents of the six monomials from source `B_j`. -/
-def tropicalOverlapSourceJExponent8Shard{shard} :
-    Fin 5 → Fin 6 → LaurentExponent (Fin 144) :=
-{source_j_exponents}
-
-set_option maxHeartbeats 10000000 in
-/-- Kernel replay of all 30 shifted `B_i` exponents in shard {shard}. -/
-theorem tropicalOverlapSourceIExponent8_replay_shard{shard}
-    (i : Fin 5) (j : Fin 6) :
-    Pi.single (tropicalOverlapProvenance8Shard{shard} i).coordinateB (1 : ℤ) +
-        tropicalMatchingLocalExponent8
-          (tropicalBaseColoring8
-            (tropicalOverlapProvenance8Shard{shard} i).sourceI)
-          (tropicalBaseMatching8 j) =
-      tropicalOverlapSourceIExponent8Shard{shard} i j := by
-  revert i j
-  decide
-
-set_option maxHeartbeats 10000000 in
-/-- Kernel replay of all 30 shifted `B_j` exponents in shard {shard}. -/
-theorem tropicalOverlapSourceJExponent8_replay_shard{shard}
-    (i : Fin 5) (j : Fin 6) :
-    Pi.single (tropicalOverlapProvenance8Shard{shard} i).coordinateA (1 : ℤ) +
-        tropicalMatchingLocalExponent8
-          (tropicalBaseColoring8
-            (tropicalOverlapProvenance8Shard{shard} i).sourceJ)
-          (tropicalBaseMatching8 j) =
-      tropicalOverlapSourceJExponent8Shard{shard} i j := by
-  revert i j
-  decide
-
-/-- The exact translated-source combination after exponent replay. -/
-def tropicalOverlapSourceCombination8Shard{shard}
-    (i : Fin 5) : LaurentPolynomial (Fin 144) :=
-  (tropicalOverlapProvenance8Shard{shard} i).epsilon •
-    ((∑ j : Fin 6,
-        Finsupp.single (tropicalOverlapSourceIExponent8Shard{shard} i j) 1) -
-      ∑ j : Fin 6,
-        Finsupp.single (tropicalOverlapSourceJExponent8Shard{shard} i j) 1)
-
-/-- Coefficientwise cancellation of the three common translated faces. -/
-private theorem tropicalOverlapRelation8_sourceCombination_shard{shard}
-    (i : Fin 5) :
-    tropicalOverlapRelation8Shard{shard} i =
-      tropicalOverlapSourceCombination8Shard{shard} i := by
-  fin_cases i <;>
-    simp [tropicalOverlapRelation8Shard{shard},
-      tropicalOverlapSourceCombination8Shard{shard},
-      tropicalOverlapProvenance8Shard{shard},
-      tropicalOverlapSourceIExponent8Shard{shard},
-      tropicalOverlapSourceJExponent8Shard{shard}, Fin.sum_univ_succ] <;>
-    abel
-
-/-- Staged kernel replay of `T_r = epsilon_r * (x_b B_i - x_a B_j)` for
-shard {shard}. -/
+/-- Collect the five one-row provenance replays in shard {shard}. -/
 theorem tropicalOverlapRelation8_provenance_shard{shard} (i : Fin 5) :
     tropicalOverlapRelation8Shard{shard} i =
       tropicalOverlapProvenancePolynomial8
         (tropicalOverlapProvenance8Shard{shard} i) := by
-  rw [tropicalOverlapRelation8_sourceCombination_shard{shard}]
-  unfold tropicalOverlapSourceCombination8Shard{shard}
-  unfold tropicalOverlapProvenancePolynomial8
-  rw [tropicalOverlapTranslateBaseRelation8,
-    tropicalOverlapTranslateBaseRelation8]
-  simp_rw [tropicalOverlapSourceIExponent8_replay_shard{shard},
-    tropicalOverlapSourceJExponent8_replay_shard{shard}]
+  fin_cases i
+{cases}
 
 end
 
@@ -698,19 +768,33 @@ def generated_files(
     result = {DATA_PATH: generate_data(), AGGREGATE_PATH: generate_aggregate()}
     for shard in range(SHARD_COUNT):
         start = shard * ROWS_PER_SHARD
-        path = SHARD_DIR / f"Shard{shard}.lean"
-        result[path] = generate_shard(
-            shard,
-            rows[start : start + ROWS_PER_SHARD],
-            base_rows,
-        )
+        result[SHARD_DIR / f"Shard{shard}.lean"] = generate_shard(shard)
+        for local_row in range(ROWS_PER_SHARD):
+            result[
+                SHARD_DIR / f"Shard{shard}" / f"Row{local_row}.lean"
+            ] = generate_row(
+                shard,
+                local_row,
+                rows[start + local_row],
+                base_rows,
+            )
     return result
 
 
 def write_or_check(files: dict[Path, str], check: bool) -> None:
     expected_shards = {SHARD_DIR / f"Shard{i}.lean" for i in range(SHARD_COUNT)}
     existing_shards = set(SHARD_DIR.glob("Shard*.lean")) if SHARD_DIR.exists() else set()
-    unexpected = sorted(existing_shards - expected_shards)
+    expected_rows = {
+        SHARD_DIR / f"Shard{shard}" / f"Row{row}.lean"
+        for shard in range(SHARD_COUNT)
+        for row in range(ROWS_PER_SHARD)
+    }
+    existing_rows = (
+        set(SHARD_DIR.glob("Shard*/Row*.lean")) if SHARD_DIR.exists() else set()
+    )
+    unexpected = sorted(
+        (existing_shards - expected_shards) | (existing_rows - expected_rows)
+    )
     if unexpected:
         fail("unexpected generated shard files: " + ", ".join(map(str, unexpected)))
 

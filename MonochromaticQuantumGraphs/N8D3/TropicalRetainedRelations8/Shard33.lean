@@ -1,6 +1,10 @@
-import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard33.Row0
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard33.Row1
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard33.Row2
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard33.Row3
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard33.Row4
 
-/-! Kernel replay for first-overlap rows 165--169. -/
+/-! Lightweight dispatch for first-overlap rows 165--169. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -8,236 +12,49 @@ noncomputable section
 
 set_option maxRecDepth 100000
 
-/-- Exact two-base-source provenance for overlap shard 33. -/
+/-- Exact provenance for the five independently replayed rows in shard 33. -/
 def tropicalOverlapProvenance8Shard33 :
     Fin 5 → TropicalOverlapProvenance8 :=
 ![
-  { epsilon := -1, sourceI := 60, coordinateB := 87, sourceJ := 73, coordinateA := 85 },
-  { epsilon := 1, sourceI := 60, coordinateB := 90, sourceJ := 77, coordinateA := 85 },
-  { epsilon := 1, sourceI := 61, coordinateB := 88, sourceJ := 63, coordinateA := 85 },
-  { epsilon := -1, sourceI := 61, coordinateB := 86, sourceJ := 67, coordinateA := 85 },
-  { epsilon := 1, sourceI := 61, coordinateB := 89, sourceJ := 71, coordinateA := 85 }
+  tropicalOverlapProvenance8Row165,
+  tropicalOverlapProvenance8Row166,
+  tropicalOverlapProvenance8Row167,
+  tropicalOverlapProvenance8Row168,
+  tropicalOverlapProvenance8Row169
 ]
 
-/-- The five explicit sparse target polynomials in overlap shard 33. -/
+/-- Explicit targets for the five independently replayed rows in shard 33. -/
 def tropicalOverlapRelation8Shard33 :
     Fin 5 → LaurentPolynomial (Fin 144) :=
 ![
-  Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 58 85 104 141) 1 +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 58 85 115 126) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 58 87 98 141) 1) +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 58 87 109 126) 1) +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 69 85 122) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 69 87 116) 1),
-  Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 58 90 98 141) 1 +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 58 90 109 126) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 59 85 104 141) 1) +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 59 85 115 126) 1) +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 69 90 116) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 26 52 69 85 122) 1),
-  Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 88 98 141) 1 +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 88 109 126) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 65 85 98 141) 1) +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 65 85 109 126) 1) +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 75 88 116) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 26 52 75 85 116) 1),
-  Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 85 101 141) 1 +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 85 112 126) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 86 98 141) 1) +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 86 109 126) 1) +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 75 85 119) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 75 86 116) 1),
-  Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 89 98 141) 1 +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 64 89 109 126) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 65 85 101 141) 1) +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 7 65 85 112 126) 1) +
-    Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 25 52 75 89 116) 1 +
-    (-Finsupp.single
-      (tropicalOverlapDegreeFiveExponent8 26 52 75 85 119) 1)
+  tropicalOverlapRelation8Row165,
+  tropicalOverlapRelation8Row166,
+  tropicalOverlapRelation8Row167,
+  tropicalOverlapRelation8Row168,
+  tropicalOverlapRelation8Row169
 ]
 
-/-- Explicit shifted exponents of the six monomials from source `B_i`. -/
-def tropicalOverlapSourceIExponent8Shard33 :
-    Fin 5 → Fin 6 → LaurentExponent (Fin 144) :=
-![
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 58 87 98 141,
-    tropicalOverlapDegreeFiveExponent8 7 58 87 109 126,
-    tropicalOverlapDegreeFiveExponent8 7 69 85 87 141,
-    tropicalOverlapDegreeFiveExponent8 15 41 85 87 141,
-    tropicalOverlapDegreeFiveExponent8 15 52 85 87 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 69 87 116
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 58 90 98 141,
-    tropicalOverlapDegreeFiveExponent8 7 58 90 109 126,
-    tropicalOverlapDegreeFiveExponent8 7 69 85 90 141,
-    tropicalOverlapDegreeFiveExponent8 15 41 85 90 141,
-    tropicalOverlapDegreeFiveExponent8 15 52 85 90 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 69 90 116
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 64 88 98 141,
-    tropicalOverlapDegreeFiveExponent8 7 64 88 109 126,
-    tropicalOverlapDegreeFiveExponent8 7 75 85 88 141,
-    tropicalOverlapDegreeFiveExponent8 17 41 85 88 141,
-    tropicalOverlapDegreeFiveExponent8 17 52 85 88 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 75 88 116
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 64 86 98 141,
-    tropicalOverlapDegreeFiveExponent8 7 64 86 109 126,
-    tropicalOverlapDegreeFiveExponent8 7 75 85 86 141,
-    tropicalOverlapDegreeFiveExponent8 17 41 85 86 141,
-    tropicalOverlapDegreeFiveExponent8 17 52 85 86 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 75 86 116
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 64 89 98 141,
-    tropicalOverlapDegreeFiveExponent8 7 64 89 109 126,
-    tropicalOverlapDegreeFiveExponent8 7 75 85 89 141,
-    tropicalOverlapDegreeFiveExponent8 17 41 85 89 141,
-    tropicalOverlapDegreeFiveExponent8 17 52 85 89 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 75 89 116
-]
-]
-
-/-- Explicit shifted exponents of the six monomials from source `B_j`. -/
-def tropicalOverlapSourceJExponent8Shard33 :
-    Fin 5 → Fin 6 → LaurentExponent (Fin 144) :=
-![
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 58 85 104 141,
-    tropicalOverlapDegreeFiveExponent8 7 58 85 115 126,
-    tropicalOverlapDegreeFiveExponent8 7 69 85 87 141,
-    tropicalOverlapDegreeFiveExponent8 15 41 85 87 141,
-    tropicalOverlapDegreeFiveExponent8 15 52 85 87 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 69 85 122
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 59 85 104 141,
-    tropicalOverlapDegreeFiveExponent8 7 59 85 115 126,
-    tropicalOverlapDegreeFiveExponent8 7 69 85 90 141,
-    tropicalOverlapDegreeFiveExponent8 15 41 85 90 141,
-    tropicalOverlapDegreeFiveExponent8 15 52 85 90 126,
-    tropicalOverlapDegreeFiveExponent8 26 52 69 85 122
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 65 85 98 141,
-    tropicalOverlapDegreeFiveExponent8 7 65 85 109 126,
-    tropicalOverlapDegreeFiveExponent8 7 75 85 88 141,
-    tropicalOverlapDegreeFiveExponent8 17 41 85 88 141,
-    tropicalOverlapDegreeFiveExponent8 17 52 85 88 126,
-    tropicalOverlapDegreeFiveExponent8 26 52 75 85 116
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 64 85 101 141,
-    tropicalOverlapDegreeFiveExponent8 7 64 85 112 126,
-    tropicalOverlapDegreeFiveExponent8 7 75 85 86 141,
-    tropicalOverlapDegreeFiveExponent8 17 41 85 86 141,
-    tropicalOverlapDegreeFiveExponent8 17 52 85 86 126,
-    tropicalOverlapDegreeFiveExponent8 25 52 75 85 119
-],
-  ![
-    tropicalOverlapDegreeFiveExponent8 7 65 85 101 141,
-    tropicalOverlapDegreeFiveExponent8 7 65 85 112 126,
-    tropicalOverlapDegreeFiveExponent8 7 75 85 89 141,
-    tropicalOverlapDegreeFiveExponent8 17 41 85 89 141,
-    tropicalOverlapDegreeFiveExponent8 17 52 85 89 126,
-    tropicalOverlapDegreeFiveExponent8 26 52 75 85 119
-]
-]
-
-set_option maxHeartbeats 10000000 in
-/-- Kernel replay of all 30 shifted `B_i` exponents in shard 33. -/
-theorem tropicalOverlapSourceIExponent8_replay_shard33
-    (i : Fin 5) (j : Fin 6) :
-    Pi.single (tropicalOverlapProvenance8Shard33 i).coordinateB (1 : ℤ) +
-        tropicalMatchingLocalExponent8
-          (tropicalBaseColoring8
-            (tropicalOverlapProvenance8Shard33 i).sourceI)
-          (tropicalBaseMatching8 j) =
-      tropicalOverlapSourceIExponent8Shard33 i j := by
-  revert i j
-  decide
-
-set_option maxHeartbeats 10000000 in
-/-- Kernel replay of all 30 shifted `B_j` exponents in shard 33. -/
-theorem tropicalOverlapSourceJExponent8_replay_shard33
-    (i : Fin 5) (j : Fin 6) :
-    Pi.single (tropicalOverlapProvenance8Shard33 i).coordinateA (1 : ℤ) +
-        tropicalMatchingLocalExponent8
-          (tropicalBaseColoring8
-            (tropicalOverlapProvenance8Shard33 i).sourceJ)
-          (tropicalBaseMatching8 j) =
-      tropicalOverlapSourceJExponent8Shard33 i j := by
-  revert i j
-  decide
-
-/-- The exact translated-source combination after exponent replay. -/
-def tropicalOverlapSourceCombination8Shard33
-    (i : Fin 5) : LaurentPolynomial (Fin 144) :=
-  (tropicalOverlapProvenance8Shard33 i).epsilon •
-    ((∑ j : Fin 6,
-        Finsupp.single (tropicalOverlapSourceIExponent8Shard33 i j) 1) -
-      ∑ j : Fin 6,
-        Finsupp.single (tropicalOverlapSourceJExponent8Shard33 i j) 1)
-
-/-- Coefficientwise cancellation of the three common translated faces. -/
-private theorem tropicalOverlapRelation8_sourceCombination_shard33
-    (i : Fin 5) :
-    tropicalOverlapRelation8Shard33 i =
-      tropicalOverlapSourceCombination8Shard33 i := by
-  fin_cases i <;>
-    simp [tropicalOverlapRelation8Shard33,
-      tropicalOverlapSourceCombination8Shard33,
-      tropicalOverlapProvenance8Shard33,
-      tropicalOverlapSourceIExponent8Shard33,
-      tropicalOverlapSourceJExponent8Shard33, Fin.sum_univ_succ] <;>
-    abel
-
-/-- Staged kernel replay of `T_r = epsilon_r * (x_b B_i - x_a B_j)` for
-shard 33. -/
+/-- Collect the five one-row provenance replays in shard 33. -/
 theorem tropicalOverlapRelation8_provenance_shard33 (i : Fin 5) :
     tropicalOverlapRelation8Shard33 i =
       tropicalOverlapProvenancePolynomial8
         (tropicalOverlapProvenance8Shard33 i) := by
-  rw [tropicalOverlapRelation8_sourceCombination_shard33]
-  unfold tropicalOverlapSourceCombination8Shard33
-  unfold tropicalOverlapProvenancePolynomial8
-  rw [tropicalOverlapTranslateBaseRelation8,
-    tropicalOverlapTranslateBaseRelation8]
-  simp_rw [tropicalOverlapSourceIExponent8_replay_shard33,
-    tropicalOverlapSourceJExponent8_replay_shard33]
+  fin_cases i
+  · simpa [tropicalOverlapRelation8Shard33,
+      tropicalOverlapProvenance8Shard33] using
+      tropicalOverlapRelation8_provenance_row165
+  · simpa [tropicalOverlapRelation8Shard33,
+      tropicalOverlapProvenance8Shard33] using
+      tropicalOverlapRelation8_provenance_row166
+  · simpa [tropicalOverlapRelation8Shard33,
+      tropicalOverlapProvenance8Shard33] using
+      tropicalOverlapRelation8_provenance_row167
+  · simpa [tropicalOverlapRelation8Shard33,
+      tropicalOverlapProvenance8Shard33] using
+      tropicalOverlapRelation8_provenance_row168
+  · simpa [tropicalOverlapRelation8Shard33,
+      tropicalOverlapProvenance8Shard33] using
+      tropicalOverlapRelation8_provenance_row169
 
 end
 
