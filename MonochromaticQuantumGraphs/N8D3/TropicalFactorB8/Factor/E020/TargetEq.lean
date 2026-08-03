@@ -108,7 +108,7 @@ theorem target_eq :
     SignedCharacterRow.factorProductPolynomial,
     tropicalComponentBTranslateSub8, LaurentPolynomial.translate_add,
     LaurentPolynomial.translate_single, signedCoefficient,
-    Fin.sum_univ_succ, hexp0, hexp1, hexp2, hexp3] <;> abel
+    Fin.sum_univ_succ, hexp0, hexp1, hexp2, hexp3] <;> abel_nf
 
 end TropicalFactorB8.Internal.Factor020
 
