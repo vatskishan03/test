@@ -42,7 +42,8 @@ def monomial03 :
           SignedCharacterRow.withParityGenerator,
           SignedCharacterRow.parityGenerator,
           tropicalComponentBCharacter8, tropicalBinomialCharacter8,
-          differenceRow] <;> abel
+          differenceRow] <;>
+        (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
       · norm_num [SignedCharacterRow.linearCombination,
           Fintype.sum_sum_type, Fin.sum_univ_succ,
           tropicalComponentBWithParityCoefficients8,

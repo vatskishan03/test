@@ -967,7 +967,8 @@ def monomial{use_index:02d} :
           SignedCharacterRow.withParityGenerator,
           SignedCharacterRow.parityGenerator,
           tropicalComponentBCharacter8, tropicalBinomialCharacter8,
-          differenceRow] <;> abel
+          differenceRow] <;>
+        (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
       · norm_num [SignedCharacterRow.linearCombination,
           Fintype.sum_sum_type, Fin.sum_univ_succ,
           tropicalComponentBWithParityCoefficients8,
@@ -1930,10 +1931,16 @@ def audit_generated(
     finite_vector_normalization = (
         "tropicalComponentBWithParityCoefficients8,\n          Fin.last,"
     )
+    pointwise_exponent_normalization = (
+        "differenceRow] <;>\n"
+        "        (ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
+    )
     for path, text in proof_tree.items():
         if "Monomial" in path.parts:
             if structural_ext not in text:
                 fail(f"monomial leaf does not use structural row equality: {path}")
+            if pointwise_exponent_normalization not in text:
+                fail(f"monomial leaf lacks pointwise exponent normalization: {path}")
             sign_normalization = text.find("· norm_num [")
             vector_normalization = text.find(finite_vector_normalization)
             if (
