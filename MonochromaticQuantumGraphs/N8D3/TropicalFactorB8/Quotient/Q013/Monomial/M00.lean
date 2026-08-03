@@ -46,6 +46,7 @@ def monomial00 :
       · norm_num [SignedCharacterRow.linearCombination,
           Fintype.sum_sum_type, Fin.sum_univ_succ,
           tropicalComponentBWithParityCoefficients8,
+          Fin.last,
           SignedCharacterRow.withParityGenerator,
           SignedCharacterRow.parityGenerator,
           tropicalComponentBCharacter8, tropicalBinomialCharacter8,

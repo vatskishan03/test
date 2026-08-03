@@ -787,6 +787,7 @@ def monomial{use_index:02d} :
       · norm_num [SignedCharacterRow.linearCombination,
           Fintype.sum_sum_type, Fin.sum_univ_succ,
           tropicalComponentBWithParityCoefficients8,
+          Fin.last,
           SignedCharacterRow.withParityGenerator,
           SignedCharacterRow.parityGenerator,
           tropicalComponentBCharacter8, tropicalBinomialCharacter8,
@@ -1753,9 +1754,21 @@ def audit_generated(
     structural_ext = (
         "apply TropicalFactorB8.Internal.signedCharacterRow_eq_of_fields"
     )
+    finite_vector_normalization = (
+        "tropicalComponentBWithParityCoefficients8,\n          Fin.last,"
+    )
     for path, text in proof_tree.items():
-        if "Monomial" in path.parts and structural_ext not in text:
-            fail(f"monomial leaf does not use structural row equality: {path}")
+        if "Monomial" in path.parts:
+            if structural_ext not in text:
+                fail(f"monomial leaf does not use structural row equality: {path}")
+            sign_normalization = text.find("· norm_num [")
+            vector_normalization = text.find(finite_vector_normalization)
+            if (
+                sign_normalization < 0
+                or vector_normalization < sign_normalization
+                or text.count(finite_vector_normalization) != 1
+            ):
+                fail(f"monomial leaf lacks bounded vector normalization: {path}")
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source\n"
