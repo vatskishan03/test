@@ -34,7 +34,6 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 3299) 0 7 59 102 139
       (by decide) (by decide) (by decide) (by decide)]
-    abel
   have hexp1 :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3299) 1 =
         (Pi.single (7 : Fin 144) (1 : ℤ) +
@@ -44,7 +43,6 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 3299) 1 7 59 111 130
       (by decide) (by decide) (by decide) (by decide)]
-    abel
   have hexp2 :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3299) 6 =
         (Pi.single (7 : Fin 144) (1 : ℤ) +
@@ -54,7 +52,6 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 3299) 6 7 70 89 139
       (by decide) (by decide) (by decide) (by decide)]
-    abel
   have hexp3 :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3299) 21 =
         (Pi.single (15 : Fin 144) (1 : ℤ) +
@@ -64,7 +61,6 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 3299) 21 15 42 89 139
       (by decide) (by decide) (by decide) (by decide)]
-    abel
   have hexp4 :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3299) 24 =
         (Pi.single (15 : Fin 144) (1 : ℤ) +
@@ -74,7 +70,6 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 3299) 24 15 51 89 130
       (by decide) (by decide) (by decide) (by decide)]
-    abel
   have hexp5 :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3299) 40 =
         (Pi.single (26 : Fin 144) (1 : ℤ) +
@@ -84,7 +79,6 @@ theorem source_eq :
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 3299) 40 26 51 70 120
       (by decide) (by decide) (by decide) (by decide)]
-    abel
   simp [uses, monomial00,
     monomial01,
     monomial02,

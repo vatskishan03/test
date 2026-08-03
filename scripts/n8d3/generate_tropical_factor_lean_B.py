@@ -1080,8 +1080,7 @@ def emit_source_source_eq(data: dict[str, Any], source_id: int) -> str:
         {exponent(rows, f"source {source_id} base exponent {term_index}")} := by
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
       (tropicalColoringOfCode8 {code}) {matching} {locals_}
-      (by decide) (by decide) (by decide) (by decide)]
-    abel''')
+      (by decide) (by decide) (by decide) (by decide)]''')
         proof_prefix = "\n".join(replay_chunks) + "\n"
         extra_simp = ", hcolor, " + ", ".join(
             f"hexp{i}" for i in range(6)
@@ -1960,6 +1959,13 @@ def audit_generated(
             f"{emitted_base_coordinate_equalities} != "
             f"{expected_base_coordinate_equalities}"
         )
+    for path, text in proof_tree.items():
+        if (
+            path.parts[0] == "Source"
+            and path.name == "SourceEq.lean"
+            and "\n    abel\n" in text
+        ):
+            fail(f"source coordinate rewrite has redundant standalone abel: {path}")
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source\n"
