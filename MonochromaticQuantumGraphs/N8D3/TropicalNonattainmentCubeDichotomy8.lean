@@ -227,6 +227,97 @@ theorem tropicalCubeSixIdentity8
     pmTerm8_tropicalCubeBits_matching40] at hsum
   linear_combination hsum
 
+/-- Every `01` factor used as a coefficient in the cube dichotomy is nonzero
+under exact support. -/
+theorem tropicalCubeA8_ne_zero
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (a b : Fin 2) : tropicalCubeA8 W a b ≠ 0 := by
+  apply (hSupport _).2
+  rw [tropicalEdgeSupported8_mkEdge_of_lt (by decide)]
+  revert a b
+  decide
+
+/-- Every `23` coefficient in the cube dichotomy is nonzero. -/
+theorem tropicalCubeB8_ne_zero
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (c : Fin 2) : tropicalCubeB8 W c ≠ 0 := by
+  apply (hSupport _).2
+  rw [tropicalEdgeSupported8_mkEdge_of_lt (by decide)]
+  revert c
+  decide
+
+/-- Both `57` entries on the cube are nonzero. -/
+theorem tropicalCubeL8_ne_zero
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (e : Fin 2) : tropicalCubeL8 W e ≠ 0 := by
+  apply (hSupport _).2
+  rw [tropicalEdgeSupported8_mkEdge_of_lt (by decide)]
+  revert e
+  decide
+
+/-- Both `03` coefficients on the cube are nonzero. -/
+theorem tropicalCubeR8_ne_zero
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (a : Fin 2) : tropicalCubeR8 W a ≠ 0 := by
+  apply (hSupport _).2
+  rw [tropicalEdgeSupported8_mkEdge_of_lt (by decide)]
+  revert a
+  decide
+
+/-- Both `47` coefficients on the cube are nonzero. -/
+theorem tropicalCubeK8_ne_zero
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (d : Fin 2) : tropicalCubeK8 W d ≠ 0 := by
+  apply (hSupport _).2
+  rw [tropicalEdgeSupported8_mkEdge_of_lt (by decide)]
+  revert d
+  decide
+
+/-- Both entries of the `67` reference axis are nonzero. -/
+theorem tropicalCubeG8_ne_zero
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (f : Fin 2) : tropicalCubeG8 W f ≠ 0 := by
+  apply (hSupport _).2
+  rw [tropicalEdgeSupported8_mkEdge_of_lt (by decide)]
+  revert f
+  decide
+
+/-- The four determinant relations defining the cube part of Component A.
+The separate off-cube argument supplies the fifth relation. -/
+def TropicalCubeComponentA8 (W : WeightsN 8 3 ℂ) : Prop :=
+  cubeDet2 (tropicalCubeG8 W) (tropicalCubeU8 W 0) = 0 ∧
+  cubeDet2 (tropicalCubeG8 W) (tropicalCubeU8 W 1) = 0 ∧
+  cubeDet2 (tropicalCubeU8 W 0) (tropicalCubeV8 W 0) = 0 ∧
+  cubeDet2 (tropicalCubeU8 W 0) (tropicalCubeV8 W 1) = 0
+
+/-- The two determinant relations defining Component B. -/
+def TropicalCubeComponentB8 (W : WeightsN 8 3 ℂ) : Prop :=
+  cubeDet2 (tropicalCubeL8 W) (tropicalCubeP8 W 0) = 0 ∧
+  cubeDet2 (tropicalCubeL8 W) (tropicalCubeP8 W 1) = 0
+
+/-- Every exact GHZ realization on the canonical support lies in the frozen
+Component A/Component B split. -/
+theorem tropicalCube_component_dichotomy8
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) :
+    TropicalCubeComponentA8 W ∨ TropicalCubeComponentB8 W := by
+  have hSix := tropicalCubeSixIdentity8 hSupport hEq
+  have hDichotomy := cubeSixIdentity_component_dichotomy hSix
+    (tropicalCubeA8_ne_zero hSupport)
+    (tropicalCubeB8_ne_zero hSupport)
+    (tropicalCubeL8_ne_zero hSupport)
+    (tropicalCubeR8_ne_zero hSupport)
+    (tropicalCubeK8_ne_zero hSupport)
+  rcases hDichotomy with ⟨hGU, hGV⟩ | hLP
+  · left
+    refine ⟨hGU 0, hGU 1, ?_, ?_⟩
+    · exact cubeDet2_trans_left (tropicalCubeG8_ne_zero hSupport 0)
+        (hGU 0) (hGV 0)
+    · exact cubeDet2_trans_left (tropicalCubeG8_ne_zero hSupport 0)
+        (hGU 0) (hGV 1)
+  · right
+    exact ⟨hLP 0, hLP 1⟩
+
 end
 
 end MonochromaticQuantumGraphs.N8D3
