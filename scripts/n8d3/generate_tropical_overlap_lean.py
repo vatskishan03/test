@@ -443,12 +443,12 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def generate_row(
+def render_row_payload(
     shard: int,
     local_row: int,
     row: dict[str, Any],
     base_rows: list[dict[str, Any]],
-) -> str:
+) -> tuple[int, str, str, str, str]:
     global_row = shard * ROWS_PER_SHARD + local_row
     if row["index"] != global_row:
         fail(f"internal error: expected overlap row {global_row}")
@@ -474,9 +474,25 @@ def generate_row(
             ]["relation"]
         ]
     )
+    return (
+        global_row,
+        provenance,
+        relation,
+        source_i_exponents,
+        source_j_exponents,
+    )
+
+
+def generate_row_data(
+    global_row: int,
+    provenance: str,
+    relation: str,
+    source_i_exponents: str,
+    source_j_exponents: str,
+) -> str:
     return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data
 
-/-! Kernel replay for first-overlap row {global_row}. -/
+/-! Explicit data for first-overlap row {global_row}. -/
 
 namespace MonochromaticQuantumGraphs.N8D3
 
@@ -502,6 +518,32 @@ def tropicalOverlapSourceJExponent8Row{global_row} :
     Fin 6 → LaurentExponent (Fin 144) :=
 {source_j_exponents}
 
+/-- The exact translated-source combination after exponent replay. -/
+def tropicalOverlapSourceCombination8Row{global_row} :
+    LaurentPolynomial (Fin 144) :=
+  tropicalOverlapProvenance8Row{global_row}.epsilon •
+    ((∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceIExponent8Row{global_row} j) 1) -
+      ∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceJExponent8Row{global_row} j) 1)
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
+'''
+
+
+def generate_row_source_i(shard: int, local_row: int, global_row: int) -> str:
+    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Data
+
+/-! Source-I exponent replay for first-overlap row {global_row}. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
+
 set_option maxHeartbeats 10000000 in
 /-- Kernel replay of the six shifted `B_i` exponents in row {global_row}. -/
 theorem tropicalOverlapSourceIExponent8_replay_row{global_row} (j : Fin 6) :
@@ -511,6 +553,23 @@ theorem tropicalOverlapSourceIExponent8_replay_row{global_row} (j : Fin 6) :
           (tropicalBaseMatching8 j) =
       tropicalOverlapSourceIExponent8Row{global_row} j := by
   fin_cases j <;> decide
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
+'''
+
+
+def generate_row_source_j(shard: int, local_row: int, global_row: int) -> str:
+    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Data
+
+/-! Source-J exponent replay for first-overlap row {global_row}. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
 
 set_option maxHeartbeats 10000000 in
 /-- Kernel replay of the six shifted `B_j` exponents in row {global_row}. -/
@@ -522,17 +581,25 @@ theorem tropicalOverlapSourceJExponent8_replay_row{global_row} (j : Fin 6) :
       tropicalOverlapSourceJExponent8Row{global_row} j := by
   fin_cases j <;> decide
 
-/-- The exact translated-source combination after exponent replay. -/
-def tropicalOverlapSourceCombination8Row{global_row} :
-    LaurentPolynomial (Fin 144) :=
-  tropicalOverlapProvenance8Row{global_row}.epsilon •
-    ((∑ j : Fin 6,
-        Finsupp.single (tropicalOverlapSourceIExponent8Row{global_row} j) 1) -
-      ∑ j : Fin 6,
-        Finsupp.single (tropicalOverlapSourceJExponent8Row{global_row} j) 1)
+end
+
+end MonochromaticQuantumGraphs.N8D3
+'''
+
+
+def generate_row_cancellation(shard: int, local_row: int, global_row: int) -> str:
+    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Shard{shard}.Row{local_row}.Data
+
+/-! Explicit coefficient cancellation for first-overlap row {global_row}. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
 
 /-- Coefficientwise cancellation of the three common translated faces. -/
-private theorem tropicalOverlapRelation8_sourceCombination_row{global_row} :
+theorem tropicalOverlapRelation8_sourceCombination_row{global_row} :
     tropicalOverlapRelation8Row{global_row} =
       tropicalOverlapSourceCombination8Row{global_row} := by
   simp [tropicalOverlapRelation8Row{global_row},
@@ -541,6 +608,29 @@ private theorem tropicalOverlapRelation8_sourceCombination_row{global_row} :
     tropicalOverlapSourceIExponent8Row{global_row},
     tropicalOverlapSourceJExponent8Row{global_row}, Fin.sum_univ_succ]
   abel
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
+'''
+
+
+def generate_row(shard: int, local_row: int, global_row: int) -> str:
+    prefix = (
+        "import MonochromaticQuantumGraphs.N8D3."
+        f"TropicalRetainedRelations8.Shard{shard}.Row{local_row}"
+    )
+    return f'''{prefix}.SourceI
+{prefix}.SourceJ
+{prefix}.Cancellation
+
+/-! Assembly of the staged kernel replay for first-overlap row {global_row}. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
 
 /-- Staged kernel replay of `T_r = epsilon_r * (x_b B_i - x_a B_j)` for
 row {global_row}. -/
@@ -768,13 +858,28 @@ def generated_files(
         start = shard * ROWS_PER_SHARD
         result[SHARD_DIR / f"Shard{shard}.lean"] = generate_shard(shard)
         for local_row in range(ROWS_PER_SHARD):
-            result[
-                SHARD_DIR / f"Shard{shard}" / f"Row{local_row}.lean"
-            ] = generate_row(
+            payload = render_row_payload(
                 shard,
                 local_row,
                 rows[start + local_row],
                 base_rows,
+            )
+            global_row, provenance, relation, source_i, source_j = payload
+            row_path = SHARD_DIR / f"Shard{shard}" / f"Row{local_row}"
+            result[row_path.with_suffix(".lean")] = generate_row(
+                shard, local_row, global_row
+            )
+            result[row_path / "Data.lean"] = generate_row_data(
+                global_row, provenance, relation, source_i, source_j
+            )
+            result[row_path / "SourceI.lean"] = generate_row_source_i(
+                shard, local_row, global_row
+            )
+            result[row_path / "SourceJ.lean"] = generate_row_source_j(
+                shard, local_row, global_row
+            )
+            result[row_path / "Cancellation.lean"] = generate_row_cancellation(
+                shard, local_row, global_row
             )
     return result
 
@@ -790,8 +895,19 @@ def write_or_check(files: dict[Path, str], check: bool) -> None:
     existing_rows = (
         set(SHARD_DIR.glob("Shard*/Row*.lean")) if SHARD_DIR.exists() else set()
     )
+    expected_row_parts = {
+        SHARD_DIR / f"Shard{shard}" / f"Row{row}" / f"{part}.lean"
+        for shard in range(SHARD_COUNT)
+        for row in range(ROWS_PER_SHARD)
+        for part in ("Data", "SourceI", "SourceJ", "Cancellation")
+    }
+    existing_row_parts = (
+        set(SHARD_DIR.glob("Shard*/Row*/*.lean")) if SHARD_DIR.exists() else set()
+    )
     unexpected = sorted(
-        (existing_shards - expected_shards) | (existing_rows - expected_rows)
+        (existing_shards - expected_shards)
+        | (existing_rows - expected_rows)
+        | (existing_row_parts - expected_row_parts)
     )
     if unexpected:
         fail("unexpected generated shard files: " + ", ".join(map(str, unexpected)))

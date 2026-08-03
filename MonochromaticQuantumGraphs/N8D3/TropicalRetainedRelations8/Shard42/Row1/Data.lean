@@ -1,0 +1,65 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data
+
+/-! Explicit data for first-overlap row 211. -/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+noncomputable section
+
+set_option maxRecDepth 100000
+
+/-- Exact two-base-source provenance for overlap row 211. -/
+def tropicalOverlapProvenance8Row211 : TropicalOverlapProvenance8 :=
+  { epsilon := 1, sourceI := 100, coordinateB := 142, sourceJ := 160, coordinateA := 139 }
+
+/-- The explicit sparse target polynomial in overlap row 211. -/
+def tropicalOverlapRelation8Row211 : LaurentPolynomial (Fin 144) :=
+  Finsupp.single
+      (tropicalOverlapDegreeFiveExponent8 6 59 108 127 142) 1 +
+    (-Finsupp.single
+      (tropicalOverlapDegreeFiveExponent8 6 59 109 127 139) 1) +
+    Finsupp.single
+      (tropicalOverlapDegreeFiveExponent8 15 48 88 127 142) 1 +
+    (-Finsupp.single
+      (tropicalOverlapDegreeFiveExponent8 15 49 88 127 139) 1) +
+    Finsupp.single
+      (tropicalOverlapDegreeFiveExponent8 26 48 69 117 142) 1 +
+    (-Finsupp.single
+      (tropicalOverlapDegreeFiveExponent8 26 49 69 117 139) 1)
+
+/-- Explicit shifted exponents of the six monomials from source `B_i`. -/
+def tropicalOverlapSourceIExponent8Row211 :
+    Fin 6 → LaurentExponent (Fin 144) :=
+![
+  tropicalOverlapDegreeFiveExponent8 6 59 98 139 142,
+  tropicalOverlapDegreeFiveExponent8 6 59 108 127 142,
+  tropicalOverlapDegreeFiveExponent8 6 69 88 139 142,
+  tropicalOverlapDegreeFiveExponent8 15 38 88 139 142,
+  tropicalOverlapDegreeFiveExponent8 15 48 88 127 142,
+  tropicalOverlapDegreeFiveExponent8 26 48 69 117 142
+]
+
+/-- Explicit shifted exponents of the six monomials from source `B_j`. -/
+def tropicalOverlapSourceJExponent8Row211 :
+    Fin 6 → LaurentExponent (Fin 144) :=
+![
+  tropicalOverlapDegreeFiveExponent8 6 59 98 139 142,
+  tropicalOverlapDegreeFiveExponent8 6 59 109 127 139,
+  tropicalOverlapDegreeFiveExponent8 6 69 88 139 142,
+  tropicalOverlapDegreeFiveExponent8 15 38 88 139 142,
+  tropicalOverlapDegreeFiveExponent8 15 49 88 127 139,
+  tropicalOverlapDegreeFiveExponent8 26 49 69 117 139
+]
+
+/-- The exact translated-source combination after exponent replay. -/
+def tropicalOverlapSourceCombination8Row211 :
+    LaurentPolynomial (Fin 144) :=
+  tropicalOverlapProvenance8Row211.epsilon •
+    ((∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceIExponent8Row211 j) 1) -
+      ∑ j : Fin 6,
+        Finsupp.single (tropicalOverlapSourceJExponent8Row211 j) 1)
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
