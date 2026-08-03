@@ -1,0 +1,275 @@
+import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Data
+
+/-!
+# Component-B normalized source reduction 115
+
+All six termwise character implications and both polynomial equalities are
+replayed by Lean.
+-/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+open MonochromaticQuantumGraph
+open MonochromaticQuantumGraphs
+open MonochromaticQuantumGraphs.FactorCoverCertificate
+open scoped BigOperators
+
+noncomputable section
+
+set_option maxRecDepth 100000
+set_option maxHeartbeats 8000000
+
+private def tropicalComponentBSourceReduction115Monomial008 :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) where
+  signExponent := (0 : ℤ)
+  implication := {
+    coeff := tropicalComponentBWithParityCoefficients8 ![
+      (0 : ℤ),
+      (0 : ℤ),
+      (0 : ℤ)
+]
+    combination_eq := by
+      apply SignedCharacterRow.ext <;> decide
+  }
+
+private def tropicalComponentBSourceReduction115Monomial018 :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) where
+  signExponent := (0 : ℤ)
+  implication := {
+    coeff := tropicalComponentBWithParityCoefficients8 ![
+      (0 : ℤ),
+      (0 : ℤ),
+      (0 : ℤ)
+]
+    combination_eq := by
+      apply SignedCharacterRow.ext <;> decide
+  }
+
+private def tropicalComponentBSourceReduction115Monomial028 :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) where
+  signExponent := (0 : ℤ)
+  implication := {
+    coeff := tropicalComponentBWithParityCoefficients8 ![
+      (0 : ℤ),
+      (0 : ℤ),
+      (0 : ℤ)
+]
+    combination_eq := by
+      apply SignedCharacterRow.ext <;> decide
+  }
+
+private def tropicalComponentBSourceReduction115Monomial038 :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ)) where
+  signExponent := (0 : ℤ)
+  implication := {
+    coeff := tropicalComponentBWithParityCoefficients8 ![
+      (0 : ℤ),
+      (0 : ℤ),
+      (0 : ℤ)
+]
+    combination_eq := by
+      apply SignedCharacterRow.ext <;> decide
+  }
+
+private def tropicalComponentBSourceReduction115Monomial048 :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) where
+  signExponent := (0 : ℤ)
+  implication := {
+    coeff := tropicalComponentBWithParityCoefficients8 ![
+      (0 : ℤ),
+      (0 : ℤ),
+      (0 : ℤ)
+]
+    combination_eq := by
+      apply SignedCharacterRow.ext <;> decide
+  }
+
+private def tropicalComponentBSourceReduction115Monomial058 :
+    MonomialReductionCertificate tropicalComponentBCharacter8
+      (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ)) where
+  signExponent := (0 : ℤ)
+  implication := {
+    coeff := tropicalComponentBWithParityCoefficients8 ![
+      (0 : ℤ),
+      (0 : ℤ),
+      (0 : ℤ)
+]
+    combination_eq := by
+      apply SignedCharacterRow.ext <;> decide
+  }
+
+private def tropicalComponentBSourceReduction115Use8 :
+    Fin 6 → CharacterReductionUse tropicalComponentBCharacter8 :=
+![
+  { coefficient := (1 : ℤ)
+      sourceExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ))
+      targetExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (106 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ))
+      reduction := tropicalComponentBSourceReduction115Monomial008 },
+  { coefficient := (1 : ℤ)
+      sourceExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ))
+      targetExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ))
+      reduction := tropicalComponentBSourceReduction115Monomial018 },
+  { coefficient := (-1 : ℤ)
+      sourceExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ))
+      targetExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (100 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ))
+      reduction := tropicalComponentBSourceReduction115Monomial028 },
+  { coefficient := (-1 : ℤ)
+      sourceExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ))
+      targetExponent := (Pi.single (6 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (108 : Fin 144) (1 : ℤ) +
+        Pi.single (133 : Fin 144) (1 : ℤ))
+      reduction := tropicalComponentBSourceReduction115Monomial038 },
+  { coefficient := (1 : ℤ)
+      sourceExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ))
+      targetExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (88 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ))
+      reduction := tropicalComponentBSourceReduction115Monomial048 },
+  { coefficient := (-1 : ℤ)
+      sourceExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ))
+      targetExponent := (Pi.single (26 : Fin 144) (1 : ℤ) +
+        Pi.single (48 : Fin 144) (1 : ℤ) +
+        Pi.single (71 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (117 : Fin 144) (1 : ℤ))
+      reduction := tropicalComponentBSourceReduction115Monomial058 }
+]
+
+private theorem tropicalComponentBSourceReduction115_source_eq :
+    (∑ k : Fin 6,
+      Finsupp.single (tropicalComponentBSourceReduction115Use8 k).sourceExponent
+        (tropicalComponentBSourceReduction115Use8 k).coefficient) = tropicalRetainedRelation8 (tropicalComponentBQuotientSourceIndex8 115) := by
+  decide
+
+private theorem tropicalComponentBSourceReduction115_target_eq :
+    (∑ k : Fin 6,
+      Finsupp.single (tropicalComponentBSourceReduction115Use8 k).targetExponent
+        (signedCoefficient (tropicalComponentBSourceReduction115Use8 k).reduction.signExponent
+          (tropicalComponentBSourceReduction115Use8 k).coefficient)) =
+      (-1 : ℤ) • tropicalComponentBQuotientReducedSource8 115 := by
+  decide
+
+/-- Exact normalized reduction of retained source 115. -/
+def tropicalComponentBSourceReductionCertificate8_115 :
+    NormalizedCharacterReductionCertificate (κ := Fin 6)
+      tropicalComponentBCharacter8
+      (tropicalRetainedRelation8 (tropicalComponentBQuotientSourceIndex8 115))
+      (tropicalComponentBQuotientReducedSource8 115) where
+  unit := (-1 : ℤ)
+  unit_ne_zero := by norm_num
+  reduction := {
+    use := tropicalComponentBSourceReduction115Use8
+    source_eq := tropicalComponentBSourceReduction115_source_eq
+    target_eq := tropicalComponentBSourceReduction115_target_eq
+  }
+
+theorem tropicalComponentBSourceReduced8_115_hold
+    {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
+    (hEq : EqSystemN 8 3 W) (hChars : TropicalComponentBCharacters8 W) :
+    (tropicalComponentBQuotientReducedSource8 115).Holds
+      (tropicalSupportWeight8 W) :=
+  holds_of_normalizedCharacterReductionCertificate
+    (tropicalSupportWeight8 W) (tropicalSupportWeight8_ne_zero hSupport)
+    tropicalComponentBCharacter8
+    (tropicalRetainedRelation8 (tropicalComponentBQuotientSourceIndex8 115))
+    (tropicalComponentBQuotientReducedSource8 115)
+    tropicalComponentBSourceReductionCertificate8_115 hChars
+    (tropicalRetainedRelations8_hold hSupport hEq
+      (tropicalComponentBQuotientSourceIndex8 115))
+
+end
+
+end MonochromaticQuantumGraphs.N8D3
