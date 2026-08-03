@@ -30,12 +30,21 @@ INPUT = (
     / "certificates/n8d3/tropical_nonattainment/factor_semantics/"
     "component_A_factor_semantics.json"
 )
+GLOBAL_RELATIONS_INPUT = (
+    ROOT
+    / "certificates/n8d3/tropical_nonattainment/factor_semantics/"
+    "global_relations.json"
+)
 OUTPUT = ROOT / "MonochromaticQuantumGraphs/N8D3/TropicalFactorA8"
 UMBRELLA = ROOT / "MonochromaticQuantumGraphs/N8D3/TropicalFactorA8.lean"
 
 INPUT_SHA256 = "f59912bea5b8c36421f80173d50ef37fb5bd64fc8d330ae96ff91a221ac6ec25"
+GLOBAL_RELATIONS_SHA256 = (
+    "f4f5657bf80c11f3a50c223d60bbc084d52a632a4d8be30db2d1af732008326a"
+)
 SCHEMA_VERSION = 2
 SOURCE_COUNT = 116
+FIRST_OVERLAP_COUNT = 360
 QUOTIENT_COUNT = 70
 RAW_VERTEX_COUNT = 59
 RAW_EDGE_COUNT = 68
@@ -139,6 +148,24 @@ def canonical_polynomial(payload: Any, context: str) -> tuple[tuple[tuple[tuple[
     return tuple(sorted((exponent, coefficient) for exponent, coefficient in aggregate.items() if coefficient))
 
 
+def canonical_coordinate_polynomial(
+    payload: Any, context: str,
+) -> tuple[tuple[tuple[tuple[int, int, int], ...], int], ...]:
+    """Canonical polynomial retaining both local and global coordinates."""
+    aggregate: dict[tuple[tuple[int, int, int], ...], int] = {}
+    for coefficient, exponent_rows in polynomial_entries(payload, context):
+        exponent = tuple(
+            (row["local"], row["global"], row["exp"])
+            for row in exponent_rows
+        )
+        aggregate[exponent] = aggregate.get(exponent, 0) + coefficient
+    return tuple(sorted(
+        (exponent, coefficient)
+        for exponent, coefficient in aggregate.items()
+        if coefficient
+    ))
+
+
 def check_polynomial_equality(payload: Any, context: str) -> None:
     if not isinstance(payload, dict) or set(payload) != {"lhs", "rhs"}:
         fail(f"{context} is not an explicit two-sided polynomial equality")
@@ -224,6 +251,36 @@ def factor_certificate(payload: Any, context: str) -> None:
     check_reduction(payload.get("reduction"), 4, 5, f"{context}.reduction")
 
 
+def load_first_overlap_rows() -> list[dict[str, Any]]:
+    """Load the independently pinned exact rows used by source Data leaves."""
+    actual = digest(GLOBAL_RELATIONS_INPUT)
+    if actual != GLOBAL_RELATIONS_SHA256:
+        fail(
+            "global-relations JSON SHA-256 mismatch: "
+            f"{actual} != {GLOBAL_RELATIONS_SHA256}"
+        )
+    data = json.loads(GLOBAL_RELATIONS_INPUT.read_text())
+    if data.get("schema_version") != SCHEMA_VERSION:
+        fail("global-relations schema identity changed")
+    overlap = data.get("first_overlap", {})
+    rows = overlap.get("rows")
+    if (
+        overlap.get("count") != FIRST_OVERLAP_COUNT
+        or not isinstance(rows, list)
+        or len(rows) != FIRST_OVERLAP_COUNT
+    ):
+        fail("global first-overlap row count changed")
+    for index, row in enumerate(rows):
+        if row.get("index") != index or row.get("combined_index") != 200 + index:
+            fail(f"global first-overlap row {index} is out of order")
+        relation = canonical_coordinate_polynomial(
+            row.get("relation"), f"global first-overlap row {index}"
+        )
+        if len(relation) != 6:
+            fail(f"global first-overlap row {index} is not an exact hexanomial")
+    return rows
+
+
 def load_and_validate(path: Path) -> dict[str, Any]:
     actual = digest(path)
     if actual != INPUT_SHA256:
@@ -240,6 +297,7 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         fail("the unused second overlap leaked into the factor input")
     if len(data.get("base_characters", [])) != 5:
         fail("Component-A base-character count changed")
+    first_overlap_rows = load_first_overlap_rows()
 
     quotient = data.get("quotient", {})
     source_reductions = quotient.get("source_reductions")
@@ -248,6 +306,7 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         fail("Component-A quotient count changed")
     if quotient.get("unique_source_reduction_count") != SOURCE_COUNT or len(source_reductions) != SOURCE_COUNT:
         fail("Component-A source-reduction count changed")
+    checked_source_terms = 0
     for reduction_id, source in enumerate(source_reductions):
         if source.get("reduction_id") != reduction_id:
             fail(f"source reduction {reduction_id} is out of order")
@@ -256,11 +315,38 @@ def load_and_validate(path: Path) -> dict[str, Any]:
             560,
             f"source reduction {reduction_id} relation index",
         )
-        if combined != source["relation_source"].get("index") + (
-            200 if source["relation_source"].get("kind") == "first_overlap" else 0
-        ):
+        relation_source = source["relation_source"]
+        if relation_source.get("kind") != "first_overlap":
+            fail(f"Component-A source reduction {reduction_id} is not first-overlap")
+        overlap_index = check_index(
+            relation_source.get("index"),
+            FIRST_OVERLAP_COUNT,
+            f"source reduction {reduction_id} first-overlap index",
+        )
+        if combined != overlap_index + 200:
             fail(f"source reduction {reduction_id} source tag is inconsistent")
         normalized_certificate(source.get("certificate"), 6, f"source reduction {reduction_id}")
+        reduction = source["certificate"]["reduction"]
+        exact_row = canonical_coordinate_polynomial(
+            first_overlap_rows[overlap_index]["relation"],
+            f"source reduction {reduction_id} exact retained row",
+        )
+        for side in ("lhs", "rhs"):
+            replayed = canonical_coordinate_polynomial(
+                reduction["source_eq"][side],
+                f"source reduction {reduction_id} source_eq.{side}",
+            )
+            if replayed != exact_row:
+                fail(
+                    f"source reduction {reduction_id} {side} differs from "
+                    f"first-overlap row {overlap_index}"
+                )
+        checked_source_terms += len(exact_row)
+    if checked_source_terms != SOURCE_COUNT * 6:
+        fail(
+            "Component-A order-independent retained source replay count changed: "
+            f"{checked_source_terms} != {SOURCE_COUNT * 6}"
+        )
 
     for row_index, row in enumerate(rows):
         if row.get("row_index") != row_index:
@@ -489,7 +575,7 @@ def emit_monomial_module(
     coeff := tropicalComponentAWithParityCoefficients8 {vector(coeffs, "      ")},
     combination_eq := by
       apply TropicalFactorA8.Internal.signedCharacterRow_eq_of_fields
-      · simp [{MONOMIAL_SIMP}] <;> abel
+      · simp [{MONOMIAL_SIMP}] <;> abel_nf
       · norm_num [{MONOMIAL_SIMP}, Fin.last]
   }}
 ''' + internal_end(kind, row_id) + FOOTER
@@ -742,7 +828,7 @@ def emit_source_eq(data: dict[str, Any], source_id: int) -> str:
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
       sourcePolynomial := by
   simp [use, {monomials}, sourcePolynomial, {row_name},
-    tropicalOverlapDegreeFiveExponent8, Fin.sum_univ_succ] <;> abel
+    tropicalOverlapDegreeFiveExponent8, Fin.sum_univ_succ] <;> abel_nf
 ''' + internal_end("Source", source_id) + FOOTER
 
 
@@ -1646,8 +1732,23 @@ def validate_generated_layout(
         "apply TropicalFactorA8.Internal.signedCharacterRow_eq_of_fields"
     )
     for path, text in proof_tree.items():
-        if "Monomial" in path.parts and structural_ext not in text:
-            fail(f"monomial leaf does not use structural row equality: {path}")
+        if "Monomial" in path.parts:
+            if structural_ext not in text:
+                fail(f"monomial leaf does not use structural row equality: {path}")
+            if "<;> abel_nf" not in text:
+                fail(f"monomial leaf lacks normalized exponent replay: {path}")
+
+    source_equalities = {
+        path: text for path, text in proof_tree.items()
+        if path.parts[0] == "Source" and path.name == "SourceEq.lean"
+    }
+    if len(source_equalities) != SOURCE_COUNT:
+        fail("generated Component-A source-equality count changed")
+    for path, text in source_equalities.items():
+        if "<;> abel_nf" not in text:
+            fail(f"source equality lacks order-independent normalization: {path}")
+        if "tropicalMatchingLocalExponent8" in text:
+            fail(f"source equality acquired positional matching replay: {path}")
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorA8.Source\n"

@@ -23,7 +23,7 @@ theorem source_eq :
       Finsupp.single (use k).sourceExponent (use k).coefficient) =
       sourcePolynomial := by
   simp [use, monomial00, monomial01, monomial02, monomial03, monomial04, monomial05, sourcePolynomial, tropicalOverlapRelation8Row256,
-    tropicalOverlapDegreeFiveExponent8, Fin.sum_univ_succ] <;> abel
+    tropicalOverlapDegreeFiveExponent8, Fin.sum_univ_succ] <;> abel_nf
 
 end TropicalFactorA8.Internal.Source094
 

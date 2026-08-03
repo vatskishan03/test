@@ -51,7 +51,7 @@ def monomial01 :
         SignedCharacterRow.withParityGenerator,
         SignedCharacterRow.parityGenerator,
         tropicalComponentACharacter8, tropicalBinomialCharacter8,
-        differenceRow] <;> abel
+        differenceRow] <;> abel_nf
       · norm_num [SignedCharacterRow.linearCombination,
         Fintype.sum_sum_type, Fin.sum_univ_succ,
         tropicalComponentAWithParityCoefficients8,
