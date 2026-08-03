@@ -1240,7 +1240,7 @@ def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
                 f"  have h{flat_index:02d} : "
                 f"(({shift} + {term_exp} : LaurentExponent (Fin 144)) = "
                 f"{target}) := by\n"
-                "    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
+                "    (ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)"
             )
             flat_index += 1
     if flat_index != 12:
@@ -1520,7 +1520,7 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
         h_lines.append(
             f"  have h{term_index:02d} : shift + {term_expressions[term_index]} = {target} := by\n"
             "    unfold shift\n"
-            "    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
+            "    (ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)"
         )
     monomials = ", ".join(f"monomial{i:02d}" for i in range(4))
     use_defs = ", ".join(f"use{i:02d}" for i in range(4))
@@ -2006,7 +2006,7 @@ def validate_generated_layout(
 
     checked_shifted_exponents = 0
     pointwise_exponent_replay = (
-        "(ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
+        "(ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)"
     )
     for quotient_id in range(QUOTIENT_COUNT):
         shifted_path = Path(f"Quotient/Q{quotient_id:03d}/ShiftedEq.lean")

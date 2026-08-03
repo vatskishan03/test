@@ -37,7 +37,7 @@ theorem target_eq :
         Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (122 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
+    (ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)
   have h01 : shift + (Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (87 : Fin 144) (-1 : ℤ) +
         Pi.single (116 : Fin 144) (-1 : ℤ) +
@@ -49,7 +49,7 @@ theorem target_eq :
         Pi.single (85 : Fin 144) (1 : ℤ) +
         Pi.single (122 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
+    (ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)
   have h02 : shift + (Pi.single (58 : Fin 144) (1 : ℤ) +
         Pi.single (64 : Fin 144) (-1 : ℤ) +
         Pi.single (69 : Fin 144) (-1 : ℤ) +
@@ -59,7 +59,7 @@ theorem target_eq :
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (116 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
+    (ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)
   have h03 : shift + (0 : LaurentExponent (Fin 144)) = (Pi.single (25 : Fin 144) (1 : ℤ) +
         Pi.single (51 : Fin 144) (1 : ℤ) +
         Pi.single (58 : Fin 144) (-1 : ℤ) +
@@ -68,7 +68,7 @@ theorem target_eq :
         Pi.single (87 : Fin 144) (1 : ℤ) +
         Pi.single (116 : Fin 144) (1 : ℤ)) := by
     unfold shift
-    (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
+    (ext x; simp [Pi.single_apply] <;> split_ifs <;> omega)
   simp [use, use00, use01, use02, use03, TropicalFactorA8.Internal.useOfReduction,
     monomial00, monomial01, monomial02, monomial03, leftFactor, rightFactor,
     TropicalFactorA8.Internal.Vertex011.row,
