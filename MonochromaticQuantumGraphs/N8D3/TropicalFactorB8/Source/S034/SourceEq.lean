@@ -27,62 +27,62 @@ theorem source_eq :
       tropicalColoringOfCode8 3378 := by rfl
   have hexp0 :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 0 =
-        (Pi.single (20 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (123 : Fin 144) (1 : ℤ)) := by
-    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
-      (tropicalColoringOfCode8 3378) 0 20 51 70 123
-      (by decide) (by decide) (by decide) (by decide)]
-    abel
-  have hexp1 :
-      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 1 =
-        (Pi.single (9 : Fin 144) (1 : ℤ) +
-        Pi.single (51 : Fin 144) (1 : ℤ) +
-        Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (130 : Fin 144) (1 : ℤ)) := by
-    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
-      (tropicalColoringOfCode8 3378) 1 9 51 90 130
-      (by decide) (by decide) (by decide) (by decide)]
-    abel
-  have hexp2 :
-      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 6 =
-        (Pi.single (9 : Fin 144) (1 : ℤ) +
-        Pi.single (42 : Fin 144) (1 : ℤ) +
-        Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) := by
-    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
-      (tropicalColoringOfCode8 3378) 6 9 42 90 139
-      (by decide) (by decide) (by decide) (by decide)]
-    abel
-  have hexp3 :
-      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 21 =
-        (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (1 : ℤ) +
-        Pi.single (90 : Fin 144) (1 : ℤ) +
-        Pi.single (139 : Fin 144) (1 : ℤ)) := by
-    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
-      (tropicalColoringOfCode8 3378) 21 1 70 90 139
-      (by decide) (by decide) (by decide) (by decide)]
-    abel
-  have hexp4 :
-      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 24 =
-        (Pi.single (1 : Fin 144) (1 : ℤ) +
-        Pi.single (59 : Fin 144) (1 : ℤ) +
-        Pi.single (114 : Fin 144) (1 : ℤ) +
-        Pi.single (130 : Fin 144) (1 : ℤ)) := by
-    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
-      (tropicalColoringOfCode8 3378) 24 1 59 114 130
-      (by decide) (by decide) (by decide) (by decide)]
-    abel
-  have hexp5 :
-      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 40 =
         (Pi.single (1 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (105 : Fin 144) (1 : ℤ) +
         Pi.single (139 : Fin 144) (1 : ℤ)) := by
     rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
-      (tropicalColoringOfCode8 3378) 40 1 59 105 139
+      (tropicalColoringOfCode8 3378) 0 1 59 105 139
+      (by decide) (by decide) (by decide) (by decide)]
+    abel
+  have hexp1 :
+      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 1 =
+        (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (59 : Fin 144) (1 : ℤ) +
+        Pi.single (114 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) := by
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 3378) 1 1 59 114 130
+      (by decide) (by decide) (by decide) (by decide)]
+    abel
+  have hexp2 :
+      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 6 =
+        (Pi.single (1 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) := by
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 3378) 6 1 70 90 139
+      (by decide) (by decide) (by decide) (by decide)]
+    abel
+  have hexp3 :
+      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 21 =
+        (Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (42 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (139 : Fin 144) (1 : ℤ)) := by
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 3378) 21 9 42 90 139
+      (by decide) (by decide) (by decide) (by decide)]
+    abel
+  have hexp4 :
+      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 24 =
+        (Pi.single (9 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (90 : Fin 144) (1 : ℤ) +
+        Pi.single (130 : Fin 144) (1 : ℤ)) := by
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 3378) 24 9 51 90 130
+      (by decide) (by decide) (by decide) (by decide)]
+    abel
+  have hexp5 :
+      tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 3378) 40 =
+        (Pi.single (20 : Fin 144) (1 : ℤ) +
+        Pi.single (51 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (1 : ℤ) +
+        Pi.single (123 : Fin 144) (1 : ℤ)) := by
+    rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+      (tropicalColoringOfCode8 3378) 40 20 51 70 123
       (by decide) (by decide) (by decide) (by decide)]
     abel
   simp [uses, monomial00,

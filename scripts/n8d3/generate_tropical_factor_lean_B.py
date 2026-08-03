@@ -55,6 +55,35 @@ BASE_COLORING_CODE_100_TO_139 = (
     3315, 3317, 3375, 3377, 3378, 3380, 3393, 3395, 3396, 3398,
 )
 
+BASE_MATCHING_INDICES8 = (0, 1, 6, 21, 24, 40)
+BASE_MATCHING_EDGES8 = {
+    0: ((0, 1), (2, 3), (4, 5), (6, 7)),
+    1: ((0, 1), (2, 3), (4, 6), (5, 7)),
+    6: ((0, 1), (2, 5), (3, 4), (6, 7)),
+    21: ((0, 2), (1, 5), (3, 4), (6, 7)),
+    24: ((0, 2), (1, 6), (3, 4), (5, 7)),
+    40: ((0, 3), (1, 6), (2, 5), (4, 7)),
+}
+TROPICAL_SUPPORT_MASK8 = int(
+    "ffffe01ffffffc204903ffe4801ff8e3fe01ffffe01c008400203800fffffff",
+    16,
+)
+TROPICAL_SUPPORT_GLOBAL_COORDINATES8 = tuple(
+    coordinate
+    for coordinate in range(252)
+    if TROPICAL_SUPPORT_MASK8 & (1 << coordinate)
+)
+TROPICAL_SUPPORT_RANK8 = {
+    coordinate: rank
+    for rank, coordinate in enumerate(TROPICAL_SUPPORT_GLOBAL_COORDINATES8)
+}
+TROPICAL_PHYSICAL_EDGE_INDEX8 = {
+    edge: index
+    for index, edge in enumerate(
+        (u, v) for u in range(8) for v in range(u + 1, 8)
+    )
+}
+
 # This is the already checked class graph in TropicalNonattainmentComponentB8.
 EXPECTED_CLASS_EDGES = {
     (0, 5), (0, 19), (0, 20), (0, 21),
@@ -126,6 +155,144 @@ def check_sparse_exponent(rows: Any, context: str) -> list[dict[str, int]]:
             {"local": local, "global": global_coordinate, "exp": exponent}
         )
     return result
+
+
+def perfect_matchings8(
+    vertices: tuple[int, ...],
+) -> list[tuple[tuple[int, int], ...]]:
+    """Independently reproduce the lexicographic `matchingEdges8` order."""
+    if not vertices:
+        return [()]
+    first = vertices[0]
+    result: list[tuple[tuple[int, int], ...]] = []
+    for position in range(1, len(vertices)):
+        partner = vertices[position]
+        remaining = vertices[1:position] + vertices[position + 1:]
+        for tail in perfect_matchings8(remaining):
+            result.append(((first, partner),) + tail)
+    return result
+
+
+PERFECT_MATCHINGS8 = tuple(perfect_matchings8(tuple(range(8))))
+
+
+def coloring_of_code8(code: int, context: str) -> tuple[int, ...]:
+    code = check_index(code, 6561, context)
+    return tuple((code // (3 ** vertex)) % 3 for vertex in range(8))
+
+
+def base_matching_coordinate_rows8(
+    code: int, matching_index: int, context: str,
+) -> list[dict[str, int]]:
+    """Recompute the four supported local/global coordinates for one matching."""
+    if len(TROPICAL_SUPPORT_GLOBAL_COORDINATES8) != 144:
+        fail(f"{context}: independent support enumeration is not 144-dimensional")
+    if len(PERFECT_MATCHINGS8) != 105:
+        fail(f"{context}: independent perfect-matching count changed")
+    matching_index = check_index(matching_index, 105, f"{context} matching")
+    matching = PERFECT_MATCHINGS8[matching_index]
+    if matching != BASE_MATCHING_EDGES8.get(matching_index):
+        fail(f"{context}: matchingEdges8 index attachment changed")
+    coloring = coloring_of_code8(code, f"{context} coloring code")
+    rows: list[dict[str, int]] = []
+    for coordinate_index, (u, v) in enumerate(matching):
+        edge_index = TROPICAL_PHYSICAL_EDGE_INDEX8[(u, v)]
+        global_coordinate = 9 * edge_index + 3 * coloring[u] + coloring[v]
+        if global_coordinate not in TROPICAL_SUPPORT_RANK8:
+            fail(
+                f"{context} coordinate {coordinate_index}: global coordinate "
+                f"{global_coordinate} is outside the canonical support"
+            )
+        local_coordinate = TROPICAL_SUPPORT_RANK8[global_coordinate]
+        if TROPICAL_SUPPORT_GLOBAL_COORDINATES8[local_coordinate] != global_coordinate:
+            fail(
+                f"{context} coordinate {coordinate_index}: local {local_coordinate} "
+                f"does not decode to global {global_coordinate}"
+            )
+        rows.append(
+            {"local": local_coordinate, "global": global_coordinate, "exp": 1}
+        )
+    checked = check_sparse_exponent(rows, f"{context} replayed exponent")
+    if len(checked) != 4:
+        fail(f"{context}: replayed matching does not have four coordinates")
+    return checked
+
+
+def base_source_coordinate_replay8(
+    source: dict[str, Any], source_id: int,
+) -> list[tuple[int, list[dict[str, int]]]]:
+    """Validate and order every emitted base-source coordinate equality.
+
+    Polynomial term order is deliberately ignored.  The six monomials are
+    recomputed from the coloring and `matchingEdges8` convention, then matched
+    to the manifest as a set of exact local/global exponent rows.
+    """
+    context = f"source reduction {source_id} base coordinate replay"
+    relation = source.get("relation_source", {})
+    if relation.get("kind") != "base":
+        fail(f"{context}: source is not a base relation")
+    base_index = check_index(relation.get("index"), 200, f"{context} base index")
+    if not 100 <= base_index <= 139:
+        fail(f"{context}: base index {base_index} is outside Component B")
+    code = BASE_COLORING_CODE_100_TO_139[base_index - 100]
+    rhs_terms = polynomial_entries(
+        source["certificate"]["reduction"]["source_eq"]["rhs"],
+        f"{context} manifest polynomial",
+    )
+    if len(rhs_terms) != len(BASE_MATCHING_INDICES8):
+        fail(f"{context}: manifest polynomial does not have six terms")
+
+    manifest_by_signature: dict[
+        tuple[tuple[int, int, int], ...], list[dict[str, int]]
+    ] = {}
+    for term_index, (coefficient, rows) in enumerate(rhs_terms):
+        if coefficient != 1 or len(rows) != 4 or any(row["exp"] != 1 for row in rows):
+            fail(f"{context} term {term_index}: expected a monic squarefree tetrad")
+        for coordinate_index, row in enumerate(rows):
+            global_coordinate = check_index(
+                row["global"], 252,
+                f"{context} term {term_index} coordinate {coordinate_index} global",
+            )
+            expected_global = TROPICAL_SUPPORT_GLOBAL_COORDINATES8[row["local"]]
+            if global_coordinate != expected_global:
+                fail(
+                    f"{context} term {term_index} coordinate {coordinate_index}: "
+                    f"local {row['local']} expects global {expected_global}, "
+                    f"not {global_coordinate}"
+                )
+        signature = tuple(
+            (row["local"], row["global"], row["exp"]) for row in rows
+        )
+        if signature in manifest_by_signature:
+            fail(f"{context}: manifest repeats a matching monomial")
+        manifest_by_signature[signature] = rows
+
+    replayed: list[tuple[int, list[dict[str, int]]]] = []
+    for matching_index in BASE_MATCHING_INDICES8:
+        rows = base_matching_coordinate_rows8(
+            code, matching_index, f"{context} matching {matching_index}"
+        )
+        signature = tuple(
+            (row["local"], row["global"], row["exp"]) for row in rows
+        )
+        manifest_rows = manifest_by_signature.pop(signature, None)
+        if manifest_rows is None:
+            first = rows[0]
+            fail(
+                f"{context} matching {matching_index}: missing replayed monomial; "
+                f"coordinate 0 expects local {first['local']} / "
+                f"global {first['global']}"
+            )
+        for coordinate_index, (actual, manifest) in enumerate(zip(rows, manifest_rows)):
+            if actual != manifest:
+                fail(
+                    f"{context} matching {matching_index} coordinate {coordinate_index}: "
+                    f"expected {actual}, found {manifest}"
+                )
+        replayed.append((matching_index, rows))
+    if manifest_by_signature:
+        fail(f"{context}: manifest contains an unmatched monomial")
+    return replayed
 
 
 def polynomial_entries(payload: Any, context: str) -> list[tuple[int, list[dict[str, int]]]]:
@@ -327,6 +494,7 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         fail("Component-B quotient count changed")
     if quotient.get("unique_source_reduction_count") != SOURCE_COUNT or len(source_reductions) != SOURCE_COUNT:
         fail("Component-B source-reduction count changed")
+    checked_base_coordinate_equalities = 0
     for reduction_id, source in enumerate(source_reductions):
         if source.get("reduction_id") != reduction_id:
             fail(f"source reduction {reduction_id} is out of order")
@@ -340,6 +508,22 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         ):
             fail(f"source reduction {reduction_id} source tag is inconsistent")
         normalized_certificate(source.get("certificate"), 6, f"source reduction {reduction_id}")
+        if source["relation_source"].get("kind") == "base":
+            replayed = base_source_coordinate_replay8(source, reduction_id)
+            checked_base_coordinate_equalities += sum(
+                len(rows) for _matching, rows in replayed
+            )
+    expected_base_coordinate_equalities = (
+        len(BASE_COLORING_CODE_100_TO_139)
+        * len(BASE_MATCHING_INDICES8)
+        * 4
+    )
+    if checked_base_coordinate_equalities != expected_base_coordinate_equalities:
+        fail(
+            "Component-B base coordinate replay count changed: "
+            f"{checked_base_coordinate_equalities} != "
+            f"{expected_base_coordinate_equalities}"
+        )
 
     for row_index, row in enumerate(rows):
         if row.get("row_index") != row_index:
@@ -881,14 +1065,7 @@ def emit_source_source_eq(data: dict[str, Any], source_id: int) -> str:
         if not 100 <= base_index <= 139:
             fail(f"unexpected Component-B base source index {base_index}")
         code = BASE_COLORING_CODE_100_TO_139[base_index - 100]
-        rhs_terms = polynomial_entries(
-            reduction["source_eq"]["rhs"], f"source {source_id} base rhs"
-        )
-        if len(rhs_terms) != 6 or any(
-            coefficient != 1 or len(rows) != 4
-            for coefficient, rows in rhs_terms
-        ):
-            fail(f"base source {source_id} is not six squarefree monomials")
+        replayed_terms = base_source_coordinate_replay8(source, source_id)
         extra_imports.append(
             "MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data"
         )
@@ -896,10 +1073,7 @@ def emit_source_source_eq(data: dict[str, Any], source_id: int) -> str:
             f"  have hcolor : tropicalBaseColoring8 {base_index} =\n"
             f"      tropicalColoringOfCode8 {code} := by rfl"
         ]
-        matching_indices = (0, 1, 6, 21, 24, 40)
-        for term_index, ((_, rows), matching) in enumerate(
-            zip(rhs_terms, matching_indices)
-        ):
+        for term_index, (matching, rows) in enumerate(replayed_terms):
             locals_ = " ".join(str(row["local"]) for row in rows)
             replay_chunks.append(f'''  have hexp{term_index} :
       tropicalMatchingLocalExponent8 (tropicalColoringOfCode8 {code}) {matching} =
@@ -1769,6 +1943,23 @@ def audit_generated(
                 or text.count(finite_vector_normalization) != 1
             ):
                 fail(f"monomial leaf lacks bounded vector normalization: {path}")
+
+    emitted_base_coordinate_equalities = sum(
+        text.count("(by decide)")
+        for path, text in proof_tree.items()
+        if path.parts[0] == "Source" and path.name == "SourceEq.lean"
+    )
+    expected_base_coordinate_equalities = (
+        len(BASE_COLORING_CODE_100_TO_139)
+        * len(BASE_MATCHING_INDICES8)
+        * 4
+    )
+    if emitted_base_coordinate_equalities != expected_base_coordinate_equalities:
+        fail(
+            "generated base coordinate equality count changed: "
+            f"{emitted_base_coordinate_equalities} != "
+            f"{expected_base_coordinate_equalities}"
+        )
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source\n"
