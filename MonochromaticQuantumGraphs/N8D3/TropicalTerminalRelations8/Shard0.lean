@@ -27,8 +27,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching0 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (0 : Fin 105)
     (4 : Fin 144) (57 : Fin 144) (98 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 1. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching1 :
@@ -38,8 +37,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching1 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (1 : Fin 105)
     (4 : Fin 144) (57 : Fin 144) (108 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 6. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching6 :
@@ -49,8 +47,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching6 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (6 : Fin 105)
     (4 : Fin 144) (69 : Fin 144) (82 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 21. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching21 :
@@ -60,8 +57,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching21 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (21 : Fin 105)
     (12 : Fin 144) (41 : Fin 144) (82 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 24. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching24 :
@@ -71,8 +67,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching24 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (24 : Fin 105)
     (12 : Fin 144) (51 : Fin 144) (82 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 25. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching25 :
@@ -82,8 +77,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching25 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (25 : Fin 105)
     (12 : Fin 144) (51 : Fin 144) (91 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 40. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching40 :
@@ -93,8 +87,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching40 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (40 : Fin 105)
     (21 : Fin 144) (51 : Fin 144) (69 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 69. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching69 :
@@ -104,8 +97,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching69 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (69 : Fin 105)
     (28 : Fin 144) (51 : Fin 144) (57 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 65, matching 84. -/
 theorem tropicalTerminalMatchingExponent8_row0_matching84 :
@@ -115,8 +107,7 @@ theorem tropicalTerminalMatchingExponent8_row0_matching84 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 733) (84 : Fin 105)
     (31 : Fin 144) (41 : Fin 144) (57 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 
 theorem tropicalTerminalSupportedMatchingSet8_row1 :
@@ -133,8 +124,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching0 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (0 : Fin 105)
     (0 : Fin 144) (58 : Fin 144) (98 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 1. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching1 :
@@ -144,8 +134,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching1 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (1 : Fin 105)
     (0 : Fin 144) (58 : Fin 144) (108 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 6. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching6 :
@@ -155,8 +144,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching6 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (6 : Fin 105)
     (0 : Fin 144) (69 : Fin 144) (85 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 21. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching21 :
@@ -166,8 +154,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching21 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (21 : Fin 105)
     (9 : Fin 144) (38 : Fin 144) (85 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 24. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching24 :
@@ -177,8 +164,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching24 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (24 : Fin 105)
     (9 : Fin 144) (48 : Fin 144) (85 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 40. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching40 :
@@ -188,8 +174,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching40 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (40 : Fin 105)
     (19 : Fin 144) (48 : Fin 144) (69 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 43. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching43 :
@@ -199,8 +184,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching43 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (43 : Fin 105)
     (19 : Fin 144) (56 : Fin 144) (69 : Fin 144) (108 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 51. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching51 :
@@ -210,8 +194,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching51 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (51 : Fin 105)
     (27 : Fin 144) (38 : Fin 144) (58 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 73, matching 54. -/
 theorem tropicalTerminalMatchingExponent8_row1_matching54 :
@@ -221,8 +204,7 @@ theorem tropicalTerminalMatchingExponent8_row1_matching54 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 756) (54 : Fin 105)
     (27 : Fin 144) (48 : Fin 144) (58 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 
 theorem tropicalTerminalSupportedMatchingSet8_row2 :
@@ -239,8 +221,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching0 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (0 : Fin 105)
     (6 : Fin 144) (58 : Fin 144) (98 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 74, matching 1. -/
 theorem tropicalTerminalMatchingExponent8_row2_matching1 :
@@ -250,8 +231,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching1 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (1 : Fin 105)
     (6 : Fin 144) (58 : Fin 144) (108 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 74, matching 6. -/
 theorem tropicalTerminalMatchingExponent8_row2_matching6 :
@@ -261,8 +241,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching6 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (6 : Fin 105)
     (6 : Fin 144) (69 : Fin 144) (85 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 74, matching 21. -/
 theorem tropicalTerminalMatchingExponent8_row2_matching21 :
@@ -272,8 +251,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching21 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (21 : Fin 105)
     (15 : Fin 144) (38 : Fin 144) (85 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 74, matching 24. -/
 theorem tropicalTerminalMatchingExponent8_row2_matching24 :
@@ -283,8 +261,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching24 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (24 : Fin 105)
     (15 : Fin 144) (48 : Fin 144) (85 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 74, matching 40. -/
 theorem tropicalTerminalMatchingExponent8_row2_matching40 :
@@ -294,8 +271,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching40 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (40 : Fin 105)
     (25 : Fin 144) (48 : Fin 144) (69 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 74, matching 43. -/
 theorem tropicalTerminalMatchingExponent8_row2_matching43 :
@@ -305,8 +281,7 @@ theorem tropicalTerminalMatchingExponent8_row2_matching43 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 758) (43 : Fin 105)
     (25 : Fin 144) (56 : Fin 144) (69 : Fin 144) (108 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 
 theorem tropicalTerminalSupportedMatchingSet8_row3 :
@@ -323,8 +298,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching0 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (0 : Fin 105)
     (1 : Fin 144) (58 : Fin 144) (98 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 1. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching1 :
@@ -334,8 +308,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching1 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (1 : Fin 105)
     (1 : Fin 144) (58 : Fin 144) (108 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 6. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching6 :
@@ -345,8 +318,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching6 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (6 : Fin 105)
     (1 : Fin 144) (69 : Fin 144) (85 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 21. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching21 :
@@ -356,8 +328,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching21 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (21 : Fin 105)
     (9 : Fin 144) (41 : Fin 144) (85 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 24. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching24 :
@@ -367,8 +338,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching24 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (24 : Fin 105)
     (9 : Fin 144) (51 : Fin 144) (85 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 40. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching40 :
@@ -378,8 +348,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching40 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (40 : Fin 105)
     (19 : Fin 144) (51 : Fin 144) (69 : Fin 144) (116 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 51. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching51 :
@@ -389,8 +358,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching51 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (51 : Fin 105)
     (27 : Fin 144) (41 : Fin 144) (58 : Fin 144) (138 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 /-- Four-coordinate replay for official row 75, matching 54. -/
 theorem tropicalTerminalMatchingExponent8_row3_matching54 :
@@ -400,8 +368,7 @@ theorem tropicalTerminalMatchingExponent8_row3_matching54 :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 759) (54 : Fin 105)
     (27 : Fin 144) (51 : Fin 144) (58 : Fin 144) (126 : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 
 
 end

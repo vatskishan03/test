@@ -541,8 +541,7 @@ theorem tropicalTerminalMatchingExponent8_row{index}_matching{matching_index} :
   rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
     (tropicalColoringOfCode8 {code}) ({matching_index} : Fin 105)
     ({a0} : Fin 144) ({a1} : Fin 144) ({a2} : Fin 144) ({a3} : Fin 144)
-    (by decide) (by decide) (by decide) (by decide)]
-  abel
+    (by decide) (by decide) (by decide) (by decide)] <;> abel
 '''
             )
         rows.append(
