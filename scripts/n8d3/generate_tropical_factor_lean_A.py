@@ -49,6 +49,21 @@ QUOTIENT_COUNT = 70
 RAW_VERTEX_COUNT = 59
 RAW_EDGE_COUNT = 68
 CLASS_COUNT = 15
+MONOMIAL_REPLAY_COUNT = (
+    SOURCE_COUNT * 6 + QUOTIENT_COUNT * 12 + RAW_EDGE_COUNT * 4
+)
+
+# These are the five exponent rows unfolded by
+# `tropicalComponentACharacter8`.  Keeping the local-coordinate shapes here
+# lets the generator replay every implication coefficient vector before Lean
+# sees it, independently of the equality row copied into the certificate JSON.
+COMPONENT_A_CHARACTER_EXPONENTS = (
+    ((48, 1), (49, -1), (139, -1), (142, 1)),
+    ((51, 1), (52, -1), (139, -1), (142, 1)),
+    ((48, 1), (49, -1), (108, -1), (109, 1)),
+    ((48, 1), (49, -1), (111, -1), (112, 1)),
+    ((48, 1), (49, -1), (114, -1), (115, 1)),
+)
 
 # This is the already checked class graph in TropicalNonattainmentComponentA8.
 EXPECTED_CLASS_EDGES = {
@@ -112,6 +127,27 @@ def check_sparse_exponent(rows: Any, context: str) -> list[dict[str, int]]:
             {"local": local, "global": global_coordinate, "exp": exponent}
         )
     return result
+
+
+def canonical_local_exponent(
+    rows: Any, context: str,
+) -> tuple[tuple[int, int], ...]:
+    """Canonical sparse exponent in the local coordinates emitted to Lean."""
+    return tuple(
+        (row["local"], row["exp"])
+        for row in check_sparse_exponent(rows, context)
+    )
+
+
+def linear_combination_exponent(
+    terms: Iterable[tuple[int, Sequence[tuple[int, int]]]],
+) -> tuple[tuple[int, int], ...]:
+    """Normalize a finite integer combination of sparse exponent rows."""
+    values: dict[int, int] = {}
+    for coefficient, exponent_row in terms:
+        for local, value in exponent_row:
+            values[local] = values.get(local, 0) + coefficient * value
+    return tuple(sorted((local, value) for local, value in values.items() if value))
 
 
 def polynomial_entries(payload: Any, context: str) -> list[tuple[int, list[dict[str, int]]]]:
@@ -198,34 +234,90 @@ def check_row_equality(payload: Any, context: str) -> None:
         fail(f"{context} is unequal even before Lean replay")
 
 
-def check_reduction(reduction: Any, use_count: int, basis_count: int, context: str) -> None:
+def check_reduction(reduction: Any, use_count: int, basis_count: int, context: str) -> int:
     if not isinstance(reduction, dict):
         fail(f"{context} is not a CharacterReductionCertificate object")
+    if basis_count != len(COMPONENT_A_CHARACTER_EXPONENTS):
+        fail(f"{context} has an unsupported Component-A character basis")
     uses = reduction.get("use")
     if not isinstance(uses, list) or len(uses) != use_count:
         fail(f"{context}.use count changed")
     for use_index, use in enumerate(uses):
         use_context = f"{context}.use[{use_index}]"
         integer(use.get("coefficient"), f"{use_context}.coefficient")
-        check_sparse_exponent(use.get("sourceExponent"), f"{use_context}.sourceExponent")
-        check_sparse_exponent(use.get("targetExponent"), f"{use_context}.targetExponent")
+        source_exponent = canonical_local_exponent(
+            use.get("sourceExponent"), f"{use_context}.sourceExponent"
+        )
+        target_exponent = canonical_local_exponent(
+            use.get("targetExponent"), f"{use_context}.targetExponent"
+        )
         monomial = use.get("reduction")
-        integer(monomial.get("signExponent"), f"{use_context}.signExponent")
+        if not isinstance(monomial, dict):
+            fail(f"{use_context}.reduction is not a monomial certificate")
+        sign_exponent = integer(
+            monomial.get("signExponent"), f"{use_context}.signExponent"
+        )
         implication = monomial.get("implication")
+        if not isinstance(implication, dict):
+            fail(f"{use_context}.implication is not an implication certificate")
         coeff = implication.get("coeff")
         if not isinstance(coeff, list) or len(coeff) != basis_count + 1:
             fail(f"{use_context}.implication coefficient count changed")
-        for coefficient_index, coefficient in enumerate(coeff):
-            integer(coefficient, f"{use_context}.implication.coeff[{coefficient_index}]")
+        coefficients = tuple(
+            integer(
+                coefficient,
+                f"{use_context}.implication.coeff[{coefficient_index}]",
+            )
+            for coefficient_index, coefficient in enumerate(coeff)
+        )
+        expected_from_coefficients = linear_combination_exponent(
+            zip(coefficients[:basis_count], COMPONENT_A_CHARACTER_EXPONENTS)
+        )
+        expected_from_difference = linear_combination_exponent(
+            ((1, source_exponent), (-1, target_exponent))
+        )
+        if expected_from_coefficients != expected_from_difference:
+            fail(
+                f"{use_context}.implication coefficients do not replay the "
+                "emitted source-target exponent"
+            )
+        expected_sign = 2 * coefficients[-1]
+        if expected_sign != sign_exponent:
+            fail(
+                f"{use_context}.implication parity coefficient does not replay "
+                "the emitted sign exponent"
+            )
+        combination_eq = implication.get("combination_eq")
         check_row_equality(
-            implication.get("combination_eq"),
+            combination_eq,
             f"{use_context}.implication.combination_eq",
         )
+        for side in ("lhs", "rhs"):
+            row = combination_eq[side]
+            actual_exponent = canonical_local_exponent(
+                row.get("exponent"),
+                f"{use_context}.implication.combination_eq.{side}.exponent",
+            )
+            actual_sign = integer(
+                row.get("signExponent"),
+                f"{use_context}.implication.combination_eq.{side}.signExponent",
+            )
+            if actual_exponent != expected_from_coefficients:
+                fail(
+                    f"{use_context}.implication.combination_eq.{side} does not "
+                    "match the coefficient-replayed exponent"
+                )
+            if actual_sign != expected_sign:
+                fail(
+                    f"{use_context}.implication.combination_eq.{side} does not "
+                    "match the coefficient-replayed sign exponent"
+                )
     check_polynomial_equality(reduction.get("source_eq"), f"{context}.source_eq")
     check_polynomial_equality(reduction.get("target_eq"), f"{context}.target_eq")
+    return len(uses)
 
 
-def normalized_certificate(payload: Any, use_count: int, context: str) -> None:
+def normalized_certificate(payload: Any, use_count: int, context: str) -> int:
     if not isinstance(payload, dict):
         fail(f"{context} is not a normalized certificate")
     unit = integer(payload.get("unit"), f"{context}.unit")
@@ -235,10 +327,12 @@ def normalized_certificate(payload: Any, use_count: int, context: str) -> None:
     if provenance.get("basis_character_count") != 5:
         fail(f"{context} basis character count changed")
     polynomial_entries(provenance.get("normalized_target"), f"{context}.normalized_target")
-    check_reduction(payload.get("reduction"), use_count, 5, f"{context}.reduction")
+    return check_reduction(
+        payload.get("reduction"), use_count, 5, f"{context}.reduction"
+    )
 
 
-def factor_certificate(payload: Any, context: str) -> None:
+def factor_certificate(payload: Any, context: str) -> int:
     if not isinstance(payload, dict):
         fail(f"{context} is not a factor certificate")
     unit = integer(payload.get("unit"), f"{context}.unit")
@@ -248,7 +342,7 @@ def factor_certificate(payload: Any, context: str) -> None:
     provenance = payload.get("provenance")
     if provenance.get("basis_character_count") != 5:
         fail(f"{context} basis count changed")
-    check_reduction(payload.get("reduction"), 4, 5, f"{context}.reduction")
+    return check_reduction(payload.get("reduction"), 4, 5, f"{context}.reduction")
 
 
 def load_first_overlap_rows() -> list[dict[str, Any]]:
@@ -295,9 +389,28 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         fail("factor input count changed")
     if pipeline.get("unused_second_overlap_relations_in_factor_input") != 0:
         fail("the unused second overlap leaked into the factor input")
-    if len(data.get("base_characters", [])) != 5:
+    base_characters = data.get("base_characters", [])
+    if len(base_characters) != len(COMPONENT_A_CHARACTER_EXPONENTS):
         fail("Component-A base-character count changed")
+    for character_index, (character, expected_exponent) in enumerate(
+        zip(base_characters, COMPONENT_A_CHARACTER_EXPONENTS)
+    ):
+        if not isinstance(character, dict):
+            fail(f"Component-A base character {character_index} is not an object")
+        actual_exponent = canonical_local_exponent(
+            character.get("row"), f"Component-A base character {character_index}"
+        )
+        if actual_exponent != expected_exponent:
+            fail(
+                f"Component-A base character {character_index} differs from "
+                "tropicalComponentACharacter8"
+            )
+        if integer(
+            character.get("bit"), f"Component-A base character {character_index}.bit"
+        ) != 0:
+            fail(f"Component-A base character {character_index} sign changed")
     first_overlap_rows = load_first_overlap_rows()
+    checked_monomial_replays = 0
 
     quotient = data.get("quotient", {})
     source_reductions = quotient.get("source_reductions")
@@ -325,7 +438,9 @@ def load_and_validate(path: Path) -> dict[str, Any]:
         )
         if combined != overlap_index + 200:
             fail(f"source reduction {reduction_id} source tag is inconsistent")
-        normalized_certificate(source.get("certificate"), 6, f"source reduction {reduction_id}")
+        checked_monomial_replays += normalized_certificate(
+            source.get("certificate"), 6, f"source reduction {reduction_id}"
+        )
         reduction = source["certificate"]["reduction"]
         exact_row = canonical_coordinate_polynomial(
             first_overlap_rows[overlap_index]["relation"],
@@ -369,7 +484,7 @@ def load_and_validate(path: Path) -> dict[str, Any]:
                 fail(f"quotient row {row_index} source ids disagree")
             integer(use.get("integer_scale"), f"quotient row {row_index} source scale")
             check_sparse_exponent(use.get("shift"), f"quotient row {row_index} source shift")
-        normalized_certificate(
+        checked_monomial_replays += normalized_certificate(
             row.get("combination_reduction"), 12,
             f"quotient row {row_index} combination reduction",
         )
@@ -418,7 +533,15 @@ def load_and_validate(path: Path) -> dict[str, Any]:
             f"raw edge {edge_index} quotient relation",
         ):
             fail(f"raw edge {edge_index} source is not its exact quotient row")
-        factor_certificate(witness.get("factor_certificate"), f"raw edge {edge_index}")
+        checked_monomial_replays += factor_certificate(
+            witness.get("factor_certificate"), f"raw edge {edge_index}"
+        )
+
+    if checked_monomial_replays != MONOMIAL_REPLAY_COUNT:
+        fail(
+            "Component-A coefficient-replayed monomial count changed: "
+            f"{checked_monomial_replays} != {MONOMIAL_REPLAY_COUNT}"
+        )
 
     owner: dict[int, int] = {}
     for class_id, class_row in enumerate(classes):
@@ -575,7 +698,8 @@ def emit_monomial_module(
     coeff := tropicalComponentAWithParityCoefficients8 {vector(coeffs, "      ")},
     combination_eq := by
       apply TropicalFactorA8.Internal.signedCharacterRow_eq_of_fields
-      · simp [{MONOMIAL_SIMP}] <;> abel_nf
+      · simp [{MONOMIAL_SIMP}] <;>
+          (ext x; simp [Pi.single_apply]; split_ifs <;> omega)
       · norm_num [{MONOMIAL_SIMP}, Fin.last]
   }}
 ''' + internal_end(kind, row_id) + FOOTER
@@ -1735,8 +1859,11 @@ def validate_generated_layout(
         if "Monomial" in path.parts:
             if structural_ext not in text:
                 fail(f"monomial leaf does not use structural row equality: {path}")
-            if "<;> abel_nf" not in text:
-                fail(f"monomial leaf lacks normalized exponent replay: {path}")
+            pointwise_replay = (
+                "(ext x; simp [Pi.single_apply]; split_ifs <;> omega)"
+            )
+            if pointwise_replay not in text:
+                fail(f"monomial leaf lacks pointwise exponent replay: {path}")
 
     source_equalities = {
         path: text for path, text in proof_tree.items()
