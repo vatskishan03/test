@@ -1351,7 +1351,8 @@ def emit_quotient_shifted_eq(data: dict[str, Any], quotient_id: int) -> str:
       (({exponent(use["shift"], f"quotient {quotient_id} shift {local_index}")} +
         {exponent(term_rows, f"quotient {quotient_id} source exponent")} : LaurentExponent (Fin 144)) =
       {exponent(combined, f"quotient {quotient_id} translated exponent")}) := by
-    ext x; simp [Pi.single_apply]; split_ifs <;> omega''')
+    ext x
+    simp [Pi.single_apply] <;> split_ifs <;> omega''')
     source_simp = ",\n    ".join(
         f"{stage_namespace('Source', source_id)}.reduced"
         for source_id in source_ids
@@ -1611,7 +1612,8 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
       shift + {exponent(term_rows, f"factor {edge_id} product exponent")} =
         {exponent(combined, f"factor {edge_id} translated exponent")} := by
     unfold shift
-    ext x; simp [Pi.single_apply]; split_ifs <;> omega''')
+    ext x
+    simp [Pi.single_apply] <;> split_ifs <;> omega''')
     namespace = stage_namespace("Factor", edge_id)
     module = stage_module("Factor", edge_id)
     body = f'''/-- Sparse translated-product equality for factor edge {edge_id}. -/
@@ -2163,7 +2165,8 @@ def audit_generated(
             fail(f"quotient shifted replay lacks local zsmul bridge: {path}")
         rows = re.findall(
             r"  have (hexp\d+_\d+) :\n(.*?) := by\n"
-            r"    ext x; simp \[Pi\.single_apply\]; split_ifs <;> omega",
+            r"    ext x\n"
+            r"    simp \[Pi\.single_apply\] <;> split_ifs <;> omega",
             text,
             re.DOTALL,
         )
@@ -2191,7 +2194,8 @@ def audit_generated(
         rows = re.findall(
             r"  have (hexp\d+) :\n(.*?) := by\n"
             r"    unfold shift\n"
-            r"    ext x; simp \[Pi\.single_apply\]; split_ifs <;> omega",
+            r"    ext x\n"
+            r"    simp \[Pi\.single_apply\] <;> split_ifs <;> omega",
             contents[path],
             re.DOTALL,
         )
