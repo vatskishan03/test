@@ -1,0 +1,73 @@
+{
+  "components": {
+    "A": {
+      "all_engine_accepted_factor_witnesses_even": true,
+      "class_edges": 12,
+      "classes": 15,
+      "global_covers": 54,
+      "local_cover_counts": [
+        9,
+        2,
+        3
+      ],
+      "quotient_rows": 70,
+      "raw_edges": 68,
+      "raw_vertices": 59
+    },
+    "B": {
+      "all_engine_accepted_factor_witnesses_even": true,
+      "class_edges": 21,
+      "classes": 23,
+      "global_covers": 288,
+      "local_cover_counts": [
+        16,
+        3,
+        3,
+        2
+      ],
+      "quotient_rows": 88,
+      "raw_edges": 59,
+      "raw_vertices": 49
+    }
+  },
+  "inputs": {
+    "branch_state_sha256": {
+      "B_state15_branch0.pkl": "18379887b5ffe3a43d3f248cf4c0afb3ae58bc14dbb6a0e6dee005d52cecea21",
+      "B_state15_branch1.pkl": "1879f0618b3f2895d137d6ad3da885cf335c992f8e1e518af750d0242ad8b34f",
+      "B_state3_branch0.pkl": "b5ae9901ae526ee69fa95aa569f4b5b4ab839b9c53a9d236433e5df88bb49ac6",
+      "B_state3_branch1.pkl": "0fad334566f902c2da65d324656c96a54ca27903ba2f5a04e3b69857e8476741",
+      "B_state9_branch0.pkl": "9e42e8095d2d7a9f30d8a51045bc933bbb247bc8b96ea7b92f05fb3d31f1024f",
+      "B_state9_branch1.pkl": "bd854b72af03089f6bb329816fd97b2ced0df1860adf4c7eeed283986e72503c"
+    },
+    "canonical_handoff_zip_sha256": "df8d76ed377a8c63f4517951556fb00a2860e1da5dde36dcf834f9aca14e2e15",
+    "component_A_research_sha256": "f4264471fa00e06608a749b1020f29a0711a6cd271f52ab3d731fbfa86a82222",
+    "component_B_research_sha256": "dfcf6f64749c73687d4920633df888ae9589d31cfbcc873d93b5463e99504b58",
+    "recovered_engine_filename": "mqg_exact_engine.py",
+    "recovered_engine_sha256": "75f55ccc4fa1f46e8b1ab1a22e489e2d93ff8370c4b8a8faca8deb0d02c749d0",
+    "recovered_engine_size": 25736,
+    "support_path": "certificates/n8d3/tropical_nonattainment/tropical_border/support_144.txt",
+    "support_sha256": "16bcc5dbb023bc4ed522633b462a81fa0d5dca6722aeac54e6bdc3dc2f44fbe1",
+    "support_size": 144,
+    "sympy_version": "1.14.0"
+  },
+  "retained_pipeline": {
+    "base_relations": 200,
+    "factor_pipeline_relations": 560,
+    "first_overlap_relations": 360,
+    "second_overlap_relations_used": 0
+  },
+  "schema_version": 2,
+  "scope": "N=8,D=3 canonical six-matching support factor semantics",
+  "trust_boundary": {
+    "arbitrary_quotient_normal_form_multiplication_trusted": false,
+    "integer_character_coefficients_replayed_exactly": true,
+    "lean_kernel_replay_required": true,
+    "lean_replay_must_append_the_parity_generator_row_0_2": true,
+    "python_output_is_proof": false,
+    "signed_implications_include_even_parity_correction": true
+  },
+  "unused_regression": {
+    "canonical_rows_sha256": "290c40afaf35e3bf9c1506f03c0431a1471745bcf0f25eb97b6e61a03fc78667",
+    "second_overlap_relations": 68
+  }
+}
