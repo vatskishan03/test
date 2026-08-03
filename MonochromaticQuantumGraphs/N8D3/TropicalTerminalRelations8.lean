@@ -101,7 +101,21 @@ def tropicalTerminalRelation65_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation65_8_explicit :
     tropicalTerminalRelation65_8 =
       tropicalTerminalExplicitRelation8 0 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation65_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row0_matching0,
+    tropicalTerminalMatchingExponent8_row0_matching1,
+    tropicalTerminalMatchingExponent8_row0_matching6,
+    tropicalTerminalMatchingExponent8_row0_matching21,
+    tropicalTerminalMatchingExponent8_row0_matching24,
+    tropicalTerminalMatchingExponent8_row0_matching25,
+    tropicalTerminalMatchingExponent8_row0_matching40,
+    tropicalTerminalMatchingExponent8_row0_matching69,
+    tropicalTerminalMatchingExponent8_row0_matching84]
+  <;> abel
 
 theorem tropicalTerminalRelation65_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -117,7 +131,21 @@ def tropicalTerminalRelation73_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation73_8_explicit :
     tropicalTerminalRelation73_8 =
       tropicalTerminalExplicitRelation8 1 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation73_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row1_matching0,
+    tropicalTerminalMatchingExponent8_row1_matching1,
+    tropicalTerminalMatchingExponent8_row1_matching6,
+    tropicalTerminalMatchingExponent8_row1_matching21,
+    tropicalTerminalMatchingExponent8_row1_matching24,
+    tropicalTerminalMatchingExponent8_row1_matching40,
+    tropicalTerminalMatchingExponent8_row1_matching43,
+    tropicalTerminalMatchingExponent8_row1_matching51,
+    tropicalTerminalMatchingExponent8_row1_matching54]
+  <;> abel
 
 theorem tropicalTerminalRelation73_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -133,7 +161,19 @@ def tropicalTerminalRelation74_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation74_8_explicit :
     tropicalTerminalRelation74_8 =
       tropicalTerminalExplicitRelation8 2 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation74_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row2_matching0,
+    tropicalTerminalMatchingExponent8_row2_matching1,
+    tropicalTerminalMatchingExponent8_row2_matching6,
+    tropicalTerminalMatchingExponent8_row2_matching21,
+    tropicalTerminalMatchingExponent8_row2_matching24,
+    tropicalTerminalMatchingExponent8_row2_matching40,
+    tropicalTerminalMatchingExponent8_row2_matching43]
+  <;> abel
 
 theorem tropicalTerminalRelation74_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -149,7 +189,20 @@ def tropicalTerminalRelation75_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation75_8_explicit :
     tropicalTerminalRelation75_8 =
       tropicalTerminalExplicitRelation8 3 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation75_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row3_matching0,
+    tropicalTerminalMatchingExponent8_row3_matching1,
+    tropicalTerminalMatchingExponent8_row3_matching6,
+    tropicalTerminalMatchingExponent8_row3_matching21,
+    tropicalTerminalMatchingExponent8_row3_matching24,
+    tropicalTerminalMatchingExponent8_row3_matching40,
+    tropicalTerminalMatchingExponent8_row3_matching51,
+    tropicalTerminalMatchingExponent8_row3_matching54]
+  <;> abel
 
 theorem tropicalTerminalRelation75_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -165,7 +218,18 @@ def tropicalTerminalRelation77_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation77_8_explicit :
     tropicalTerminalRelation77_8 =
       tropicalTerminalExplicitRelation8 4 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation77_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row4_matching0,
+    tropicalTerminalMatchingExponent8_row4_matching1,
+    tropicalTerminalMatchingExponent8_row4_matching6,
+    tropicalTerminalMatchingExponent8_row4_matching21,
+    tropicalTerminalMatchingExponent8_row4_matching24,
+    tropicalTerminalMatchingExponent8_row4_matching40]
+  <;> abel
 
 theorem tropicalTerminalRelation77_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -181,7 +245,20 @@ def tropicalTerminalRelation437_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation437_8_explicit :
     tropicalTerminalRelation437_8 =
       tropicalTerminalExplicitRelation8 5 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation437_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row5_matching0,
+    tropicalTerminalMatchingExponent8_row5_matching1,
+    tropicalTerminalMatchingExponent8_row5_matching6,
+    tropicalTerminalMatchingExponent8_row5_matching21,
+    tropicalTerminalMatchingExponent8_row5_matching24,
+    tropicalTerminalMatchingExponent8_row5_matching25,
+    tropicalTerminalMatchingExponent8_row5_matching40,
+    tropicalTerminalMatchingExponent8_row5_matching69]
+  <;> abel
 
 theorem tropicalTerminalRelation437_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -197,7 +274,21 @@ def tropicalTerminalRelation874_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation874_8_explicit :
     tropicalTerminalRelation874_8 =
       tropicalTerminalExplicitRelation8 6 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation874_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row6_matching0,
+    tropicalTerminalMatchingExponent8_row6_matching1,
+    tropicalTerminalMatchingExponent8_row6_matching6,
+    tropicalTerminalMatchingExponent8_row6_matching21,
+    tropicalTerminalMatchingExponent8_row6_matching24,
+    tropicalTerminalMatchingExponent8_row6_matching25,
+    tropicalTerminalMatchingExponent8_row6_matching40,
+    tropicalTerminalMatchingExponent8_row6_matching69,
+    tropicalTerminalMatchingExponent8_row6_matching84]
+  <;> abel
 
 theorem tropicalTerminalRelation874_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)
@@ -213,7 +304,20 @@ def tropicalTerminalRelation1213_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation1213_8_explicit :
     tropicalTerminalRelation1213_8 =
       tropicalTerminalExplicitRelation8 7 := by
-  decide
+  classical
+  simp [tropicalTerminalRelation1213_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    tropicalTerminalMatchingExponent8_row7_matching0,
+    tropicalTerminalMatchingExponent8_row7_matching1,
+    tropicalTerminalMatchingExponent8_row7_matching6,
+    tropicalTerminalMatchingExponent8_row7_matching21,
+    tropicalTerminalMatchingExponent8_row7_matching24,
+    tropicalTerminalMatchingExponent8_row7_matching25,
+    tropicalTerminalMatchingExponent8_row7_matching40,
+    tropicalTerminalMatchingExponent8_row7_matching69]
+  <;> abel
 
 theorem tropicalTerminalRelation1213_8_hold
     {W : WeightsN 8 3 ℂ} (hSupport : TropicalExactSupport8 W)

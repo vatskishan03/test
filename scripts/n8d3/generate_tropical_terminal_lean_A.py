@@ -153,9 +153,15 @@ def official_relation_payloads(
             )
             if all(value in support_rank for value in globals_for_term):
                 active.append(matching_index)
-                local_indices = sorted(support_rank[value] for value in globals_for_term)
+                local_coordinates = tuple(
+                    support_rank[value] for value in globals_for_term
+                )
+                local_indices = sorted(local_coordinates)
                 terms.append(
                     {
+                        "matching_index": matching_index,
+                        "local_coordinates": local_coordinates,
+                        "global_coordinates": globals_for_term,
                         "coefficient": 1,
                         "exponent": [
                             {"local": local, "global": support[local], "exp": 1}
@@ -548,20 +554,53 @@ end MonochromaticQuantumGraphs.N8D3
 '''
 
 
-def relation_shard_file(shard: int) -> str:
+def relation_shard_file(
+    shard: int, official_payloads: dict[int, list[dict[str, Any]]]
+) -> str:
     start = 4 * shard
     rows = []
     for local in range(4):
         index = start + local
+        official_index, code, active = OFFICIAL_ROWS[index]
+        payloads = official_payloads[official_index]
+        if tuple(int(term["matching_index"]) for term in payloads) != active:
+            fail(f"official row {official_index} replay ordering changed")
+        exponent_replays = []
+        for term in payloads:
+            matching_index = int(term["matching_index"])
+            local_coordinates = tuple(int(x) for x in term["local_coordinates"])
+            global_coordinates = tuple(int(x) for x in term["global_coordinates"])
+            if len(local_coordinates) != 4 or len(global_coordinates) != 4:
+                fail(
+                    f"official row {official_index} matching {matching_index} "
+                    "is not a four-coordinate monomial"
+                )
+            a0, a1, a2, a3 = local_coordinates
+            exponent_replays.append(
+                f'''/-- Four-coordinate replay for official row {official_index}, matching {matching_index}. -/
+theorem tropicalTerminalMatchingExponent8_row{index}_matching{matching_index} :
+    tropicalMatchingLocalExponent8
+        (tropicalColoringOfCode8 {code}) ({matching_index} : Fin 105) =
+      {exponent_expr(term['exponent'])} := by
+  rw [tropicalMatchingLocalExponent8_eq_four_of_globalCoordinates8
+    (tropicalColoringOfCode8 {code}) ({matching_index} : Fin 105)
+    ({a0} : Fin 144) ({a1} : Fin 144) ({a2} : Fin 144) ({a3} : Fin 144)
+    (by decide) (by decide) (by decide) (by decide)]
+  abel
+'''
+            )
         rows.append(
             f'''theorem tropicalTerminalSupportedMatchingSet8_row{index} :
     Finset.univ.filter (fun m : Fin 105 ↦
       tropicalMatchingSupported8 (tropicalTerminalColoring8 {index}) m = true) =
         tropicalTerminalMatchingSet8 {index} := by
   decide
+
+{chr(10).join(exponent_replays)}
 '''
         )
-    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalTerminalRelations8.Data
+    return f'''import MonochromaticQuantumGraphs.N8D3.TropicalRetainedRelations8.Data
+import MonochromaticQuantumGraphs.N8D3.TropicalTerminalRelations8.Data
 
 /-! Bounded support-filter replay shard {shard} for the official terminal rows. -/
 
@@ -584,7 +623,11 @@ end MonochromaticQuantumGraphs.N8D3
 
 def relation_main_file(official_payloads: dict[int, list[dict[str, Any]]]) -> str:
     aliases = []
-    for row_position, (official_index, _code, _active) in enumerate(OFFICIAL_ROWS):
+    for row_position, (official_index, _code, active) in enumerate(OFFICIAL_ROWS):
+        replay_names = "\n    ".join(
+            f"tropicalTerminalMatchingExponent8_row{row_position}_matching{matching},"
+            for matching in active
+        ).rstrip(",")
         aliases.append(
             f'''/-- Official terminal relation {official_index}. -/
 def tropicalTerminalRelation{official_index}_8 : LaurentPolynomial (Fin 144) :=
@@ -593,7 +636,13 @@ def tropicalTerminalRelation{official_index}_8 : LaurentPolynomial (Fin 144) :=
 theorem tropicalTerminalRelation{official_index}_8_explicit :
     tropicalTerminalRelation{official_index}_8 =
       tropicalTerminalExplicitRelation8 {row_position} := by
-  decide
+  classical
+  simp [tropicalTerminalRelation{official_index}_8,
+    tropicalTerminalRelation8, tropicalTerminalMatchingSet8,
+    tropicalTerminalColoring8, tropicalTerminalColoringCode8,
+    tropicalTerminalExplicitRelation8,
+    {replay_names}]
+  <;> abel
 
 theorem tropicalTerminalRelation{official_index}_8_hold
     {{W : WeightsN 8 3 ℂ}} (hSupport : TropicalExactSupport8 W)
@@ -1122,8 +1171,8 @@ def generated_artifacts(
 ) -> dict[Path, str]:
     artifacts = {
         RELATIONS_DIR / "Data.lean": relation_data_file(official_payloads),
-        RELATIONS_DIR / "Shard0.lean": relation_shard_file(0),
-        RELATIONS_DIR / "Shard1.lean": relation_shard_file(1),
+        RELATIONS_DIR / "Shard0.lean": relation_shard_file(0, official_payloads),
+        RELATIONS_DIR / "Shard1.lean": relation_shard_file(1, official_payloads),
         RELATIONS_MAIN: relation_main_file(official_payloads),
         COMPONENT_DIR / "Data.lean": component_data_file(),
         COMPONENT_MAIN: component_main_file(),
