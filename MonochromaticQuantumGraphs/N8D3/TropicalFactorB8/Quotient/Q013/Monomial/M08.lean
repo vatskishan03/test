@@ -35,7 +35,7 @@ def monomial08 :
       (0 : ℤ)
 ],
     combination_eq := by
-      apply SignedCharacterRow.ext
+      apply TropicalFactorB8.Internal.signedCharacterRow_eq_of_fields
       · simp [SignedCharacterRow.linearCombination,
           Fintype.sum_sum_type, Fin.sum_univ_succ,
           tropicalComponentBWithParityCoefficients8,

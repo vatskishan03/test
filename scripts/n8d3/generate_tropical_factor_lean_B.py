@@ -603,6 +603,28 @@ def tropicalComponentBWithParityCoefficients8
   | .inl i => coeff i.castSucc
   | .inr _ => coeff (Fin.last 2)
 
+namespace TropicalFactorB8.Internal
+
+/-- Equality of signed character rows from equality of their two fields.
+`SignedCharacterRow` is intentionally a plain structure and does not declare
+an `ext` theorem, so certificate leaves use this explicit structural lemma. -/
+theorem signedCharacterRow_eq_of_fields {ι : Type*}
+    {left right : SignedCharacterRow ι}
+    (exponent_eq : left.exponent = right.exponent)
+    (sign_eq : left.signExponent = right.signExponent) :
+    left = right := by
+  cases left with
+  | mk leftExponent leftSign =>
+      cases right with
+      | mk rightExponent rightSign =>
+          change leftExponent = rightExponent at exponent_eq
+          change leftSign = rightSign at sign_eq
+          subst rightExponent
+          subst rightSign
+          rfl
+
+end TropicalFactorB8.Internal
+
 /-- Translation is additive over subtraction.  This structural lemma avoids
 unfolding the quotient-backed `Finsupp` implementation in factor leaves. -/
 theorem tropicalComponentBTranslateSub8
@@ -754,7 +776,7 @@ def monomial{use_index:02d} :
   implication := {{
     coeff := tropicalComponentBWithParityCoefficients8 {vector(coeffs, "      ")},
     combination_eq := by
-      apply SignedCharacterRow.ext
+      apply TropicalFactorB8.Internal.signedCharacterRow_eq_of_fields
       · simp [SignedCharacterRow.linearCombination,
           Fintype.sum_sum_type, Fin.sum_univ_succ,
           tropicalComponentBWithParityCoefficients8,
@@ -1714,7 +1736,7 @@ def audit_generated(
         if path.parts[0] in {"Source", "Quotient", "Factor"}
     }
     forbidden = (
-        "apply SignedCharacterRow.ext <;> decide",
+        "SignedCharacterRow.ext",
         "Quot.lift",
         ".support.val",
         "\n  decide\n",
@@ -1727,6 +1749,13 @@ def audit_generated(
         for heartbeat in re.findall(r"set_option maxHeartbeats (\d+)", text):
             if int(heartbeat) > 8_000_000:
                 fail(f"heartbeat ceiling exceeded in {path}")
+
+    structural_ext = (
+        "apply TropicalFactorB8.Internal.signedCharacterRow_eq_of_fields"
+    )
+    for path, text in proof_tree.items():
+        if "Monomial" in path.parts and structural_ext not in text:
+            fail(f"monomial leaf does not use structural row equality: {path}")
 
     source_umbrella = (
         "import MonochromaticQuantumGraphs.N8D3.TropicalFactorB8.Source\n"

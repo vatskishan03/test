@@ -23,6 +23,28 @@ def tropicalComponentBWithParityCoefficients8
   | .inl i => coeff i.castSucc
   | .inr _ => coeff (Fin.last 2)
 
+namespace TropicalFactorB8.Internal
+
+/-- Equality of signed character rows from equality of their two fields.
+`SignedCharacterRow` is intentionally a plain structure and does not declare
+an `ext` theorem, so certificate leaves use this explicit structural lemma. -/
+theorem signedCharacterRow_eq_of_fields {ι : Type*}
+    {left right : SignedCharacterRow ι}
+    (exponent_eq : left.exponent = right.exponent)
+    (sign_eq : left.signExponent = right.signExponent) :
+    left = right := by
+  cases left with
+  | mk leftExponent leftSign =>
+      cases right with
+      | mk rightExponent rightSign =>
+          change leftExponent = rightExponent at exponent_eq
+          change leftSign = rightSign at sign_eq
+          subst rightExponent
+          subst rightSign
+          rfl
+
+end TropicalFactorB8.Internal
+
 /-- Translation is additive over subtraction.  This structural lemma avoids
 unfolding the quotient-backed `Finsupp` implementation in factor leaves. -/
 theorem tropicalComponentBTranslateSub8
