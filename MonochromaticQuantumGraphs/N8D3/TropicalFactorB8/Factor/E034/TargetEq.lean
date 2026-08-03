@@ -26,16 +26,15 @@ theorem target_eq :
       (-1 : ℤ) • LaurentPolynomial.translate shift
         (leftFactor.factorProductPolynomial rightFactor) := by
   have hexp0 :
-      shift + (Pi.single (7 : Fin 144) (1 : ℤ) +
+      shift + ((Pi.single (69 : Fin 144) (1 : ℤ) +
+        Pi.single (70 : Fin 144) (-1 : ℤ) +
+        Pi.single (126 : Fin 144) (-1 : ℤ) +
+        Pi.single (129 : Fin 144) (1 : ℤ)) + (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (15 : Fin 144) (-1 : ℤ) +
         Pi.single (51 : Fin 144) (-1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
-        Pi.single (69 : Fin 144) (1 : ℤ) +
-        Pi.single (70 : Fin 144) (-1 : ℤ) +
         Pi.single (90 : Fin 144) (-1 : ℤ) +
-        Pi.single (114 : Fin 144) (1 : ℤ) +
-        Pi.single (126 : Fin 144) (-1 : ℤ) +
-        Pi.single (129 : Fin 144) (1 : ℤ)) =
+        Pi.single (114 : Fin 144) (1 : ℤ))) =
         (Pi.single (7 : Fin 144) (1 : ℤ) +
         Pi.single (59 : Fin 144) (1 : ℤ) +
         Pi.single (114 : Fin 144) (1 : ℤ) +

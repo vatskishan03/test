@@ -1599,17 +1599,27 @@ def emit_factor_target_eq(data: dict[str, Any], edge_id: int) -> str:
     left_rows = data["factor"]["vertices"][left]["row"]
     right_rows = data["factor"]["vertices"][right]["row"]
     shift_rows = payload["shift"]
-    structural = [
+    left_exp = exponent(left_rows, f"factor {edge_id} left exponent")
+    right_exp = exponent(right_rows, f"factor {edge_id} right exponent")
+    structural_rows = [
         normalize_exponent_rows(left_rows, right_rows),
         list(left_rows),
         list(right_rows),
         [],
     ]
+    term_expressions = [
+        f"({left_exp} + {right_exp})",
+        left_exp,
+        right_exp,
+        "(0 : LaurentExponent (Fin 144))",
+    ]
     exponent_lemmas: list[str] = []
-    for term_index, term_rows in enumerate(structural):
+    for term_index, (term_rows, term_expression) in enumerate(
+        zip(structural_rows, term_expressions)
+    ):
         combined = normalize_exponent_rows(shift_rows, term_rows)
         exponent_lemmas.append(f'''  have hexp{term_index} :
-      shift + {exponent(term_rows, f"factor {edge_id} product exponent")} =
+      shift + {term_expression} =
         {exponent(combined, f"factor {edge_id} translated exponent")} := by
     unfold shift
     ext x
