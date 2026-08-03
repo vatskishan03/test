@@ -103,6 +103,86 @@ theorem exists_listed_zero_cover
   intro v hv
   exact (Finset.mem_filter.mp (hi hv)).2
 
+/-- A predicate covers an edge relation when at least one endpoint of every
+declared edge satisfies it.  Unlike `zeroFactors_cover`, this formulation is
+not tied to one scalar value per graph vertex. -/
+def IsCoveringPredicate {V : Type*}
+    (edge : V → V → Prop) (predicate : V → Prop) : Prop :=
+  ∀ ⦃u v⦄, edge u v → predicate u ∨ predicate v
+
+/-- A complete finite cover table dispatches any covering predicate to one
+listed row. -/
+theorem exists_listed_of_coveringPredicate
+    {V I : Type*} [Fintype V] [DecidableEq V]
+    (edge : V → V → Prop) (predicate : V → Prop)
+    (listed : I → Finset V)
+    (htable : IsCompleteTable edge listed)
+    (hpredicate : IsCoveringPredicate edge predicate) :
+    ∃ i, ∀ v ∈ listed i, predicate v := by
+  classical
+  let cover := Finset.univ.filter predicate
+  have hcover : IsVertexCover edge cover := by
+    intro u v huv
+    rcases hpredicate huv with hu | hv
+    · exact Or.inl (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hu⟩)
+    · exact Or.inr (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hv⟩)
+  obtain ⟨i, hi⟩ := htable cover hcover
+  refine ⟨i, ?_⟩
+  intro v hv
+  exact (Finset.mem_filter.mp (hi hv)).2
+
+/-- Every raw factor represented by one false-twin class vanishes. -/
+def AllZeroInClass {C R : Type*} [DecidableEq R]
+    (members : C → Finset R) (value : R → ℂ) (c : C) : Prop :=
+  ∀ r ∈ members c, value r = 0
+
+/-- A class edge is an exact complete-bipartite quotient of the raw factor
+graph when every pair of raw members across the two classes is a raw edge. -/
+def IsCompleteBipartiteQuotient {C R : Type*} [DecidableEq R]
+    (rawEdge : R → R → Prop) (classEdge : C → C → Prop)
+    (members : C → Finset R) : Prop :=
+  ∀ ⦃c d⦄, classEdge c d →
+    ∀ ⦃r s⦄, r ∈ members c → s ∈ members d → rawEdge r s
+
+/-- If all raw edge products vanish and a class edge is complete bipartite,
+then every raw factor in one of its endpoint classes vanishes. -/
+theorem allZero_class_edge_cases
+    {C R : Type*} [DecidableEq R]
+    {rawEdge : R → R → Prop} {classEdge : C → C → Prop}
+    {members : C → Finset R} {value : R → ℂ}
+    (hcomplete :
+      IsCompleteBipartiteQuotient rawEdge classEdge members)
+    (hraw : ∀ ⦃r s⦄, rawEdge r s → value r * value s = 0)
+    {c d : C} (hcd : classEdge c d) :
+    AllZeroInClass members value c ∨ AllZeroInClass members value d := by
+  classical
+  by_cases hc : AllZeroInClass members value c
+  · exact Or.inl hc
+  · right
+    simp only [AllZeroInClass] at hc ⊢
+    push_neg at hc
+    obtain ⟨r, hrc, hrne⟩ := hc
+    intro s hsd
+    exact (mul_eq_zero.mp
+      (hraw (hcomplete hcd hrc hsd))).resolve_left hrne
+
+/-- Complete-bipartite false-twin quotient edges and raw factor products
+dispatch to a listed class cover whose every raw member vanishes. -/
+theorem exists_listed_allZero_cover
+    {C R I : Type*} [Fintype C] [DecidableEq C] [DecidableEq R]
+    (rawEdge : R → R → Prop) (classEdge : C → C → Prop)
+    (members : C → Finset R) (value : R → ℂ)
+    (listed : I → Finset C)
+    (htable : IsCompleteTable classEdge listed)
+    (hcomplete :
+      IsCompleteBipartiteQuotient rawEdge classEdge members)
+    (hraw : ∀ ⦃r s⦄, rawEdge r s → value r * value s = 0) :
+    ∃ i, ∀ c ∈ listed i, AllZeroInClass members value c := by
+  apply exists_listed_of_coveringPredicate classEdge
+    (AllZeroInClass members value) listed htable
+  intro c d hcd
+  exact allZero_class_edge_cases hcomplete hraw hcd
+
 /-- Minimality is recorded separately from completeness so a replay can audit
 both claims without making minimality part of the logical elimination gate. -/
 def IsMinimalVertexCover {V : Type*} [DecidableEq V]
