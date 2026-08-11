@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: candidate129-exclusions-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: candidate129-exclusions-${{ github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   exclusion-chunks:
