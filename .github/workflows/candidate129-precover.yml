@@ -1,0 +1,45 @@
+name: Candidate 129 precover audit
+
+on:
+  pull_request:
+    branches:
+      - research/general-reduction-n8-d3
+    paths:
+      - "research/candidate129/**"
+      - ".github/workflows/candidate129-precover.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate129-precover-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  precover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Reconstruct exact closure and precover factor graph
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v python research/candidate129/probe_candidate129_precover.py \
+            research/candidate129/candidate129_support.txt \
+            research/candidate129/candidate129_precover.json \
+            2>&1 | tee research/candidate129/candidate129_precover.log
+      - name: Upload exact precover outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate129-precover-${{ github.run_id }}
+          path: |
+            research/candidate129/candidate129_support.txt
+            research/candidate129/candidate129_precover.json
+            research/candidate129/candidate129_precover.log
+          if-no-files-found: warn
+          retention-days: 30
