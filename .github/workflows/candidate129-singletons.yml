@@ -1,0 +1,56 @@
+name: Candidate 129 singleton audit
+
+on:
+  pull_request:
+    branches:
+      - research/general-reduction-n8-d3
+    paths:
+      - "research/candidate129/**"
+      - ".github/workflows/candidate129-singletons.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate129-singletons-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  singleton-chunks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 13
+      matrix:
+        chunk: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact integer-lattice dependency
+        run: python -m pip install --disable-pip-version-check sympy==1.14.0
+      - name: Audit singleton class chunk
+        env:
+          CHUNK: ${{ matrix.chunk }}
+        run: |
+          set -euo pipefail
+          start=$((CHUNK * 8))
+          end=$((start + 8))
+          /usr/bin/time -v python research/candidate129/audit_candidate129_singletons.py \
+            research/candidate129/candidate129_support.txt \
+            research/candidate129/candidate129_singletons_${CHUNK}.json \
+            --start "$start" --end "$end" \
+            2>&1 | tee research/candidate129/candidate129_singletons_${CHUNK}.log
+      - name: Upload singleton chunk
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate129-singletons-${{ matrix.chunk }}-${{ github.run_id }}
+          path: |
+            research/candidate129/candidate129_singletons_${{ matrix.chunk }}.json
+            research/candidate129/candidate129_singletons_${{ matrix.chunk }}.log
+          if-no-files-found: warn
+          retention-days: 30
