@@ -1,12 +1,6 @@
 name: Candidate 129 singleton local flips
 
 on:
-  pull_request:
-    branches:
-      - research/general-reduction-n8-d3
-    paths:
-      - "research/candidate129/audit_candidate129_singleton_flips.py"
-      - ".github/workflows/candidate129-singleton-flips.yml"
   workflow_dispatch:
 
 permissions:
