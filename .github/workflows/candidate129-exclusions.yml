@@ -1,12 +1,6 @@
 name: Candidate 129 exclusion audit
 
 on:
-  pull_request:
-    branches:
-      - research/general-reduction-n8-d3
-    paths:
-      - "research/candidate129/**"
-      - ".github/workflows/candidate129-exclusions.yml"
   workflow_dispatch:
 
 permissions:
