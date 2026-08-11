@@ -1,0 +1,52 @@
+name: Candidate 129 fatal certificate verifier
+
+on:
+  pull_request:
+    branches:
+      - research/general-reduction-n8-d3
+    paths:
+      - "research/candidate129/verify_candidate129_fatal_certificate.py"
+      - ".github/workflows/candidate129-fatal-verifier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate129-fatal-verifier-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  independent-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        replay: [1, 2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact integer-lattice dependency
+        run: python -m pip install --disable-pip-version-check sympy==1.14.0
+      - name: Reconstruct and verify Candidate 129 from support alone
+        env:
+          REPLAY: ${{ matrix.replay }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v python research/candidate129/verify_candidate129_fatal_certificate.py \
+            research/candidate129/candidate129_support.txt \
+            research/candidate129/candidate129_fatal_verifier_${REPLAY}.json \
+            2>&1 | tee research/candidate129/candidate129_fatal_verifier_${REPLAY}.log
+      - name: Upload independent replay
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate129-fatal-verifier-${{ matrix.replay }}-${{ github.run_id }}
+          path: |
+            research/candidate129/candidate129_fatal_verifier_${{ matrix.replay }}.json
+            research/candidate129/candidate129_fatal_verifier_${{ matrix.replay }}.log
+          if-no-files-found: warn
+          retention-days: 30
