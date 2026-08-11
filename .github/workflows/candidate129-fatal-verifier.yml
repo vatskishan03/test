@@ -6,6 +6,7 @@ on:
       - research/general-reduction-n8-d3
     paths:
       - "research/candidate129/verify_candidate129_fatal_certificate.py"
+      - "research/candidate129/verify_candidate129_fatal_certificate_v2.py"
       - ".github/workflows/candidate129-fatal-verifier.yml"
   workflow_dispatch:
 
@@ -36,7 +37,7 @@ jobs:
           REPLAY: ${{ matrix.replay }}
         run: |
           set -euo pipefail
-          /usr/bin/time -v python research/candidate129/verify_candidate129_fatal_certificate.py \
+          /usr/bin/time -v python research/candidate129/verify_candidate129_fatal_certificate_v2.py \
             research/candidate129/candidate129_support.txt \
             research/candidate129/candidate129_fatal_verifier_${REPLAY}.json \
             2>&1 | tee research/candidate129/candidate129_fatal_verifier_${REPLAY}.log
