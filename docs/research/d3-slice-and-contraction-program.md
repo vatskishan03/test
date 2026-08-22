@@ -371,3 +371,34 @@ machine certificate**, which closes Case-(1a)-generic entirely: no solution of
 EqSystemN(6,3) exists with all bicolour entries identically zero.
 Remaining after that: rank-degeneracy loci of freedom-(0,0,0) patterns, and the
 freedom>0 two-flip cascade.
+
+### SESSION-2 FINAL STATE
+
+**Pure-cc extinction (Case-1a generic): saturated.** 44,444 orbits dead across
+1.4M enumerated models; zero alive ever; zero new orbits in the final 450k
+consecutive models. Solver completing formal UNSAT proof autonomously
+(`lab/unified.py`, checkpoints in `lab/ckpt_orbits.json`).
+
+**(6,2)-classification lever discovered.** Every EqSystemN(6,3) solution
+restricts to three FULL EqSystemN(6,2) solutions (colour-pair restrictions,
+Lean-restriction argument). The complete (6,2) system = 60 variables x 64
+profile equations (`lab/d2_full_hunt.py`; hexagon residual verified exactly 0).
+Numerical hunts (200 restarts): no non-hexagon solutions found; classification
+"only C₆-type" is the working hypothesis. Rigorous closure requires re-running
+the support-enumeration + Groebner pipeline with the FULL slot set (60 vars,
+all four colour-slot types per edge) — encoding bug found and fixed en route;
+complete builder validated against the hexagon witness exactly.
+
+**Battle-3 census:** ~68% of surviving forcing patterns have freedom>0 worlds;
+~3,400 pattern-orbit classes per 20k sample. Victim-cascade solver built
+(`lab/cascade.py`) but plain DFS explodes; CDCL-style learning identified as
+the required solver upgrade (open engineering item).
+
+**Remaining roadmap to full (6,3) theorem:**
+1. Pure-cc formal UNSAT verdict (autonomous).
+2. Rank-degeneracy sub-case: GB with bicolor slots unfrozen per orbit.
+3. Complete-(6,2) classification via corrected pipeline (this session's fix).
+4. Assemble: interlock three classified (6,2) structures + rainbow-profile
+   constraints -> (6,3) contradiction; or find counterexample.
+5. Lean-formalize the assembled theorem; extend toward N>=8 or N-uniform
+   obstruction.
