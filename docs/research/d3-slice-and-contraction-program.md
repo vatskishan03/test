@@ -482,3 +482,21 @@ shared nonzero factors). Emerging N-uniform theorem:
 Open in this programme: rigorous cancellation handling across blocks; the
 non-divisible-by-4 cases (N ≡ 2 mod 4: K₄-tiling impossible — new structure
 needed); formal write-up.
+
+### ⚡ THE PROP RULE (session 2, invented): dimension-free cascade engine
+
+Statement (pure-cc world): for colours c,d distinct and edge {v,u}:
+    haf^d(V∖{v,u}) ≠ 0  AND  x^{dd}(v,u) ≠ 0   =>   x^{cc}(v,u) = 0  ∀c≠d.
+Proof: profile ι ≡ d on V∖{v,u}, ι ≡ c on {v,u}; all bicolor matchings drop;
+pmSum = x^{cc}(v,u)·haf^d(V∖{v,u}) = 0; divide. ∎
+
+Context: mono_d(v) = Σ_u x^{dd}(vu)·haf^d(V∖{v,u}) = 1 forces existence of an
+edge with BOTH factors alive; PROP then kills that edge's other colours,
+perturbing neighbour mono-sums, whose surviving terms re-trigger PROP — a
+dimension-free cascade consuming the colour assignment graph-wide.
+
+Status: N=6 cascade termination proven exhaustively (44,444 orbits). General-N
+termination = the key open lemma: show PROP-propagation cannot stall before
+contradicting some mono-equality (or classify stall structures and refute them
+via secondary identities). This is now THE central technical target of the
+full-conjecture programme.
