@@ -428,3 +428,29 @@ Concrete artefacts to build next:
   P3. Cascade fixpoint per pattern-orbit; classify survivors.
   P4. Hand-theory: identify the monotone invariant the cascade consumes,
       aiming for a pattern-independent exhaustion argument.
+
+### 🌋 REGIME SHIFT DISCOVERY (session 2, capstone experiment)
+
+Parameterized core (`lab/coreN.py`) validated against all N=6 known statistics,
+then run at N=8:
+
+```
+                 N=6          N=8
+serving-PM pass  16.2%        95.4%
+freedom-(0,0,0)  32.3%        0.0%
+world freedoms   0..4         (10..15)^(3) typical
+```
+
+Interpretation: bicolor slot count grows as O(N²) while near-mono constraint
+nodes grow as O(N): the linear-layer kernel dimension EXPLODES beyond N=6.
+Consequences:
+
+1. The N=6 extinction mechanism (rank-zero => bicolour vanishing => pure-cc)
+   DOES NOT OPERATE at N>=8. The problem changes character fundamentally.
+2. Value-level constraints (two-flip quartics, mono anchors) must carry ALL
+   the obstruction — their algebraic structure at scale is unmapped territory.
+3. STRATEGIC BIFURCATION: either (a) new structure theory for the quadratic
+   layer at scale, or (b) counterexample hunting at N>=8 becomes a first-class
+   programme — the linear cage that made N=6 rigid is absent there, so
+   solutions may genuinely exist. Both outcomes resolve the conjecture;
+   neither has ever been systematically attacked.
