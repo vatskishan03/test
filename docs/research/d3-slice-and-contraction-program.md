@@ -402,3 +402,29 @@ the required solver upgrade (open engineering item).
    constraints -> (6,3) contradiction; or find counterexample.
 5. Lean-formalize the assembled theorem; extend toward N>=8 or N-uniform
    obstruction.
+
+### 🌌 THE N-UNIFORM ARCHITECTURE (session 2, capstone)
+
+Invented live: the **octagonal diametric construction** at N=8 — M₀,M₁ alternating
+octagon edges, M₂ = all four diameters — which provably admits NO tricolour perfect
+matching (checked exhaustively over U-PM types), defeating any naive rainbow-
+obstruction generalization. Refuted immediately by the V-family: the mono-anchor
+x⁰(v₀v₁)≠0 forces haf¹(v₂..v₇)=0 while colour-1's supported pairing {v₃v₄,v₅v₆}
+gives product 1≠0.
+
+Conclusion: the constraint web (mono anchors -> V-family -> near-mono linearity ->
+two-flip coupling) has UNIVERSAL teeth; every rule is dimension-free. The
+full-conjecture program crystallizes as:
+
+  EXTINCTION-THEOREM(N): the cascade, anchored at mono-forced good matchings and
+  Theorem-B lockers, derives global contradiction for every forcing pattern.
+
+  N=6: PROVEN (exhaustive machine certificate, this session).
+  N=8+: open — same rules, parameterized solver required.
+
+Concrete artefacts to build next:
+  P1. N-parameterized core (matchings/slots/clauses/cascade as functions of N).
+  P2. N=8 pattern census with sound prunes (serving-PM, locker clauses).
+  P3. Cascade fixpoint per pattern-orbit; classify survivors.
+  P4. Hand-theory: identify the monotone invariant the cascade consumes,
+      aiming for a pattern-independent exhaustion argument.
