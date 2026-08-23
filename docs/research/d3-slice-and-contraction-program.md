@@ -454,3 +454,31 @@ Consequences:
    programme — the linear cage that made N=6 rigid is absent there, so
    solutions may genuinely exist. Both outcomes resolve the conjecture;
    neither has ever been systematically attacked.
+
+### 💎 THE UNIVERSAL CONSTRUCTION & ITS SELF-DESTRUCTION (session 2, web-research breakthrough)
+
+Web research lead: Anastos–Fabian–Müyesser–Szabó, "Splitting matchings and the
+Ryser–Brualdi–Stein conjecture for multisets" (EJC 2023, arXiv:2212.03100).
+Their Remark 2 tightness construction: disjoint copies of K₄, each 1-factorized
+into three perfect matchings (colours 0,1,2). Any matching inside a K₄ uses ≤1
+colour => NO tricolour perfect matching exists, at EVERY even N divisible by 4,
+STRUCTURALLY. This defeats all rainbow-type obstructions uniformly — the exact
+object the pure-cc world needed to survive.
+
+LIVE REFUTATION (computed by hand, verified): at N=8 with two K₄-blocks A,B,
+weights 1: let a,b = colour-2 weights of one internal pairing of B, c,d of the
+other. Mono_2 demands ab + cd = 1 (times A₂-product ≠ 0); the profile
+ι = (0,0,1,1,2,2,2,2) demands ab + cd = 0. CONTRADICTION.
+
+General principle extracted: any colour-region carrying ≥2 internal matchings
+creates mono-vs-(4,2)-profile tension (same expression demanded =1 and =0 up to
+shared nonzero factors). Emerging N-uniform theorem:
+
+  If bicolour ≡ 0 and EqSystemN(N,3) holds, every colour-region admits at most
+  one internal perfect matching; rigidity then cascades (unique-matchings =>
+  K₄-like tiling => cross-block profile collisions) toward contradiction for
+  all even N ≥ 6.
+
+Open in this programme: rigorous cancellation handling across blocks; the
+non-divisible-by-4 cases (N ≡ 2 mod 4: K₄-tiling impossible — new structure
+needed); formal write-up.
