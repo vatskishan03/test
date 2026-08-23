@@ -500,3 +500,26 @@ termination = the key open lemma: show PROP-propagation cannot stall before
 contradicting some mono-equality (or classify stall structures and refute them
 via secondary identities). This is now THE central technical target of the
 full-conjecture programme.
+
+### 🌊 THE (6,2) WORLD IS RICH (session 2, msolve era begins)
+
+msolve 0.10.1 installed; bridge built (`lab/d2f_msolve_batch.py`) after decoding
+the true input format (variables line, characteristic line, then comma-separated
+polynomials — earlier phantom header lines caused silent misparses).
+
+Production run over sampled FULL-(6,2) supports (60 vars, 64 profile equations,
+ALL slot types including bicolour):
+```
+first 600 tested: 152 dead, 445 ALIVE, 3 errors
+ALIVE = exact msolve certificates: infinitely many complex solutions
+```
+
+Interpretation: the two-colour world on six vertices carries a RICH solution
+variety — thousands of structurally distinct EqSystemN(6,2) solutions far beyond
+the hexagon family. Consequences:
+
+1. Battle 3 cannot rely on (6,2) rigidity — the interlock problem (three rich
+   structures sharing slots + rainbow profiles) is the true crux.
+2. NEW HUNT TARGET: test whether any rich (6,2) solution extends by a third
+   colour to a full (6,3) solution — if yes, COUNTEREXAMPLE => prize. The msolve
+   bridge makes this extension search tractable per candidate.
