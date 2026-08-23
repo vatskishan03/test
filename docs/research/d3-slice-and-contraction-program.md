@@ -523,3 +523,10 @@ the hexagon family. Consequences:
 2. NEW HUNT TARGET: test whether any rich (6,2) solution extends by a third
    colour to a full (6,3) solution — if yes, COUNTEREXAMPLE => prize. The msolve
    bridge makes this extension search tractable per candidate.
+
+### EXTENSION HUNT v1 RESULTS (session 2 close)
+
+300-trial numerical hunt over the FULL (6,3) system (135 vars, 729 equations),
+seeded broadly: global-best residual 616 — universal stalls, zero candidates.
+Consistent with conjecture truth at N=6; weak evidence only (optimization is
+not proof). Hunt architecture retained (`lab/ext_hunt.py`) for future scaling.
