@@ -1,5 +1,5 @@
-name = "mqg_n6_audit"
-defaultTargets = ["MQGN6Audit"]
+name = "monochromatic_quantum_graphs"
+defaultTargets = ["MQGN6Audit", "MonochromaticQuantumGraphs"]
 
 [[require]]
 name = "formal_conjectures"
@@ -8,3 +8,6 @@ rev = "b0f99dafb7d16d0c7bf22e9ae724a83168105968"
 
 [[lean_lib]]
 name = "MQGN6Audit"
+
+[[lean_lib]]
+name = "MonochromaticQuantumGraphs"

@@ -1,0 +1,26 @@
+import MonochromaticQuantumGraphs.N8D3.TargetOrbitCertificateReplay8.A032B096_103
+
+/-!
+# Bounded certificate replay for `a = 32`, `b = 104..104`
+
+Each theorem fixes `(a,b)` and kernel-checks at most 105 closed
+`c` branches with the canonical-endpoint checker.  The implication
+makes branches with `c < b` propositionally false rather than
+looking up an invalid sorted row.  The bridge then returns the
+proof to the official certificate proposition.
+-/
+
+namespace MonochromaticQuantumGraphs.N8D3
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 2000000 in
+theorem targetOrbitCertificateAt8_a032_b104 (c : Fin 105) :
+    (104 : Fin 105) ≤ c → targetOrbitCertificateAt8 (32 : Fin 105) (104 : Fin 105) c := by
+  have hfast :
+      (104 : Fin 105) ≤ c → targetOrbitCertificateCanonicalFastAt8 (32 : Fin 105) (104 : Fin 105) c := by
+    fin_cases c <;> decide +kernel
+  intro hbc
+  exact targetOrbitCertificateAt8_of_canonicalFast
+    (32 : Fin 105) (104 : Fin 105) c (hfast hbc)
+
+end MonochromaticQuantumGraphs.N8D3
