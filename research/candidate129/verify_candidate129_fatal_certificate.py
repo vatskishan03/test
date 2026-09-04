@@ -32,9 +32,6 @@ import json
 import sys
 import time
 
-from sympy import Matrix
-from sympy.matrices.normalforms import hermite_normal_form
-
 N = 8
 D = 3
 EXPECTED_SUPPORT_SHA256 = "f2e0a7910c9761e23923f467b7bb00a1677b7381bb531e75e91e31abc0a92815"
@@ -314,6 +311,11 @@ def sha_obj(x):
 
 class SignedLattice:
     def __init__(self, n, chars):
+        # Only discovery/saturation needs HNF. Compact witness replay uses the
+        # exact arithmetic helpers in this module without importing SymPy.
+        from sympy import Matrix
+        from sympy.matrices.normalforms import hermite_normal_form
+
         self.n = n
         rows = []
         seen = set()
