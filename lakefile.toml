@@ -11,3 +11,7 @@ name = "MQGN6Audit"
 
 [[lean_lib]]
 name = "MonochromaticQuantumGraphs"
+
+[[lean_exe]]
+name = "axiom_report"
+root = "scripts.ci.AxiomReport"

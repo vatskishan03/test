@@ -2,7 +2,7 @@
 """Linux VM supervisor; operational protection, not mathematical evidence.
 
 Monitor the child PID (not a racing setsid group). Subreap detached descendants.
-Poll every 250 ms; leave margin below 8 GB and 5 minutes. Fail closed on errors.
+Poll every 100 ms; leave margin below 8 GB and 5 minutes. Fail closed on errors.
 """
 import argparse
 import ctypes
@@ -147,7 +147,8 @@ def supervise(command, repository, log_path, limits):
 
         watched = [repository, log_path.parent, Path(os.environ.get("TMPDIR", "/tmp")), Path("/")]
         disks = lambda: [shutil.disk_usage(path).free // 1024 for path in watched]
-        existing = [p for p in processes().values() if p.name in ("lean", "lake") and p.state != "Z"]
+        monitored = ("lean", "axiom_report")
+        existing = [p for p in processes().values() if p.name in (*monitored, "lake") and p.state != "Z"]
         if existing:
             raise RuntimeError(f"another Lean/Lake process exists: {[p.pid for p in existing]}")
         problem = violation([], limits, mem_available(), disks())
@@ -161,6 +162,7 @@ def supervise(command, repository, log_path, limits):
         samples = 0
         peaks = {"compilers": 0, "single_rss_kb": 0, "aggregate_rss_kb": 0, "elapsed_s": 0}
         status = 1
+        observed_compilers = set()
         try:
             child = subprocess.Popen(command, cwd=repository,
                                      env=dict(os.environ, LEAN_NUM_THREADS=str(limits.workers)),
@@ -168,8 +170,16 @@ def supervise(command, repository, log_path, limits):
             while True:  # Sample even when the child exits immediately.
                 table = processes()
                 owned = descendants(table, os.getpid())
-                compilers = [p for p in owned.values() if p.name == "lean" and p.state != "Z"]
-                foreign = [p for p in table.values() if p.name in ("lean", "lake")
+                compilers = [p for p in owned.values() if p.name in monitored and p.state != "Z"]
+                for compiler in compilers:
+                    if compiler.pid not in observed_compilers:
+                        observed_compilers.add(compiler.pid)
+                        try:
+                            argv = Path(f"/proc/{compiler.pid}/cmdline").read_bytes().decode().split("\0")
+                            report(f"compiler_started pid={compiler.pid} sources={json.dumps([a for a in argv if a.endswith('.lean')])}")
+                        except (FileNotFoundError, ProcessLookupError):
+                            pass
+                foreign = [p for p in table.values() if p.name in (*monitored, "lake")
                            and p.pid not in owned and p.state != "Z"]
                 available, disk = mem_available(), disks()
                 current = {"compilers": len(compilers),
@@ -177,7 +187,7 @@ def supervise(command, repository, log_path, limits):
                            "aggregate_rss_kb": sum(p.rss for p in compilers),
                            "elapsed_s": max((p.elapsed for p in compilers), default=0)}
                 peaks = {key: max(peaks[key], value) for key, value in current.items()}
-                if samples % 120 == 0:
+                if samples % 300 == 0:
                     report(f"monitor={json.dumps(current)} available_kb={available} disk_free_kb={disk}")
                 samples += 1
                 problem = violation(compilers, limits, available, disk)
@@ -191,7 +201,7 @@ def supervise(command, repository, log_path, limits):
                         report("ABORT: child exited leaving live descendants")
                         status = 137
                     break
-                time.sleep(0.25)
+                time.sleep(0.1)
         finally:
             try:
                 if child is not None:

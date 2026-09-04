@@ -95,6 +95,32 @@ class ProcessTests(unittest.TestCase):
             self.assertEqual(process.returncode, 137)
             self.assertIn("elapsed time exceeded", Path(directory, "guard.log").read_text())
 
+    def test_fake_lean_rss_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            code = "import ctypes,time; ctypes.CDLL(None).prctl(15,b'lean',0,0,0); time.sleep(20)"
+            process = self.run_guard(code, directory, LEAN_RSS_LIMIT_KB="1000")
+            process.communicate(timeout=10)
+            self.assertEqual(process.returncode, 137)
+            self.assertIn("single compiler RSS exceeded", Path(directory, "guard.log").read_text())
+
+    def test_native_reporter_is_also_bounded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            code = "import ctypes,time; ctypes.CDLL(None).prctl(15,b'axiom_report',0,0,0); time.sleep(20)"
+            process = self.run_guard(code, directory, LEAN_ELAPSED_LIMIT_SECONDS="1")
+            process.communicate(timeout=10)
+            self.assertEqual(process.returncode, 137)
+            self.assertIn("elapsed time exceeded", Path(directory, "guard.log").read_text())
+
+    def test_disk_preflight_does_not_start_child(self):
+        with tempfile.TemporaryDirectory() as directory:
+            marker = Path(directory, "child-ran")
+            process = self.run_guard(f"open({str(marker)!r},'w').close()", directory,
+                                     DISK_AVAILABLE_FLOOR_KB="1000000000000")
+            _, error = process.communicate(timeout=10)
+            self.assertEqual(process.returncode, 75)
+            self.assertIn(b"preflight", error)
+            self.assertFalse(marker.exists())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
