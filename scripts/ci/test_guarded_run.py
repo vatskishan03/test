@@ -21,6 +21,7 @@ class PolicyTests(unittest.TestCase):
         for key, value in [("LAKE_WORKERS", "8"), ("LEAN_RSS_LIMIT_KB", "8000001"),
                            ("LEAN_ELAPSED_LIMIT_SECONDS", "300"), ("MEM_AVAILABLE_FLOOR_KB", "0"),
                            ("LEAN_AGGREGATE_RSS_LIMIT_KB", "55000000"),
+                           ("AXIOM_REPORT_RSS_LIMIT_KB", "15600001"),
                            ("DISK_AVAILABLE_FLOOR_KB", "0"), ("LAKE_WORKERS", "bad")]:
             with self.subTest(key=key), patch.dict(os.environ, {key: value}, clear=True):
                 with self.assertRaises(ValueError):
@@ -36,6 +37,19 @@ class PolicyTests(unittest.TestCase):
                 ([proc(elapsed=5)], 10, [10], "elapsed"), ([], 9, [10], "MemAvailable"),
                 ([], 10, [9], "disk")]:
             self.assertIn(expected, guard.violation(ps, limits, mem, disk))
+
+    def test_report_exception_never_changes_compiler_budget(self):
+        limits = guard.Limits(rss_kb=100, report_rss_kb=1000)
+        lean = guard.Process(1, 0, "lean", 101, 0, "S")
+        report = guard.Process(1, 0, "axiom_report", 101, 0, "S")
+        self.assertIn("compiler RSS", guard.violation([lean], limits, 8_000_000, [1_000_000]))
+        self.assertIsNone(guard.violation([report], limits, 8_000_000, [1_000_000]))
+        report = guard.Process(1, 0, "axiom_report", 1001, 0, "S")
+        self.assertIn("reporter RSS", guard.violation([report], limits, 8_000_000, [1_000_000]))
+        with patch.dict(os.environ, {"AXIOM_REPORT_RSS_LIMIT_KB": "15000000"}, clear=True):
+            actual = guard.Limits.environment()
+            self.assertEqual(actual.rss_kb, 7_500_000)
+            self.assertEqual(actual.report_rss_kb, 15_000_000)
 
     def test_descendants_across_sessions(self):
         ps = {pid: guard.Process(pid, parent, "python3", 1, 0, "S")

@@ -26,19 +26,22 @@ class Limits:
     available_kb: int = 8_000_000
     elapsed_s: int = 295
     disk_kb: int = 1_000_000
+    report_rss_kb: int = 7_500_000
 
     @classmethod
     def environment(cls):
         names = ["LAKE_WORKERS", "LEAN_RSS_LIMIT_KB", "LEAN_AGGREGATE_RSS_LIMIT_KB",
-                 "MEM_AVAILABLE_FLOOR_KB", "LEAN_ELAPSED_LIMIT_SECONDS", "DISK_AVAILABLE_FLOOR_KB"]
+                 "MEM_AVAILABLE_FLOOR_KB", "LEAN_ELAPSED_LIMIT_SECONDS", "DISK_AVAILABLE_FLOOR_KB",
+                 "AXIOM_REPORT_RSS_LIMIT_KB"]
         defaults = cls()
         result = cls(*(int(os.environ.get(name, getattr(defaults, field)))
                        for name, field in zip(names, cls.__dataclass_fields__)))
         if not (1 <= result.workers <= 7 and 0 < result.rss_kb <= 7_800_000
                 and 0 < result.aggregate_kb <= 46_000_000
                 and result.available_kb >= 8_000_000
-                and 0 < result.elapsed_s <= 299 and result.disk_kb >= 1_000_000):
-            raise ValueError("limits violate the 7-worker, 8 GB, 5-minute safety policy")
+                and 0 < result.elapsed_s <= 299 and result.disk_kb >= 1_000_000
+                and 0 < result.report_rss_kb <= 15_600_000):
+            raise ValueError("limits violate the 7-worker, 8 GB compiler / 16 GB read-only report, 5-minute policy")
         return result
 
 
@@ -90,8 +93,10 @@ def mem_available():
 def violation(compilers, limits, available, disk_free):
     if len(compilers) > limits.workers:
         return "compiler count exceeded"
-    if any(p.rss > limits.rss_kb for p in compilers):
+    if any(p.rss > limits.rss_kb for p in compilers if p.name != "axiom_report"):
         return "single compiler RSS exceeded"
+    if any(p.rss > limits.report_rss_kb for p in compilers if p.name == "axiom_report"):
+        return "read-only axiom reporter RSS exceeded"
     if sum(p.rss for p in compilers) > limits.aggregate_kb:
         return "aggregate compiler RSS exceeded"
     if any(p.elapsed >= limits.elapsed_s for p in compilers):
