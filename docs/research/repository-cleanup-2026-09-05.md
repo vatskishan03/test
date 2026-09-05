@@ -16,13 +16,14 @@ The final cleanup pull request is eligible for merging only after both complete 
 - Removed the corresponding unused producer paths and exact-support bridge duplication. The remaining 122 shared and 62 partial-support generated Candidate129 sources are reproducible. The edited orbit/image producers are checked against every maintained output byte; existing matching/orbit certificate bodies were not regenerated or changed.
 - Repaired the shared fetch configuration, which had pointed only at a deleted branch; enabled automatic branch deletion after merge; retired stale local branch pointers and the clean maintenance working copy. The cleanup branch is temporary and must also disappear after integration.
 - Protected main with both actual GitHub Actions check names, up-to-date branch enforcement, and pull-request integration without requiring an unavailable second reviewer. The rules apply to administrators. Locked the frozen release read-only; disabled force-pushes and deletion on both long-lived branches.
+- The required `build` check is an always-running hosted result gate. It fails when the VM compilation/audit job is skipped, cancelled, or unsuccessful; this avoids GitHub's default acceptance of skipped required jobs. External-contributor workflow runs require approval, and the maintained VM job only accepts in-repository pull requests or an explicit dispatch. Workflow tokens remain read-only and cannot approve pull requests.
 - Checked in the dependency lock with all ten package records identical to passing CI and the root package name corrected to match `lakefile.toml`. Added a real-lock regression and a narrow ignore file for build/cache/log outputs. No dependency revision changed.
 
 Recovery does not require rewriting main. For example, create a temporary working copy from the relevant archive tag and inspect its contents there. Archive tags preserve history, not authority to promote an unverified claim.
 
 ## Regressions and trust boundary
 
-Eight repository-structure checks enforce the two-workflow inventory, local import resolution, complete default-root reachability, audited-module reachability, retirement of old search imports, valid workflow script paths, comment-aware import extraction, and byte-identical regeneration of the maintained orbit/image outputs. Every retained library module is covered by a default build.
+Nine repository-structure checks enforce the two-workflow inventory, local import resolution, complete default-root reachability, audited-module reachability, retirement of old search imports, valid workflow script paths, comment-aware import extraction, rejection of skipped or failed compilation, and byte-identical regeneration of the maintained orbit/image outputs. Every retained library module is covered by a default build.
 
 The source/axiom audit has eleven regressions and requires all eighteen endpoints, including the new pointwise three-color axis lemma. All compiler limits and the separately approved read-only collector exception are unchanged. Exact arithmetic tests, source lint, hashes, and generator reproducibility supplement the Lean kernel; none replaces it.
 

@@ -3,6 +3,7 @@ import ast
 import importlib.util
 from pathlib import Path
 import re
+import subprocess
 import tempfile
 import unittest
 
@@ -82,6 +83,21 @@ class RepositoryHygieneTests(unittest.TestCase):
     def test_import_parser_ignores_commented_imports(self):
         self.assertEqual(imports("/- import Old -/\nimport New More -- import Gone\n"),
                          {"New", "More"})
+
+    def test_required_build_gate_rejects_skipped_or_failed_compilation(self):
+        workflow = (ROOT / ".github/workflows/general-research.yml").read_text()
+        self.assertEqual(workflow.count("\n  build:\n"), 1)
+        gate = workflow.split("\n  build:\n", 1)[1]
+        for required in ("needs: compile", "if: ${{ always() }}", "runs-on: ubuntu-latest",
+                         "COMPILE_RESULT: ${{ needs.compile.result }}"):
+            self.assertIn(required, gate)
+        command = re.search(r'^\s+run: (.+)$', gate, re.M)[1]
+        self.assertEqual(command, 'test "$COMPILE_RESULT" = success')
+        for result in ("success", "failure", "cancelled", "skipped", "neutral", "", "unknown"):
+            with self.subTest(result=result):
+                checked = subprocess.run(["/bin/sh", "-c", command],
+                                         env={"COMPILE_RESULT": result}, capture_output=True)
+                self.assertEqual(checked.returncode == 0, result == "success")
 
     def test_orbit_producers_preserve_all_maintained_sources(self):
         for filename in ("generate_target_orbit_replay.py", "generate_vertex_perm_image_fast8.py"):

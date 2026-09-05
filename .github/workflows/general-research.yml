@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  compile:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, Linux, X64, lean-highmem-n8d3]
     timeout-minutes: 120
@@ -94,3 +94,16 @@ jobs:
           include-hidden-files: true
           retention-days: 90
           if-no-files-found: error
+
+  # GitHub accepts skipped required checks. Keep the required name on an
+  # always-running hosted gate that accepts only a genuinely successful job.
+  build:
+    needs: compile
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require successful proof compilation and axiom audit
+        env:
+          COMPILE_RESULT: ${{ needs.compile.result }}
+        run: test "$COMPILE_RESULT" = success
