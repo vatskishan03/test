@@ -36,6 +36,12 @@ Every one of the 31 target orbits admits a basic injective non-self local-axis p
 
 This is an important negative result: the next reduction must couple multiple colors, multiple vertices, or actual polynomial amplitudes.
 
+## Kernel-certified Candidate129 exclusion
+
+On 2026-09-05, the fixed 143-coordinate Candidate129 support was excluded by an ordinary Lean kernel proof, with all support coordinates required nonzero. The official equations supply 60 complete amplitudes, including the 57 normalized premises of a 145-node Laurent DAG. Eleven factor products reduce the proof to two cases; twelve signed-character implications and two complete-amplitude cancellations exclude both.
+
+The final `no_solution_exact_support` and `not_exists_exact_support` theorems depend only on `[propext, Classical.choice, Quot.sound]`. The [certificate README](../../research/candidate129/README.md) records the exact support, reproducible sources, and measured checks. No proper sub-support, other exact support, or complete target-orbit branch is excluded merely by this statement.
+
 ## Universal support-rule experiment
 
 An exact Boolean support search was run with the following necessary conditions:
@@ -122,11 +128,11 @@ Contracting two vertices of an eight-vertex matching tensor does not produce a s
 
 ## Current exact program
 
-1. certify the 105 matching table and 31 orbit representatives in Lean;
+1. reuse the certified 105 matching table and 31-orbit coverage;
 2. formalize the three-color universal anchor and pair-pencil rules in an `N`-uniform form;
 3. develop a Plücker-aware verifier for four-vertex zero cubes;
 4. run proof-producing support CEGAR over the 31 target orbits;
-5. use localized exact algebra on surviving support strata;
+5. use the kernel-checked localized Laurent pipeline on surviving support strata, retaining explicit zero/nonzero boundaries;
 6. either emit an exact `(8,3)` witness and verify all 6,561 amplitudes, or prove every stratum impossible;
 7. extract an `N`-uniform invariant rather than enumerating every larger even `N` independently.
 

@@ -46,6 +46,12 @@ class TrustAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unexpected axioms'):
             A.check_axioms(self.complete_log().replace('Quot.sound', 'sorryAx', 1))
 
+    def test_candidate_endpoints_cannot_be_omitted(self):
+        without_candidate = '\n'.join(line for line in self.complete_log().splitlines()
+                                      if '.Candidate129.' not in line)
+        with self.assertRaisesRegex(ValueError, 'Candidate129'):
+            A.check_axioms(without_candidate)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

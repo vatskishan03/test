@@ -47,9 +47,15 @@ The proof has four layers:
 
 See [`docs/proofs/n6-d4-v1.md`](docs/proofs/n6-d4-v1.md) for the detailed statement and audit record.
 
+## Kernel-certified N8 exact-support exclusion
+
+[`Candidate129`](research/candidate129/README.md) has a separate exact-support nonexistence proof for its frozen 143 edge-color coordinates. Every declared coordinate must be nonzero and every other canonical coordinate zero. The theorem is connected to the original `EqSystemN 8 3` equations through all 105 perfect matchings.
+
+Its 145-node Laurent derivation, eleven factor products, twelve character implications, and two final amplitude cancellations are checked by ordinary Lean kernel proofs. Both final endpoints have axiom closure `[propext, Classical.choice, Quot.sound]`. Proper sub-supports and other N8 supports are not covered.
+
 ## Scope
 
-The certified nonexistence result is the six-vertex, four-color slice. The repository also contains the general color-restriction theorem, the official N8 perfect-matching expansion, target-matching extraction, and explicit coverage of the 31 target-triple orbits. These are reductions and coverage infrastructure, not an N8 impossibility theorem.
+The unrestricted certified nonexistence result is the six-vertex, four-color slice. Candidate129 adds one exact N8 support exclusion. The repository also contains the general color-restriction theorem, the official N8 perfect-matching expansion, target-matching extraction, and explicit coverage of the 31 target-triple orbits. None supplies an unrestricted N8 impossibility theorem.
 
 Neither `(6,3)` nor `(8,3)` is settled by the accepted proof chain here. The unrestricted conjecture for every even `N ≥ 6` and every `D ≥ 3` remains unresolved by this repository. There is no `d = 4` counterexample.
 
@@ -58,7 +64,7 @@ Neither `(6,3)` nor `(8,3)` is settled by the accepted proof chain here. The unr
 New research remains separated from the immutable certified release:
 
 1. reuse the checked color restriction and N8 matching/orbit foundation;
-2. complete a small exact-support Laurent certificate all the way from the official equations to a kernel-checked contradiction;
+2. reuse the completed Candidate129 exact-support Laurent certificate pipeline for further verified exclusions;
 3. maintain explicit zero/nonzero case coverage while extending support exclusions to an unrestricted finite result;
 4. find a valid `N`-uniform obstruction or an exact counterexample; color restriction alone does not reduce `N`.
 
