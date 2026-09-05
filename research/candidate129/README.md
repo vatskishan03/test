@@ -43,6 +43,8 @@ bash scripts/ci/guarded_lake_build.sh "$PWD" .ci-logs/candidate129.log \
 
 The first complete targeted replay finished successfully with 8,237 jobs including cached dependencies, 6,430,420 KiB peak Lean-process RSS, and 21.76 seconds maximum sampled single-process elapsed time. The original N8 matching table was not regenerated; the certificate's mirror was checked against all 420 official edge entries. The integrated whole-library build and its strict axiom allowlist are enforced separately by the trusted Lean workflow.
 
+The [integrated CI receipt](../../docs/research/trusted-core-2026-09-05.md#integrated-ci-receipt) records a passing complete-root build and all thirteen theorem dependency audits on the identical tree of revision `cd6e09f3`, alongside the passing hosted exact replay. It distinguishes incremental checks from fresh compilation and records the first run's log-upload defect and its correction.
+
 The larger reconstruction and certificate extraction require `sympy==1.14.0`:
 
 ```sh

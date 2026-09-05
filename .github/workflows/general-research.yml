@@ -86,5 +86,7 @@ jobs:
         with:
           name: trusted-lean-${{ github.run_id }}-${{ github.run_attempt }}
           path: .ci-logs/
+          # upload-artifact excludes dot-directories unless explicitly enabled.
+          include-hidden-files: true
           retention-days: 90
-          if-no-files-found: warn
+          if-no-files-found: error
