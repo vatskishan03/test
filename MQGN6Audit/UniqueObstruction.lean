@@ -19,18 +19,6 @@ open scoped BigOperators
 
 noncomputable section
 
-/-- Pure combinatorial version of the maximal support predicate. -/
-def PlanAllowedEntry6 (plan : Fin 6 → Fin 4 → Fin 6)
-    (u v : Fin 6) (a b : Fin 4) : Prop :=
-  (∀ c, plan u c = v → b = c) ∧
-  (∀ c, plan v c = u → a = c)
-
-/-- Entries known nonzero before using any forbidden coefficient. -/
-def PlanForcedEntry6 (plan : Fin 6 → Fin 4 → Fin 6)
-    (target : Fin 4 → Fin 15) (u v : Fin 6) (a b : Fin 4) : Prop :=
-  (∃ c, matchingMate6 (target c) u = v ∧ a = c ∧ b = c) ∨
-  (∃ c d, plan u c = v ∧ plan v d = u ∧ a = d ∧ b = c)
-
 lemma allowedByAxisPlan6_iff
     {W : WeightsN 6 4 ℂ} (P : AxisPlan6 W)
     (u v : Fin 6) (a b : Fin 4) :
@@ -83,20 +71,6 @@ lemma canonical_forced_entry_ne_zero
     subst b
     have h := mutual_axis_entry_ne_zero D.plan huc hvd
     simpa [orientedWeight6, huv] using h
-
-/-- Every factor of a matching is allowed by the witness template. -/
-def MatchingAllowed6 (plan : Fin 6 → Fin 4 → Fin 6)
-    (q : Fin 6 → Fin 4) (m : Fin 15) : Prop :=
-  ∀ k : Fin 3,
-    let e := matchingEdges6 m k
-    PlanAllowedEntry6 plan e.1 e.2 (q e.1) (q e.2)
-
-/-- Every factor of a matching is already known nonzero. -/
-def MatchingForced6 (plan : Fin 6 → Fin 4 → Fin 6)
-    (target : Fin 4 → Fin 15) (q : Fin 6 → Fin 4) (m : Fin 15) : Prop :=
-  ∀ k : Fin 3,
-    let e := matchingEdges6 m k
-    PlanForcedEntry6 plan target e.1 e.2 (q e.1) (q e.2)
 
 lemma pmTerm6_eq_zero_of_not_allowed
     {W : WeightsN 6 4 ℂ} (P : AxisPlan6 W)

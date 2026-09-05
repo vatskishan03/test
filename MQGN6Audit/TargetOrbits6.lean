@@ -15,37 +15,6 @@ namespace MQGN6Audit
 
 open Function
 
-/-- The single all-identical target orbit. -/
-def identicalTargetRep6 : Fin 4 → Fin 15 := ![0, 0, 0, 0]
-
-/-- The six target orbits for which no compatible local witness plan exists. -/
-def infeasibleTargetRep6 : Fin 6 → Fin 4 → Fin 15 := ![
-  ![0, 0, 1, 1],
-  ![0, 0, 1, 4],
-  ![0, 0, 4, 4],
-  ![0, 0, 4, 5],
-  ![0, 1, 3, 4],
-  ![0, 1, 3, 5]
-]
-
-/-- The fourteen non-identical, locally feasible target orbits. -/
-def feasibleTargetRep6 : Fin 14 → Fin 4 → Fin 15 := ![
-  ![0, 0, 0, 1],
-  ![0, 0, 0, 4],
-  ![0, 0, 1, 2],
-  ![0, 0, 1, 3],
-  ![0, 0, 1, 5],
-  ![0, 0, 4, 8],
-  ![0, 0, 4, 13],
-  ![0, 1, 2, 3],
-  ![0, 1, 3, 7],
-  ![0, 1, 3, 11],
-  ![0, 1, 3, 14],
-  ![0, 1, 5, 7],
-  ![0, 1, 5, 12],
-  ![0, 4, 8, 10]
-]
-
 /- ### Fixed mixed-radix certificate decoders -/
 
 private def mixedPerm0 : Equiv.Perm (Fin 0) :=

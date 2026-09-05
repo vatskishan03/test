@@ -10,7 +10,6 @@ plan-code and node data.
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 open Function
 
 /-- Decode a base-six local witness-plan code. -/
@@ -53,7 +52,7 @@ def RawDagLeafValidFast6 (ci : Fin 14) (codes : Fin 6 → Nat) : Prop :=
   match uniqueDagNodeAtFast6 C (rawDagEvalIdFast6 C codes) with
   | .unique z m =>
       let q := decodeDagColoringFast6 z
-      ¬ allEqual q ∧
+      ¬ allEqualFinite6 q ∧
       MatchingForced6 plan (feasibleTargetRep6 ci) q m ∧
       MatchingAllowed6 plan q m ∧
       ∀ n : Fin 15, MatchingAllowed6 plan q n → n = m

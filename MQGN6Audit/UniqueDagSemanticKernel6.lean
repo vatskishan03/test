@@ -9,7 +9,6 @@ original matching predicates.
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 
 theorem planForcedEntry6_iff_compact
     (plan : Fin 6 → Fin 4 → Fin 6) (target : Fin 4 → Fin 15)

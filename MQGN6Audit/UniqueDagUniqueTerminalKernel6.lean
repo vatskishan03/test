@@ -6,7 +6,6 @@ import MQGN6Audit.UniqueDagStructuralKernelBase6
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 
 def codesFilteredAtStructural6 (C : UniqueDagCase6) (v : Fin 6)
     (p : Nat → Prop) [DecidablePred p] : Fin 6 → Finset Nat :=
@@ -48,7 +47,7 @@ def uniqueTerminalStructuralValid6 (C : UniqueDagCase6)
     Prop :=
   let q := decodeDagColoringFast6 z
   uniqueDagNodeAtFast6 C id = .unique z m ∧
-  ¬ allEqual q ∧
+  ¬ allEqualFinite6 q ∧
   (∀ v : Fin 6,
     terminalForcesCodeStructural6 C id v fun code =>
       codeAllowsMatchingAtFast6 code v q m) ∧
@@ -65,7 +64,7 @@ def uniqueTerminalStructuralValid6 (C : UniqueDagCase6)
 instance (C : UniqueDagCase6) (target : Fin 4 → Fin 15)
     (id : Nat) (z : Fin 4096) (m : Fin 15) :
     Decidable (uniqueTerminalStructuralValid6 C target id z m) := by
-  unfold uniqueTerminalStructuralValid6 allEqual
+  unfold uniqueTerminalStructuralValid6 allEqualFinite6
   infer_instance
 
 lemma uniqueTerminalStructuralValid6_sound
@@ -75,7 +74,7 @@ lemma uniqueTerminalStructuralValid6_sound
     (heval : rawDagEvalIdFast6 C codes = id)
     (hvalid : uniqueTerminalStructuralValid6 C target id z m) :
     uniqueDagNodeAtFast6 C id = .unique z m ∧
-    ¬ allEqual (decodeDagColoringFast6 z) ∧
+    ¬ allEqualFinite6 (decodeDagColoringFast6 z) ∧
     MatchingForced6 (rawPlanFast6 codes) target
       (decodeDagColoringFast6 z) m ∧
     MatchingAllowed6 (rawPlanFast6 codes)

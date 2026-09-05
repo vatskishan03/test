@@ -6,7 +6,6 @@ import MQGN6Audit.UniqueDagStructuralKernelBase6
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 
 def case3ReachStructural6 : Finset Nat :=
   rawDagReachStructural6 uniqueDagCase6_3 fun v =>
@@ -89,7 +88,7 @@ lemma case3_unique5_leafSemanticStructural6
     (hcodes : ∀ v, codes v ∈ uniqueDagCase6_3.planCodes v)
     (hleaf : uniqueDagNodeAtFast6 uniqueDagCase6_3
       (rawDagEvalIdFast6 uniqueDagCase6_3 codes) = .unique 5 0) :
-    ¬ allEqual (decodeDagColoringFast6 5) ∧
+    ¬ allEqualFinite6 (decodeDagColoringFast6 5) ∧
     MatchingForced6 (rawPlanFast6 codes) (feasibleTargetRep6 3)
       (decodeDagColoringFast6 5) 0 ∧
     MatchingAllowed6 (rawPlanFast6 codes) (decodeDagColoringFast6 5) 0 ∧
@@ -106,7 +105,7 @@ lemma case3_unique10_leafSemanticStructural6
     (hcodes : ∀ v, codes v ∈ uniqueDagCase6_3.planCodes v)
     (hleaf : uniqueDagNodeAtFast6 uniqueDagCase6_3
       (rawDagEvalIdFast6 uniqueDagCase6_3 codes) = .unique 10 0) :
-    ¬ allEqual (decodeDagColoringFast6 10) ∧
+    ¬ allEqualFinite6 (decodeDagColoringFast6 10) ∧
     MatchingForced6 (rawPlanFast6 codes) (feasibleTargetRep6 3)
       (decodeDagColoringFast6 10) 0 ∧
     MatchingAllowed6 (rawPlanFast6 codes) (decodeDagColoringFast6 10) 0 ∧
@@ -123,7 +122,7 @@ lemma case3_unique80_leafSemanticStructural6
     (hcodes : ∀ v, codes v ∈ uniqueDagCase6_3.planCodes v)
     (hleaf : uniqueDagNodeAtFast6 uniqueDagCase6_3
       (rawDagEvalIdFast6 uniqueDagCase6_3 codes) = .unique 80 0) :
-    ¬ allEqual (decodeDagColoringFast6 80) ∧
+    ¬ allEqualFinite6 (decodeDagColoringFast6 80) ∧
     MatchingForced6 (rawPlanFast6 codes) (feasibleTargetRep6 3)
       (decodeDagColoringFast6 80) 0 ∧
     MatchingAllowed6 (rawPlanFast6 codes) (decodeDagColoringFast6 80) 0 ∧

@@ -11,7 +11,6 @@ it does not search the ambient 4096-coloring space.
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 open Function
 
 /-- Locate a canonically ordered physical edge in the fifteen-edge table. -/
@@ -88,7 +87,7 @@ instance instDecidableMaskMatchingForced6
 def MaskDerivedZero6 (target : Fin 4 → Fin 15) (sid : Fin 29)
     (e : Fin 15) (a b : Fin 4) : Prop :=
   ∃ q : Fin 6 → Fin 4, ∃ m : Fin 15, ∃ k : Fin 3,
-    ¬ allEqual q ∧
+    ¬ allEqualFinite6 q ∧
     matchingEdges6 m k = physicalEdge6 e ∧
     q (physicalEdge6 e).1 = a ∧ q (physicalEdge6 e).2 = b ∧
     MaskMatchingAllowed6 sid q m ∧
@@ -102,7 +101,7 @@ def MaskDerivedZero6 (target : Fin 4 → Fin 15) (sid : Fin 29)
 def MaskSupportZeroContradiction6 (target : Fin 4 → Fin 15)
     (sid : Fin 29) : Prop :=
   ∃ q : Fin 6 → Fin 4, ∃ m : Fin 15,
-    ¬ allEqual q ∧
+    ¬ allEqualFinite6 q ∧
     MaskMatchingAllowed6 sid q m ∧
     MaskMatchingForced6 target sid q m ∧
     ∀ n : Fin 15, n ≠ m → MaskMatchingAllowed6 sid q n →
@@ -167,7 +166,7 @@ structure TerminalKillValid6 (target : Fin 4 → Fin 15) (sid : Fin 29)
     decodeTerminalColoring6 K.zeroQ (physicalEdge6 K.edge).1
   colorRight : qFinal (physicalEdge6 K.edge).2 =
     decodeTerminalColoring6 K.zeroQ (physicalEdge6 K.edge).2
-  zeroNonmono : ¬ allEqual (decodeTerminalColoring6 K.zeroQ)
+  zeroNonmono : ¬ allEqualFinite6 (decodeTerminalColoring6 K.zeroQ)
   zeroEdge : matchingEdges6 K.zeroPm K.zeroSlot = physicalEdge6 K.edge
   zeroAllowed : MaskMatchingAllowed6 sid (decodeTerminalColoring6 K.zeroQ) K.zeroPm
   zeroUnique : ∀ n : Fin 15,
@@ -189,7 +188,7 @@ instance instDecidableTerminalKillValid6
       decodeTerminalColoring6 K.zeroQ (physicalEdge6 K.edge).1 ∧
     qFinal (physicalEdge6 K.edge).2 =
       decodeTerminalColoring6 K.zeroQ (physicalEdge6 K.edge).2 ∧
-    ¬ allEqual (decodeTerminalColoring6 K.zeroQ) ∧
+    ¬ allEqualFinite6 (decodeTerminalColoring6 K.zeroQ) ∧
     matchingEdges6 K.zeroPm K.zeroSlot = physicalEdge6 K.edge ∧
     MaskMatchingAllowed6 sid (decodeTerminalColoring6 K.zeroQ) K.zeroPm ∧
     (∀ n : Fin 15,
@@ -215,7 +214,7 @@ def ExplicitTerminalCertificateValid6 (sid : Fin 29) : Prop :=
   sid.val ≠ 26 →
     let q := decodeTerminalColoring6 (terminalFinalQ6 sid)
     let m := terminalFinalPm6 sid
-    ¬ allEqual q ∧
+    ¬ allEqualFinite6 q ∧
     MaskMatchingAllowed6 sid q m ∧
     MaskMatchingForced6 (survivorTarget6 sid) sid q m ∧
     ∀ n : Fin 15, n ≠ m → MaskMatchingAllowed6 sid q n →

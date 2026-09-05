@@ -60,6 +60,27 @@ class RepositoryHygieneTests(unittest.TestCase):
     def test_every_audited_module_is_built(self):
         self.assertEqual(set(AUDIT_GROUPS) - self.reachable, set())
 
+    def test_finite_replay_has_only_finite_imports(self):
+        pending = ["MQGN6Audit.UniqueDagCheckFast6", "MQGN6Audit.TerminalFinite6"]
+        seen, external = set(), set()
+        while pending:
+            name = pending.pop()
+            if name not in seen:
+                seen.add(name)
+                dependencies = self.graph[name]
+                pending.extend(dependencies & self.modules.keys())
+                external.update(dependencies - self.modules.keys())
+        self.assertNotIn("MQGN6Audit.TargetOrbits6", seen)
+        self.assertNotIn("MQGN6Audit.UniqueObstruction", seen)
+        self.assertNotIn("MQGN6Audit.PerfectMatchings6", seen)
+        self.assertIn("MQGN6Audit.FiniteCombinatorics6", seen)
+        self.assertEqual(external, {
+            "Mathlib.Data.Fin.VecNotation", "Mathlib.Data.List.Chain",
+            "Mathlib.Data.Finset.Union", "Mathlib.Data.Nat.Bitwise",
+            "Mathlib.Data.Fintype.Fin", "Mathlib.Data.Fintype.Pi",
+            "Mathlib.Tactic.FinCases",
+        })
+
     def test_retired_searches_stay_retired(self):
         current = {p.name for p in (ROOT / "research/candidate129").glob("*.py")}
         self.assertEqual(current & RETIRED_SEARCHES, set())

@@ -13,7 +13,6 @@ local encoding theorem.
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 open Function
 
 lemma decode_encodeLocalPlanFast6 (p : Fin 4 → Fin 6) :
@@ -78,7 +77,7 @@ theorem feasibleTemplateClassification6_fromFastDag :
       match node with
       | .unique z m =>
           let q := decodeDagColoringFast6 z
-          ¬ allEqual q ∧
+          ¬ allEqualFinite6 q ∧
           MatchingForced6 (planOfChoice6 choice) (feasibleTargetRep6 ci) q m ∧
           MatchingAllowed6 (planOfChoice6 choice) q m ∧
           ∀ n : Fin 15,
