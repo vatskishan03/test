@@ -2,3 +2,4 @@ import MonochromaticQuantumGraphs.ColorRestriction
 import MonochromaticQuantumGraphs.N8D3.GeneratedData
 import MonochromaticQuantumGraphs.N8D3.Basic
 import MonochromaticQuantumGraphs.N8D3.TargetOrbitCertificates8
+import MonochromaticQuantumGraphs.N8D3.Candidate129.ExactSupportTheorem
