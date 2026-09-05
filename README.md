@@ -49,16 +49,18 @@ See [`docs/proofs/n6-d4-v1.md`](docs/proofs/n6-d4-v1.md) for the detailed statem
 
 ## Scope
 
-The repository currently proves only the six-vertex, four-color slice. It does **not** yet prove the unrestricted conjecture for every even `N ≥ 6` and every `D ≥ 3`, and it does not contain a `d = 4` counterexample.
+The certified nonexistence result is the six-vertex, four-color slice. The repository also contains the general color-restriction theorem, the official N8 perfect-matching expansion, target-matching extraction, and explicit coverage of the 31 target-triple orbits. These are reductions and coverage infrastructure, not an N8 impossibility theorem.
+
+Neither `(6,3)` nor `(8,3)` is settled by the accepted proof chain here. The unrestricted conjecture for every even `N ≥ 6` and every `D ≥ 3` remains unresolved by this repository. There is no `d = 4` counterexample.
 
 ## Current research program
 
-The next development is intentionally separated from the certified release:
+New research remains separated from the immutable certified release:
 
-1. formalize color restriction from arbitrary `D ≥ 3` to three selected colors;
-2. formalize the quadratic-power encoding of the perfect-matching tensor;
-3. attack the next finite frontier `(N,D) = (8,3)` with symmetry certificates, structural reductions, and proof-producing exact search;
-4. extract an `N`-uniform obstruction or find an exact counterexample.
+1. reuse the checked color restriction and N8 matching/orbit foundation;
+2. complete a small exact-support Laurent certificate all the way from the official equations to a kernel-checked contradiction;
+3. maintain explicit zero/nonzero case coverage while extending support exclusions to an unrestricted finite result;
+4. find a valid `N`-uniform obstruction or an exact counterexample; color restriction alone does not reduce `N`.
 
 New work should branch from `main`; the release branch must remain unchanged.
 

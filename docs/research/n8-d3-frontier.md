@@ -6,7 +6,7 @@ This document separates kernel-certified facts, independently reproducible exact
 
 Color restriction proves that any solution with `D ≥ 3` restricts to a three-color solution. Therefore, for each fixed `N`, the entire dimension range is controlled by `D = 3`.
 
-The next unresolved vertex count after `N = 6` is consequently `(N,D) = (8,3)`.
+This document studies `(N,D) = (8,3)` as one finite research target. The accepted `(6,4)` result does not settle `(6,3)`, and the color-restriction theorem does not reduce the vertex count. The repository's strict-trust proof chain therefore still leaves `(6,3)` unresolved as well.
 
 ## Exact size of the system
 
