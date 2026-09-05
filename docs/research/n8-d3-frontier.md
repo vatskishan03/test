@@ -40,7 +40,9 @@ This is an important negative result: the next reduction must couple multiple co
 
 On 2026-09-05, the fixed 143-coordinate Candidate129 support was excluded by an ordinary Lean kernel proof, with all support coordinates required nonzero. The official equations supply 60 complete amplitudes, including the 57 normalized premises of a 145-node Laurent DAG. Eleven factor products reduce the proof to two cases; twelve signed-character implications and two complete-amplitude cancellations exclude both.
 
-The final `no_solution_exact_support` and `not_exists_exact_support` theorems depend only on `[propext, Classical.choice, Quot.sound]`. The [certificate README](../../research/candidate129/README.md) records the exact support, reproducible sources, and measured checks. No proper sub-support, other exact support, or complete target-orbit branch is excluded merely by this statement.
+The final `no_solution_exact_support` and `not_exists_exact_support` theorems depend only on `[propext, Classical.choice, Quot.sound]`. The [certificate README](../../research/candidate129/README.md) records the exact support, reproducible sources, and measured checks.
+
+A subsequent kernel-checked projection strengthens this to 75 required nonzeros, 71 required zeros, and 106 unrestricted canonical coordinates. All 60 required amplitudes are preserved because every matching either contains a required zero or uses only required nonzeros. The new `no_solution_partial_support`, `not_exists_partial_support`, and `partial_support_escape` endpoints have the same three-axiom closure; the exact-support result is now a corollary. This excludes `2^106` Boolean support patterns, but no complete target-orbit branch or unrestricted N8 theorem has been established. The nearby 144-coordinate tropical support escapes the clause at coordinate 214 and is not excluded.
 
 ## Universal support-rule experiment
 

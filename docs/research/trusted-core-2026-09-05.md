@@ -2,7 +2,7 @@
 
 ## Status
 
-The unrestricted conjecture remains unresolved. A separate Candidate129 exact-support theorem has now passed Lean's kernel checks; it does not cover other supports or arbitrary vertex counts. This checkpoint does not claim a completed tropical nonattainment theorem.
+The unrestricted conjecture remains unresolved. Candidate129's exact-support theorem and its stronger partial-support family exclusion have passed Lean's kernel checks. The latter leaves 106 canonical coordinates unrestricted, but neither supplies a complete support cover or arbitrary-vertex-count theorem. This checkpoint does not claim a completed tropical nonattainment theorem.
 
 PR #4 was merged into `main` as `19e6f4b40ba1ddd0503d55979cae95bb97ddac7c`. Its N8 matching table, target-orbit data and certificate bodies were not regenerated. The `(6,4)` release remains unchanged. [PR #5](https://github.com/vatskishan03/monochromatic-quantum-graphs/pull/5) integrates the new Candidate129 kernel proof and its expanded CI gate.
 
@@ -70,6 +70,16 @@ This first CI run's downloadable artifact was **not** uploaded: the upload actio
 
 The integrated workflow now explicitly includes that hidden log directory and fails if the evidence is missing. A passing result on a later revision must be verified separately; these links and measurements identify the tested revision above, not every subsequent commit. The latest PR checks and downloadable artifact are the authoritative receipt for the upload correction.
 
+## Partial-support projection checkpoint
+
+The new proof projects the same complete-amplitude certificate to 75 prescribed nonzeros and 71 prescribed zeros, leaving 106 of the 252 canonical coordinates unrestricted. The 62 generated projection modules and two semantic/theorem bridges check the transfer for all 60 required colorings and all 105 matchings. The original exact-support endpoints are now corollaries, avoiding a duplicate import of all old amplitude wrappers in the root library.
+
+The targeted endpoint build passed with 8,239 jobs including cached dependencies and 6,566,340 KiB peak single-compiler RSS. After source hashes were checked against the local changes, both complete default libraries passed with 7,398,252 KiB peak compiler RSS and 5.52 seconds maximum sampled single-compiler elapsed time. All seventeen required theorem dependency reports then passed. The four additions are the three partial-support endpoints and the exact `75/71/106` coordinate-count theorem. Each new exclusion endpoint has exactly `[propext, Classical.choice, Quot.sound]`.
+
+The largest read-only report used 9,399,340 KiB and 39.75 seconds; no compiler budget was increased. The new seven projection regressions pass, including independently enumerated matchings, removal of each selected condition, and exact amplitude-transfer checks with free coordinates both zero and nonzero. The audit-log regression suite now has ten tests and rejects omission of the partial-support endpoints.
+
+These are incremental VM receipts on source-matched working changes, not evidence that the earlier thirteen-endpoint GitHub runs tested this later extension. A final revision's CI receipt must be inspected separately. Intermediate attempts stopped at the unchanged boot-disk reserve were not counted as passing proof or axiom checks. Space was recovered by preserving closed log archives on the data disk; the reserve was not lowered.
+
 ## Reproduction and remaining mathematical gaps
 
 On the Linux VM with Python 3.11+, in an isolated checkout with the pinned toolchain and dependencies:
@@ -85,7 +95,7 @@ AXIOM_REPORT_RSS_LIMIT_KB=15000000 python3 scripts/ci/run_axiom_audits.py "$PWD"
 
 The report command requires a fresh log and the explicitly approved reporting budget shown above. Never reuse an old axiom list or omit coverage to label the overall gate green.
 
-Before merging any later integrated revision: run both complete root builds and the expanded axiom gate on its exact tree, verify the downloadable logs, and inspect the workflow result. Before claiming unrestricted N8: prove complete zero/nonzero case coverage. Arbitrary vertex counts require an additional valid argument; a single-support exclusion does not supply one.
+Before merging any later integrated revision: run both complete root builds and the expanded axiom gate on its exact tree, verify the downloadable logs, and inspect the workflow result. Before claiming unrestricted N8: prove complete zero/nonzero case coverage. Arbitrary vertex counts require an additional valid argument; a partial-support exclusion does not supply one.
 
 ## External six-vertex claim: a separate trust boundary
 

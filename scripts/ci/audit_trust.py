@@ -19,6 +19,10 @@ EXPECTED = {
     "MonochromaticQuantumGraphs.factor_biclique_dichotomy",
     "MonochromaticQuantumGraphs.N8D3.Candidate129.no_solution_exact_support",
     "MonochromaticQuantumGraphs.N8D3.Candidate129.not_exists_exact_support",
+    "MonochromaticQuantumGraphs.N8D3.Candidate129.no_solution_partial_support",
+    "MonochromaticQuantumGraphs.N8D3.Candidate129.not_exists_partial_support",
+    "MonochromaticQuantumGraphs.N8D3.Candidate129.partial_support_escape",
+    "MonochromaticQuantumGraphs.N8D3.Candidate129.core_classification_counts",
 }
 ALLOWED = {"propext", "Classical.choice", "Quot.sound"}
 AUDIT_GROUPS = {
@@ -38,6 +42,11 @@ AUDIT_GROUPS = {
     "MonochromaticQuantumGraphs.N8D3.Candidate129.ExactSupportTheorem": [
         "MonochromaticQuantumGraphs.N8D3.Candidate129.no_solution_exact_support",
         "MonochromaticQuantumGraphs.N8D3.Candidate129.not_exists_exact_support"],
+    "MonochromaticQuantumGraphs.N8D3.Candidate129.PartialSupportTheorem": [
+        "MonochromaticQuantumGraphs.N8D3.Candidate129.no_solution_partial_support",
+        "MonochromaticQuantumGraphs.N8D3.Candidate129.not_exists_partial_support",
+        "MonochromaticQuantumGraphs.N8D3.Candidate129.partial_support_escape",
+        "MonochromaticQuantumGraphs.N8D3.Candidate129.core_classification_counts"],
     "MonochromaticQuantumGraphs.N8D3.TargetOrbitCertificates8": [
         "MonochromaticQuantumGraphs.N8D3.targetOrbitRep8_covers"],
 }

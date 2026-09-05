@@ -52,6 +52,14 @@ class TrustAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Candidate129'):
             A.check_axioms(without_candidate)
 
+    def test_each_partial_support_endpoint_required(self):
+        names = A.AUDIT_GROUPS["MonochromaticQuantumGraphs.N8D3.Candidate129.PartialSupportTheorem"]
+        for name in names:
+            without_one = '\n'.join(line for line in self.complete_log().splitlines()
+                                    if not line.startswith(f"'{name}'"))
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'missing axiom output'):
+                A.check_axioms(without_one)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
