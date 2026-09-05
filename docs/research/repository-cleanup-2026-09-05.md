@@ -31,4 +31,6 @@ The matching and target tables and pure support predicates now live once in `Fin
 
 The source/axiom audit has eleven regressions and requires all eighteen endpoints, including the new pointwise three-color axis lemma. All compiler limits and the separately approved read-only collector exception are unchanged. Exact arithmetic tests, source lint, hashes, and generator reproducibility supplement the Lean kernel; none replaces it.
 
+The full workflow has a six-hour scheduling window for its many sequential proof shards. Each individual compiler remains limited to 7,500,000 KiB RSS and 295 seconds, with one worker and the same aggregate, free-memory, and free-disk guards. Extending the workflow window does not permit an oversized or overlong compiler process.
+
 The original `(6,4)` release and all archived research remain recoverable. This cleanup resolves the identified branch, workflow, duplicate-source, dependency-coverage, and working-copy debt; it is not a claim that every possible future defect has been ruled out or that the mathematical problem is solved.

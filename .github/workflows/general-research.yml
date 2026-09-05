@@ -16,7 +16,9 @@ jobs:
   compile:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, Linux, X64, lean-highmem-n8d3]
-    timeout-minutes: 120
+    # The complete cold replay contains many individually bounded proof shards.
+    # This scheduling window does not change any compiler limit below.
+    timeout-minutes: 360
     env:
       LAKE_WORKERS: "1"
       LEAN_RSS_LIMIT_KB: "7500000"
