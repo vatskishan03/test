@@ -1,3 +1,4 @@
+import MQGN6Audit.TargetOrbits6
 import MQGN6Audit.UniqueDagCheckFast6
 import MQGN6Audit.TerminalSoundness6
 import MQGN6Audit.CartesianTerminal6
@@ -52,6 +53,7 @@ lemma false_of_feasibleTargetData6
   let choice := feasibleChoiceOfData6 D ci htarget
   rcases feasibleTemplateClassification6_fromFastDag ci choice with hunique | hterminal
   · obtain ⟨q, m, hnonmono, hforced, hallowed, huniq⟩ := hunique
+    change ¬ allEqual q at hnonmono
     apply false_of_unique_forced_matching6 hW D q m hnonmono
     · simpa [choice, htarget] using hforced
     · intro n hnm

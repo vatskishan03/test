@@ -7,7 +7,6 @@ import MQGN6Audit.UniqueDagSurvivorTerminalKernel6
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 
 def rawDagPairForcedPossible6 (cu cv : Nat)
     (target : Fin 4 → Fin 15) (u v : Fin 6) (a b : Fin 4) : Prop :=
@@ -31,7 +30,7 @@ def rawDagUniqueLocalValidPossible6 (C : UniqueDagCase6)
     (target : Fin 4 → Fin 15) (z : Fin 4096) (m : Fin 15) : Prop :=
   let leaf := UniqueDagNode6.unique z m
   let q := decodeDagColoringFast6 z
-  ¬ allEqual q ∧
+  ¬ allEqualFinite6 q ∧
   (∀ k : Fin 3,
     let e := matchingEdges6 m k
     ∀ cu ∈ rawDagPossibleCodesPossible6 C leaf e.1,
@@ -47,7 +46,7 @@ instance rawDagUniqueLocalValidPossible6Decidable
     (z : Fin 4096) (m : Fin 15) :
     Decidable (rawDagUniqueLocalValidPossible6 C target z m) := by
   unfold rawDagUniqueLocalValidPossible6 rawDagPairForcedPossible6
-    rawDagPairAllowedPossible6 allEqual
+    rawDagPairAllowedPossible6 allEqualFinite6
   infer_instance
 
 theorem uniqueLeafSemantic_of_possible6
@@ -57,7 +56,7 @@ theorem uniqueLeafSemantic_of_possible6
     (hleaf : uniqueDagNodeAtFast6 C (rawDagEvalIdFast6 C codes) =
       .unique z m)
     (hvalid : rawDagUniqueLocalValidPossible6 C target z m) :
-    ¬ allEqual (decodeDagColoringFast6 z) ∧
+    ¬ allEqualFinite6 (decodeDagColoringFast6 z) ∧
     MatchingForced6 (rawPlanFast6 codes) target
       (decodeDagColoringFast6 z) m ∧
     MatchingAllowed6 (rawPlanFast6 codes)

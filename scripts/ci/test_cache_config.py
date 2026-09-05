@@ -1,7 +1,9 @@
 """Small cache-configuration regressions; no compiler or external dependency."""
 import copy
+import json
 from pathlib import Path
 import tempfile
+import tomllib
 import unittest
 from prepare_vm_cache import check_declared_pins
 from seed_build_cache import compatible
@@ -12,6 +14,17 @@ MANIFEST = {"packages": [{"name": "dependency", "type": "git", "url": "https://e
 
 
 class CacheConfigTests(unittest.TestCase):
+    def test_checked_in_dependency_lock_matches_declared_pins(self):
+        root = Path(__file__).resolve().parents[2]
+        configuration = tomllib.loads((root / "lakefile.toml").read_text())
+        manifest = json.loads((root / "lake-manifest.json").read_text())
+        check_declared_pins(configuration, manifest)
+        self.assertEqual(manifest["name"], configuration["name"])
+        for package in manifest["packages"]:
+            with self.subTest(package=package["name"]):
+                self.assertEqual(package["type"], "git")
+                self.assertRegex(package["rev"], r"^[0-9a-f]{40}$")
+
     def test_exact_declared_pin(self):
         check_declared_pins(CONFIG, MANIFEST)
 

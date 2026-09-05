@@ -143,26 +143,6 @@ def overlaps(data, shard, per_shard=2):
     return "\n".join(lines)
 
 
-def benchmark(data):
-    lines = ["import MonochromaticQuantumGraphs.LaurentListCertificate", "",
-             "/-! A bounded ordinary-kernel replay benchmark; amplitude premises remain explicit. -/", "",
-             "namespace MonochromaticQuantumGraphs.N8D3.Candidate129.Benchmark", "",
-             "open MonochromaticQuantumGraphs.LaurentList", "",
-             "set_option maxRecDepth 100000", "set_option maxHeartbeats 10000000", ""]
-    for i in range(3):
-        lines += [f"def {node_name(i)} : Polynomial 143 :=", polynomial(data["nodes"][i]["polynomial"], 143), ""]
-    c, d, sl, sr = combination(data, 2)
-    lines += ["theorem overlap002 (x : Fin 143 → ℂ) (hx : ∀ i, x i ≠ 0)",
-              "    (h0 : (toPolynomial p000).Holds x) (h1 : (toPolynomial p001).Holds x) :",
-              "    (toPolynomial p002).Holds x := by",
-              f"  apply holds_of_combination x hx p000 p001 p002 ({c}) ({d})",
-              f"    {exponent(sl)} {exponent(sr)} _ h0 h1",
-              "  decide", "",
-              "#print axioms overlap002", "",
-              "end MonochromaticQuantumGraphs.N8D3.Candidate129.Benchmark", ""]
-    return "\n".join(lines)
-
-
 def support_data(data):
     support = data["support"]
     inverse = {g: i for i, g in enumerate(support)}
@@ -328,7 +308,8 @@ def raw_amplitude_data(data):
 def amplitude_checks(data, code_index):
     code = amplitude_codes(data)[code_index]
     q, terms = C.complete_amplitude(data["support"], code)
-    lines = preamble("", ["MonochromaticQuantumGraphs.N8D3.Candidate129.MatchingBlocks",
+    lines = preamble("", ["MonochromaticQuantumGraphs.N8D3.Candidate129.SupportCombinatorics",
+                          "Mathlib.Tactic.FinCases",
                           "MonochromaticQuantumGraphs.N8D3.Candidate129.RawAmplitudeData",
                           "MonochromaticQuantumGraphs.N8D3.Candidate129.Data"])
     lines += ["open scoped Matrix", "",
@@ -366,36 +347,6 @@ def amplitude_checks(data, code_index):
         lines += [f"theorem premiseCheck{i:03d} : agrees",
                   f"    (scale ({c}) (translate {exponent(shift)} amplitude{code})) {node_name(i)} = true := by",
                   "  decide", ""]
-    lines += ["end MonochromaticQuantumGraphs.N8D3.Candidate129", ""]
-    return "\n".join(lines)
-
-
-def amplitude_replay(data, code_index):
-    code = amplitude_codes(data)[code_index]
-    _, terms = C.complete_amplitude(data["support"], code)
-    lines = preamble("", ["MonochromaticQuantumGraphs.N8D3.Candidate129.AmplitudeBridge",
-                          f"MonochromaticQuantumGraphs.N8D3.Candidate129.Amplitude{code}Checks"])
-    lines += ["open MonochromaticQuantumGraph", "",
-              f"theorem amplitude{code}_holds (W : WeightsN 8 3 ℂ) (h : ExactSupport W)",
-              "    (hW : EqSystemN 8 3 W) :",
-              f"    (toPolynomial amplitude{code}).Holds (supportWeight W) := by",
-              f"  have hs := table_holds_of_equations W h hW coloring{code} (by decide)",
-              f"    table{code} table{code}_complete",
-              f"  rw [table{code}_expanded, table{code}_polynomial] at hs",
-              "  exact hs", "",
-              f"#print axioms amplitude{code}_holds", ""]
-    for i, node in enumerate(data["nodes"]):
-        if node.get("coloring") != code:
-            continue
-        source = [(1, dense(e, 143)) for e in terms.values()]
-        target = [(Fraction(*c), dense(e, 143)) for c, e in node["polynomial"]]
-        c, shift = unit_transform(source, target)
-        lines += [f"theorem premise{i:03d} (W : WeightsN 8 3 ℂ) (h : ExactSupport W)",
-                  "    (hW : EqSystemN 8 3 W) :",
-                  f"    (toPolynomial {node_name(i)}).Holds (supportWeight W) := by",
-                  "  apply holds_of_unit_translate (supportWeight W) (supportWeight_ne_zero W h)",
-                  f"    amplitude{code} {node_name(i)} ({c}) {exponent(shift)} _ (amplitude{code}_holds W h hW)",
-                  f"  exact premiseCheck{i:03d}", ""]
     lines += ["end MonochromaticQuantumGraphs.N8D3.Candidate129", ""]
     return "\n".join(lines)
 
@@ -466,20 +417,6 @@ def endpoint_flip(data, endpoint_index):
     return "\n".join(lines)
 
 
-def official_premises(data):
-    lines = preamble("", [f"MonochromaticQuantumGraphs.N8D3.Candidate129.Amplitude{code}"
-                          for code in amplitude_codes(data)])
-    lines += ["open MonochromaticQuantumGraph", "",
-              "/-- All 57 premises are consequences of the official equations, not new assumptions. -/",
-              "theorem official_amplitude_premises (W : WeightsN 8 3 ℂ) (h : ExactSupport W)",
-              "    (hW : EqSystemN 8 3 W) : AmplitudePremises (supportWeight W) where"]
-    lines += [f"  h{i:03d} := premise{i:03d} W h hW"
-              for i, node in enumerate(data["nodes"]) if node["kind"] == "amplitude"]
-    lines += ["", "#print axioms official_amplitude_premises", "",
-              "end MonochromaticQuantumGraphs.N8D3.Candidate129", ""]
-    return "\n".join(lines)
-
-
 def all_sources(data):
     """Deterministic source inventory, excluding hand-written semantic bridges."""
     yield "Data", definitions(data)
@@ -494,8 +431,6 @@ def all_sources(data):
     yield "RawAmplitudeData", raw_amplitude_data(data)
     for i, code in enumerate(amplitude_codes(data)):
         yield f"Amplitude{code}Checks", amplitude_checks(data, i)
-        yield f"Amplitude{code}", amplitude_replay(data, i)
-    yield "OfficialPremises", official_premises(data)
 
 
 def main():
@@ -503,7 +438,7 @@ def main():
     parser.add_argument("--patch", action="store_true")
     parser.add_argument("--check-sources", action="store_true",
                         help="fail if any checked-in generated source differs from this producer")
-    parser.add_argument("--part", choices=("benchmark", "data", "overlaps", "support_data", "star", "endpoint_step", "raw_amplitudes", "amplitude_replay", "amplitude_checks", "endpoint_flip", "official_premises"), default="benchmark")
+    parser.add_argument("--part", choices=("data", "overlaps", "support_data", "star", "endpoint_step", "raw_amplitudes", "amplitude_checks", "endpoint_flip"), default="data")
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--endpoint", type=int, choices=(0, 1), default=0)
     args = parser.parse_args()
@@ -522,14 +457,10 @@ def main():
             raise SystemExit("stale or missing generated sources: " + ", ".join(stale))
         print(f"PASS: {count} generated Lean sources match the frozen compact certificate")
         return
-    if args.part == "official_premises":
-        source, name = official_premises(data), "OfficialPremises"
-    elif args.part == "endpoint_flip":
+    if args.part == "endpoint_flip":
         source, name = endpoint_flip(data, args.endpoint), f"Endpoint{args.endpoint}Flip"
     elif args.part == "raw_amplitudes":
         source, name = raw_amplitude_data(data), "RawAmplitudeData"
-    elif args.part == "amplitude_replay":
-        source, name = amplitude_replay(data, args.shard), f"Amplitude{amplitude_codes(data)[args.shard]}"
     elif args.part == "amplitude_checks":
         source, name = amplitude_checks(data, args.shard), f"Amplitude{amplitude_codes(data)[args.shard]}Checks"
     elif args.part == "endpoint_step":
@@ -543,7 +474,7 @@ def main():
     elif args.part == "overlaps":
         source, name = overlaps(data, args.shard), f"Overlaps{args.shard:02d}"
     else:
-        source, name = benchmark(data), "Benchmark"
+        raise AssertionError(f"unhandled source part: {args.part}")
     if args.patch:
         print("*** Begin Patch")
         print("*** Add File: " + str(directory.parents[1] / f"MonochromaticQuantumGraphs/N8D3/Candidate129/{name}.lean"))

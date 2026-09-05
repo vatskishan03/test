@@ -70,19 +70,26 @@ New research remains separated from the immutable certified release:
 
 New work should branch from `main`; the release branch must remain unchanged.
 
+The [local-contraction research](research/local_contraction/README.md) contains an exact rational-input closure algorithm and an independent tensor oracle. Its pointwise three-color axis lemma is kernel-certified and included in the default build. The complete algorithm-equivalence theorem is not yet formalized, and an explicit regression proves that local acceptance is insufficient for the global matching equations.
+
+## Repository maintenance
+
+`main` is the maintained integration branch and requires both verification checks before merging, including for administrators. `release/n6-d4-v1` is locked read-only; force-pushes and branch deletion are disabled on both. Retired branches and unverified tropical drafts are recoverable from `archive/2026-09-05/` tags, not live research branches or accepted global proofs. Automatic branch deletion after merging is enabled.
+
+Two workflows remain maintained: the complete trusted Lean build/axiom audit and exact research regressions. Every retained library module must be reachable from a default root, all local imports must resolve, and every one of the eighteen audited endpoints must be reported. Superseded workflows, orphan modules, and duplicate Candidate129 wrappers are retired. See the [cleanup record](docs/research/repository-cleanup-2026-09-05.md) for scope and recovery information.
+
 ## Reproduction
 
-Using the pinned Lean toolchain and dependencies:
+On Linux with Python 3.11+ and the pinned Lean toolchain, the maintained resource-guarded check is:
 
 ```bash
-lake update
-lake exe cache get
-lake build MQGN6Audit.NoSolution6
-lake build
-lake env lean AxiomAudit.lean
+python3 scripts/ci/guarded_run.py "$PWD" .ci-logs/dependencies.log -- lake exe cache get
+bash scripts/ci/guarded_lake_build.sh "$PWD" .ci-logs/build.log
+bash scripts/ci/guarded_lake_build.sh "$PWD" .ci-logs/reporter-build.log axiom_report
+AXIOM_REPORT_RSS_LIMIT_KB=15000000 python3 scripts/ci/run_axiom_audits.py "$PWD" .ci-logs/axioms-fresh.log
 ```
 
-The expected final theorem axiom list is:
+The last command uses the separately approved read-only reporting budget; compilers keep their original limit. Logs must be fresh. The required final theorem axiom list is:
 
 ```text
 [propext, Classical.choice, Quot.sound]

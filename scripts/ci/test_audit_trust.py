@@ -60,6 +60,12 @@ class TrustAuditTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'missing axiom output'):
                 A.check_axioms(without_one)
 
+    def test_pointwise_axis_endpoint_cannot_be_omitted(self):
+        without_axis = '\n'.join(line for line in self.complete_log().splitlines()
+                                 if '.LocalContraction.' not in line)
+        with self.assertRaisesRegex(ValueError, 'LocalContraction'):
+            A.check_axioms(without_axis)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

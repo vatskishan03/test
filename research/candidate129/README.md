@@ -44,7 +44,7 @@ python3 research/candidate129/test_partial_support.py
 
 The second command includes mutation tests for omitted amplitude terms, wrong coefficients, cyclic provenance, wrong character and ratio witnesses, and an incorrect final matching. It also checks that SymPy is never imported and the producer's factor-search routine is never called.
 
-The source-generation checks cover the original 183 generated Lean modules and 62 additional partial-support modules, including exhaustive 105-entry matching tables for every amplitude. Five original producer regressions and seven projection regressions supplement the thirteen exact-replay tests. These are reproducibility checks, not substitutes for compiling the proof.
+The source-generation checks cover 122 shared generated Lean modules and 62 partial-support modules, including exhaustive 105-entry matching tables for every amplitude. Sixty obsolete exact-support amplitude wrappers and their assembly module were retired after the exact-support theorem became a partial-support corollary. Six producer regressions and seven projection regressions supplement the thirteen exact-replay tests. These are reproducibility checks, not substitutes for compiling the proof.
 
 On the pinned Linux VM, build the formal endpoint under the repository's resource guard:
 

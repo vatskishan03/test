@@ -1,4 +1,5 @@
 import MQGN6Audit.VertexAxis
+import MQGN6Audit.FiniteCombinatorics6
 
 /-!
 # The fifteen perfect matchings of `K₆`
@@ -15,45 +16,9 @@ open scoped BigOperators Matrix
 
 noncomputable section
 
-/-- Canonically ordered edges of the fifteen perfect matchings of `K₆`. -/
-def matchingEdges6 : Fin 15 → Fin 3 → Fin 6 × Fin 6 :=
-  ![
-    ![(0, 1), (2, 3), (4, 5)],
-    ![(0, 1), (2, 4), (3, 5)],
-    ![(0, 1), (2, 5), (3, 4)],
-    ![(0, 2), (1, 3), (4, 5)],
-    ![(0, 2), (1, 4), (3, 5)],
-    ![(0, 2), (1, 5), (3, 4)],
-    ![(0, 3), (1, 2), (4, 5)],
-    ![(0, 3), (1, 4), (2, 5)],
-    ![(0, 3), (1, 5), (2, 4)],
-    ![(0, 4), (1, 2), (3, 5)],
-    ![(0, 4), (1, 3), (2, 5)],
-    ![(0, 4), (1, 5), (2, 3)],
-    ![(0, 5), (1, 2), (3, 4)],
-    ![(0, 5), (1, 3), (2, 4)],
-    ![(0, 5), (1, 4), (2, 3)]
-  ]
-
-/-- Partner table for the same fifteen perfect matchings. -/
-def matchingMate6 : Fin 15 → Fin 6 → Fin 6 :=
-  ![
-    ![1, 0, 3, 2, 5, 4],
-    ![1, 0, 4, 5, 2, 3],
-    ![1, 0, 5, 4, 3, 2],
-    ![2, 3, 0, 1, 5, 4],
-    ![2, 4, 0, 5, 1, 3],
-    ![2, 5, 0, 4, 3, 1],
-    ![3, 2, 1, 0, 5, 4],
-    ![3, 4, 5, 0, 1, 2],
-    ![3, 5, 4, 0, 2, 1],
-    ![4, 2, 1, 5, 0, 3],
-    ![4, 3, 5, 1, 0, 2],
-    ![4, 5, 3, 2, 0, 1],
-    ![5, 2, 1, 4, 3, 0],
-    ![5, 3, 4, 1, 2, 0],
-    ![5, 4, 3, 2, 1, 0]
-  ]
+/-- The finite replay uses exactly the original monochromaticity predicate. -/
+lemma allEqualFinite6_iff (q : Fin 6 → Fin 4) :
+    allEqualFinite6 q ↔ allEqual q := Iff.rfl
 
 /-- The monomial contributed by one of the fifteen perfect matchings. -/
 def pmTerm6 (W : WeightsN 6 4 ℂ) (ι : Fin 6 → Fin 4) (m : Fin 15) : ℂ :=
@@ -69,21 +34,6 @@ lemma pmSumN6_eq_sum_pmTerm6 (W : WeightsN 6 4 ℂ) (ι : Fin 6 → Fin 4) :
     simp [pmSumN, pmSumList, pmSumListAux, vertices, pmTerm6, matchingEdges6,
       Fin.sum_univ_succ, Fin.prod_univ_three] <;>
     ring
-
-lemma matchingEdges6_contains_vertex (m : Fin 15) (v : Fin 6) :
-    ∃ k : Fin 3,
-      let e := matchingEdges6 m k
-      (e.1 = v ∧ e.2 = matchingMate6 m v) ∨
-        (e.2 = v ∧ e.1 = matchingMate6 m v) := by
-  fin_cases m <;> fin_cases v <;>
-    first | exact ⟨0, by decide⟩ | exact ⟨1, by decide⟩ | exact ⟨2, by decide⟩
-
-lemma matchingMate6_ne (m : Fin 15) (v : Fin 6) : matchingMate6 m v ≠ v := by
-  fin_cases m <;> fin_cases v <;> decide
-
-lemma matchingMate6_involutive (m : Fin 15) (v : Fin 6) :
-    matchingMate6 m (matchingMate6 m v) = v := by
-  fin_cases m <;> fin_cases v <;> rfl
 
 lemma pmTerm6_factor_ne_zero
     {W : WeightsN 6 4 ℂ} {ι : Fin 6 → Fin 4} {m : Fin 15}

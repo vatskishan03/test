@@ -6,7 +6,6 @@ import MQGN6Audit.UniqueDagStructuralKernelBase6
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 
 def rawDagStepCodePossible6 (C : UniqueDagCase6) (v : Fin 6)
     (code id : Nat) : Nat :=

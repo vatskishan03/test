@@ -1,4 +1,4 @@
-import MQGN6Audit.TargetOrbits6
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Compressed unique-obstruction certificate data types

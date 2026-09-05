@@ -1,17 +1,20 @@
-import MQGN6Audit.TargetOrbits6
-import MQGN6Audit.UniqueObstruction
+import MQGN6Audit.FiniteCombinatorics6
+import Mathlib.Data.Finset.Union
+import Mathlib.Data.Fintype.Fin
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Nat.Bitwise
+import Mathlib.Tactic.FinCases
 
 /-!
 # Finite definitions for the `K₆` support classification
 
 This file contains only the finite types and audited terminal masks.  The
-compressed certificate replay lives in `UniqueDagCheck6`; no expensive search
+compressed certificate replay lives in `UniqueDagCheckFast6`; no expensive search
 is performed while compiling these definitions.
 -/
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 open Function
 
 /-- The canonical order of the fifteen physical edges. -/
@@ -96,7 +99,7 @@ def PlanHasSurvivorTemplate6 (plan : Fin 6 → Fin 4 → Fin 6)
 def HasUniqueForcedMatching6 (target : Fin 4 → Fin 15)
     (plan : Fin 6 → Fin 4 → Fin 6) : Prop :=
   ∃ q : Fin 6 → Fin 4, ∃ m : Fin 15,
-    ¬ allEqual q ∧
+    ¬ allEqualFinite6 q ∧
     MatchingForced6 plan target q m ∧
     MatchingAllowed6 plan q m ∧
     ∀ n : Fin 15, MatchingAllowed6 plan q n → n = m

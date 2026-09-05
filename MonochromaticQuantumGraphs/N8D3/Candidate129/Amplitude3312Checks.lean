@@ -1,4 +1,5 @@
-import MonochromaticQuantumGraphs.N8D3.Candidate129.MatchingBlocks
+import MonochromaticQuantumGraphs.N8D3.Candidate129.SupportCombinatorics
+import Mathlib.Tactic.FinCases
 import MonochromaticQuantumGraphs.N8D3.Candidate129.RawAmplitudeData
 import MonochromaticQuantumGraphs.N8D3.Candidate129.Data
 

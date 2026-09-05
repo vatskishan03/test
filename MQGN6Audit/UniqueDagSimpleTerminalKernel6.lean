@@ -6,7 +6,6 @@ import MQGN6Audit.UniqueDagStructuralKernelBase6
 
 namespace MQGN6Audit
 
-open MonochromaticQuantumGraph
 
 lemma matchingAllowed_of_codes_avoid_mateStructural6
     (C : UniqueDagCase6) (codes : Fin 6 → Nat)
@@ -28,7 +27,7 @@ lemma uniqueLeafSemantic_simpleStructural6
     (hcodes : ∀ v, codes v ∈ C.planCodes v)
     (hleaf : uniqueDagNodeAtFast6 C (rawDagEvalIdFast6 C codes) =
       .unique z m)
-    (hnonmono : ¬ allEqual (decodeDagColoringFast6 z))
+    (hnonmono : ¬ allEqualFinite6 (decodeDagColoringFast6 z))
     (hforced : MatchingForced6 (rawPlanFast6 codes) target
       (decodeDagColoringFast6 z) m)
     (hallowed : MatchingAllowed6 (rawPlanFast6 codes)
@@ -36,7 +35,7 @@ lemma uniqueLeafSemantic_simpleStructural6
     (havoid : ∀ n : Fin 15, n ≠ m →
       ∀ id ∈ matchingReachStructural6 C z n,
         uniqueDagNodeAtFast6 C id ≠ .unique z m) :
-    ¬ allEqual (decodeDagColoringFast6 z) ∧
+    ¬ allEqualFinite6 (decodeDagColoringFast6 z) ∧
     MatchingForced6 (rawPlanFast6 codes) target
       (decodeDagColoringFast6 z) m ∧
     MatchingAllowed6 (rawPlanFast6 codes) (decodeDagColoringFast6 z) m ∧
