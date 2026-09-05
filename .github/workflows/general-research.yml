@@ -45,6 +45,8 @@ jobs:
           python3 research/candidate129/test_compact_star.py
           python3 research/candidate129/generate_lean_replay.py --check-sources
           python3 research/candidate129/test_lean_replay_generator.py
+          python3 research/candidate129/generate_partial_support.py --check-sources
+          python3 research/candidate129/test_partial_support.py
       - name: Prepare pinned dependencies and source-matched warm cache
         run: |
           if [ -n "$MQG_VM_SEED" ]; then

@@ -47,15 +47,15 @@ The proof has four layers:
 
 See [`docs/proofs/n6-d4-v1.md`](docs/proofs/n6-d4-v1.md) for the detailed statement and audit record.
 
-## Kernel-certified N8 exact-support exclusion
+## Kernel-certified N8 partial-support exclusion
 
-[`Candidate129`](research/candidate129/README.md) has a separate exact-support nonexistence proof for its frozen 143 edge-color coordinates. Every declared coordinate must be nonzero and every other canonical coordinate zero. The theorem is connected to the original `EqSystemN 8 3` equations through all 105 perfect matchings.
+[`Candidate129`](research/candidate129/README.md) now excludes a partial-support family: 75 canonical edge-color coordinates are required nonzero, 71 are required zero, and the remaining 106 are arbitrary complex numbers, including zero. The original frozen 143-coordinate exact-support exclusion is a corollary. The theorem is connected to the original `EqSystemN 8 3` equations through all 105 perfect matchings.
 
-Its 145-node Laurent derivation, eleven factor products, twelve character implications, and two final amplitude cancellations are checked by ordinary Lean kernel proofs. Both final endpoints have axiom closure `[propext, Classical.choice, Quot.sound]`. Proper sub-supports and other N8 supports are not covered.
+Its 145-node Laurent derivation, eleven factor products, twelve character implications, and two final amplitude cancellations are checked by ordinary Lean kernel proofs. A matching-by-matching projection justifies the unrestricted coordinates. All five final exact/partial-support endpoints have axiom closure `[propext, Classical.choice, Quot.sound]`. Supports outside this prescribed pattern are not covered.
 
 ## Scope
 
-The unrestricted certified nonexistence result is the six-vertex, four-color slice. Candidate129 adds one exact N8 support exclusion. The repository also contains the general color-restriction theorem, the official N8 perfect-matching expansion, target-matching extraction, and explicit coverage of the 31 target-triple orbits. None supplies an unrestricted N8 impossibility theorem.
+The unrestricted certified nonexistence result is the six-vertex, four-color slice. Candidate129 adds a family of `2^106` excluded exact N8 support patterns, not a complete support cover. The repository also contains the general color-restriction theorem, the official N8 perfect-matching expansion, target-matching extraction, and explicit coverage of the 31 target-triple orbits. None supplies an unrestricted N8 impossibility theorem.
 
 Neither `(6,3)` nor `(8,3)` is settled by the accepted proof chain here. The unrestricted conjecture for every even `N ≥ 6` and every `D ≥ 3` remains unresolved by this repository. There is no `d = 4` counterexample.
 
@@ -64,7 +64,7 @@ Neither `(6,3)` nor `(8,3)` is settled by the accepted proof chain here. The unr
 New research remains separated from the immutable certified release:
 
 1. reuse the checked color restriction and N8 matching/orbit foundation;
-2. reuse the completed Candidate129 exact-support Laurent certificate pipeline for further verified exclusions;
+2. reuse the completed Candidate129 Laurent certificate and partial-support projection pipeline for further verified exclusions;
 3. maintain explicit zero/nonzero case coverage while extending support exclusions to an unrestricted finite result;
 4. find a valid `N`-uniform obstruction or an exact counterexample; color restriction alone does not reduce `N`.
 
