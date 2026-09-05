@@ -60,6 +60,12 @@ class RepositoryHygieneTests(unittest.TestCase):
     def test_every_audited_module_is_built(self):
         self.assertEqual(set(AUDIT_GROUPS) - self.reachable, set())
 
+    def test_library_excludes_ad_hoc_diagnostic_commands(self):
+        for name, path in self.modules.items():
+            with self.subTest(module=name):
+                self.assertIsNone(re.search(r"^\s*#(?:check|eval)\b",
+                                            lean_code(path.read_text()), re.M))
+
     def test_finite_replay_has_only_finite_imports(self):
         pending = ["MQGN6Audit.UniqueDagCheckFast6", "MQGN6Audit.TerminalFinite6"]
         seen, external = set(), set()

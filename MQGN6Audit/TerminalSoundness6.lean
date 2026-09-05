@@ -184,6 +184,7 @@ lemma actualEntry_eq_zero_of_maskDerived6
     W (mkEdge (physicalEdge6 e).1 (physicalEdge6 e).2 a b) = 0 := by
   by_contra hentry
   obtain ⟨q, m, k, hnonmono, hedge, hqa, hqb, hallowed, hunique, hother⟩ := hderived
+  change ¬ allEqual q at hnonmono
   have hterm : pmTerm6 W q m ≠ 0 := by
     unfold pmTerm6
     rw [Finset.prod_ne_zero_iff]
@@ -219,6 +220,7 @@ theorem false_of_maskSupportZeroContradiction6
     (htemplate : PlanHasSurvivorTemplate6 D.plan.witness sid)
     (hcert : MaskSupportZeroContradiction6 D.target sid) : False := by
   obtain ⟨q, m, hnonmono, hallowed, hforced, hkill⟩ := hcert
+  change ¬ allEqual q at hnonmono
   have hterm : pmTerm6 W q m ≠ 0 :=
     pmTerm6_ne_zero_of_maskForced6 D sid htemplate hforced
   have hsum_single : (∑ n : Fin 15, pmTerm6 W q n) = pmTerm6 W q m := by
