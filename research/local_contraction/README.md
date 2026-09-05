@@ -2,6 +2,8 @@
 
 Status: an exact research algorithm, a constructive mathematical argument, and thirteen passing regression tests. The complete closure equivalence is **not yet Lean-certified**. No literature-priority claim is made. This is a local necessary condition for the matching equations, not a solution of the global Krenn–Gu problem.
 
+The [pointwise three-color axis lemma](../../MonochromaticQuantumGraphs/LocalContraction/PointwiseThree.lean), for at least two slots and three nonzero diagonal coefficients, has passed an ordinary Lean build with axiom closure `[propext, Classical.choice, Quot.sound]`. It is now imported by the default library and required by the eighteen-endpoint trust gate. This formalizes one lemma, not the full criterion below.
+
 ## Exact question
 
 Let `m ≥ 2`, let `B₁,…,Bₘ` be complex `3 × 3` matrices, and write `bⱼ,c` for column `c` of `Bⱼ`. Define

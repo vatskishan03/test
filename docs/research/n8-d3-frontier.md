@@ -46,6 +46,8 @@ A subsequent kernel-checked projection strengthens this to 75 required nonzeros,
 
 ## Universal support-rule experiment
 
+The experiments below are historical research notes preserved with the [archived tropical branch](https://github.com/vatskishan03/monochromatic-quantum-graphs/tree/archive/2026-09-05/tropical-working-drafts). They are not current Lean proof claims or a new replay of those archived searches. The maintained executable research and its exact tests are linked separately below.
+
 An exact Boolean support search was run with the following necessary conditions:
 
 1. one pure diagonal star anchor per root and color;
@@ -129,6 +131,8 @@ The next algebra engine must use symmetry, local Laurent localization, sparse el
 Contracting two vertices of an eight-vertex matching tensor does not produce a standard six-vertex matching tensor. Effective edges created through the contracted vertices can be selected multiple times in a product, violating the vertex-disjoint semantics of a perfect matching. No descent theorem should be claimed without an explicit gadget or algebra homomorphism that preserves matching disjointness.
 
 ## Current exact program
+
+The [local-contraction closure algorithm](../../research/local_contraction/README.md) now provides a finite rational-input test and explicit rejection witnesses for the universal three-color local condition. Its pointwise fully-active axis lemma is kernel-checked; the full closure equivalence remains a mathematical argument plus exact regression tests. A properly colored `K₃,₃` regression satisfies the local condition and target amplitudes but violates a forbidden amplitude, so local rules alone cannot close the global problem.
 
 1. reuse the certified 105 matching table and 31-orbit coverage;
 2. formalize the three-color universal anchor and pair-pencil rules in an `N`-uniform form;

@@ -1,0 +1,12 @@
+# Reproducible build products and local verification evidence.
+.lake/
+.ci-logs/
+.ci-tmp/
+__pycache__/
+*.py[cod]
+.DS_Store
+._*
+
+# Independent replay outputs are uploaded by CI, not maintained as source.
+/research/candidate129/candidate129_fatal_verifier.json
+/research/candidate129/candidate129_fatal_verifier.log

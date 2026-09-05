@@ -19,12 +19,19 @@ class LeanReplayGeneratorTests(unittest.TestCase):
 
     def test_source_inventory_is_unique_and_complete(self):
         names = [name for name, _ in self.sources]
-        self.assertEqual(len(names), 183)
+        self.assertEqual(len(names), 122)
         self.assertEqual(len(names), len(set(names)))
         self.assertEqual(len(G.amplitude_codes(self.data)), 60)
-        self.assertIn("OfficialPremises", names)
+        self.assertNotIn("OfficialPremises", names)
         self.assertIn("Endpoint0Flip", names)
         self.assertIn("Endpoint1Flip", names)
+
+    def test_superseded_exact_support_wrappers_are_absent(self):
+        retired = ["OfficialPremises", "Benchmark", "MatchingBenchmark"]
+        retired += [f"Amplitude{code}" for code in G.amplitude_codes(self.data)]
+        for name in retired:
+            with self.subTest(name=name):
+                self.assertFalse((LEAN / f"{name}.lean").exists())
 
     def test_every_generated_file_is_reproducible(self):
         for name, source in self.sources:

@@ -25,12 +25,11 @@ then exposes independent bounded leaves for a controlled parallel build:
 * dispatchers through ``A035`` import the preceding dispatcher;
 * every later ``Axxx`` dispatcher belongs to one of seven lanes rooted at
   ``A035`` and imports the preceding dispatcher in that lane;
-* a separate leaf-assembly module imports the seven lane heads;
 * the final assembly imports the seven dispatcher-lane heads.
 
 The checkpoint preserves already kernel-checked work.  After it, a resource
-supervisor can build exactly seven bounded leaf chains simultaneously, then
-build exactly seven dispatcher chains after every leaf is cached.
+supervisor may schedule the independent lanes within the configured worker
+and total-memory limits. The default trusted build uses one worker.
 """
 
 from __future__ import annotations
@@ -185,24 +184,6 @@ def emit_leaf_modules(
     ]
 
 
-def emit_parallel_leaf_root(
-    lean_root: Path,
-    parallel_lane_heads: list[str],
-) -> Path:
-    path = lean_root / "TargetOrbitReplayLeaves8.lean"
-    lines = [
-        *[f"import {head}" for head in parallel_lane_heads],
-        "",
-        "/-!",
-        "# Seven-lane bounded replay target for `(N,D) = (8,3)`",
-        "",
-        "Building this module kernel-checks every post-checkpoint certificate",
-        "leaf while exposing at most seven mutually independent compiler jobs.",
-        "It deliberately contains no theorem beyond the imported leaf proofs.",
-        "-/",
-    ]
-    write_lean(path, lines)
-    return path
 
 
 def emit_a_dispatch_modules(
@@ -339,17 +320,13 @@ def generate(output_directory: Path) -> dict[str, object]:
     lean_root = output_directory / "MonochromaticQuantumGraphs" / "N8D3"
     leaf_root = lean_root / "TargetOrbitCertificateReplay8"
 
-    leaf_paths, imports_by_a, parallel_lane_heads = emit_leaf_modules(leaf_root)
-    parallel_leaf_root = emit_parallel_leaf_root(
-        lean_root, parallel_lane_heads
-    )
+    leaf_paths, imports_by_a, _ = emit_leaf_modules(leaf_root)
     dispatch_paths, dispatcher_lane_heads = emit_a_dispatch_modules(
         leaf_root, imports_by_a
     )
     final_path = emit_final_module(lean_root, dispatcher_lane_heads)
     paths = sorted([
         *leaf_paths,
-        parallel_leaf_root,
         *dispatch_paths,
         final_path,
     ])
@@ -368,7 +345,7 @@ def generate(output_directory: Path) -> dict[str, object]:
         "lean_root": str(lean_root),
         "leaf_theorems": sum(FIN_CARD - a for a in range(FIN_CARD)),
         "leaf_modules": len(leaf_paths),
-        "leaf_assembly_modules": 1,
+        "leaf_assembly_modules": 0,
         "dispatch_modules": len(dispatch_paths),
         "final_modules": 1,
         "lean_files": len(paths),

@@ -41,12 +41,14 @@ jobs:
           python3 scripts/ci/test_guarded_run.py
           python3 scripts/ci/test_audit_trust.py
           python3 scripts/ci/test_cache_config.py
+          python3 scripts/ci/test_repository_hygiene.py
           python3 -c 'import sys; sys.path.insert(0,"scripts/ci"); from audit_trust import check_sources; check_sources()'
           python3 research/candidate129/test_compact_star.py
           python3 research/candidate129/generate_lean_replay.py --check-sources
           python3 research/candidate129/test_lean_replay_generator.py
           python3 research/candidate129/generate_partial_support.py --check-sources
           python3 research/candidate129/test_partial_support.py
+          python3 research/local_contraction/test_closure.py
       - name: Prepare pinned dependencies and source-matched warm cache
         run: |
           if [ -n "$MQG_VM_SEED" ]; then

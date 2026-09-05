@@ -5,7 +5,7 @@ import MQGN6Audit.UniqueObstruction
 # Finite definitions for the `K₆` support classification
 
 This file contains only the finite types and audited terminal masks.  The
-compressed certificate replay lives in `UniqueDagCheck6`; no expensive search
+compressed certificate replay lives in `UniqueDagCheckFast6`; no expensive search
 is performed while compiling these definitions.
 -/
 

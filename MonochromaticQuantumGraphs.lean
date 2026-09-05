@@ -1,5 +1,6 @@
 import MonochromaticQuantumGraphs.ColorRestriction
 import MonochromaticQuantumGraphs.FactorStar
+import MonochromaticQuantumGraphs.LocalContraction.PointwiseThree
 import MonochromaticQuantumGraphs.N8D3.GeneratedData
 import MonochromaticQuantumGraphs.N8D3.Basic
 import MonochromaticQuantumGraphs.N8D3.TargetOrbitCertificates8

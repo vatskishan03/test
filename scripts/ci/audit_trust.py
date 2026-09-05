@@ -17,6 +17,7 @@ EXPECTED = {
     "MonochromaticQuantumGraphs.factor_star_dichotomy",
     "MonochromaticQuantumGraphs.factor_star_impossible",
     "MonochromaticQuantumGraphs.factor_biclique_dichotomy",
+    "MonochromaticQuantumGraphs.LocalContraction.exists_axis_pointwise",
     "MonochromaticQuantumGraphs.N8D3.Candidate129.no_solution_exact_support",
     "MonochromaticQuantumGraphs.N8D3.Candidate129.not_exists_exact_support",
     "MonochromaticQuantumGraphs.N8D3.Candidate129.no_solution_partial_support",
@@ -26,6 +27,8 @@ EXPECTED = {
 }
 ALLOWED = {"propext", "Classical.choice", "Quot.sound"}
 AUDIT_GROUPS = {
+    "MonochromaticQuantumGraphs.LocalContraction.PointwiseThree": [
+        "MonochromaticQuantumGraphs.LocalContraction.exists_axis_pointwise"],
     "MQGN6Audit.NoSolution6": [
         "MQGN6Audit.no_solution_6_4", "MQGN6Audit.eqSystem6_no_solution_d4"],
     "MonochromaticQuantumGraphs.ColorRestriction": [

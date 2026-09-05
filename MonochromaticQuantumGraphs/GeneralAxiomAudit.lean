@@ -1,6 +1,0 @@
-import MonochromaticQuantumGraphs
-
-#print axioms MonochromaticQuantumGraphs.eqSystemN_restrictColors
-#print axioms MonochromaticQuantumGraphs.noSolution_all_dimensions_iff_three
-#print axioms MonochromaticQuantumGraphs.N8D3.pmSumN8_eq_sum_pmTerm8
-#print axioms MonochromaticQuantumGraphs.N8D3.exists_target_matching_triple8
