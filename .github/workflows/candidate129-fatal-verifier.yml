@@ -1,0 +1,57 @@
+name: Candidate 129 fatal certificate verifier
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "research/candidate129/**"
+      - "MonochromaticQuantumGraphs/N8D3/Candidate129/**"
+      - ".github/workflows/candidate129-fatal-verifier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate129-fatal-verifier-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  independent-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Replay compact integer certificate without SymPy or search
+        run: |
+          python research/candidate129/check_compact_star.py research/candidate129/candidate129_compact_star.json
+          python research/candidate129/test_compact_star.py
+      - name: Check all generated Lean sources against the frozen certificate
+        run: |
+          python research/candidate129/generate_lean_replay.py --check-sources
+          python research/candidate129/test_lean_replay_generator.py
+      - name: Install exact integer-lattice dependency
+        run: python -m pip install --disable-pip-version-check sympy==1.14.0
+      - name: Reconstruct and verify Candidate 129 from support alone
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v python research/candidate129/verify_candidate129_fatal_certificate_v2.py \
+            research/candidate129/candidate129_support.txt \
+            research/candidate129/candidate129_fatal_verifier.json \
+            2>&1 | tee research/candidate129/candidate129_fatal_verifier.log
+      - name: State the trust boundary
+        run: echo 'Exact Python replay and producer reproducibility only. The separate trusted Lean workflow checks the formal theorem; neither workflow establishes unrestricted N8 support coverage.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload independent replay
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate129-fatal-verifier-${{ github.run_id }}
+          path: |
+            research/candidate129/candidate129_fatal_verifier.json
+            research/candidate129/candidate129_fatal_verifier.log
+          if-no-files-found: warn
+          retention-days: 30

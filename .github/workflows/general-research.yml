@@ -1,4 +1,4 @@
-name: General reduction and N8 D3 research
+name: Trusted Lean library
 
 on:
   pull_request:
@@ -7,117 +7,86 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 concurrency:
-  group: mqg-general-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: mqg-vm-trusted-build
+  cancel-in-progress: false
 
 jobs:
   build:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, Linux, X64, lean-highmem-n8d3]
     timeout-minutes: 120
+    env:
+      LAKE_WORKERS: "1"
+      LEAN_RSS_LIMIT_KB: "7500000"
+      # User-approved read-only dependency-collector exception, 2026-09-05.
+      # The actual Lean compiler keeps its original cap above.
+      AXIOM_REPORT_RSS_LIMIT_KB: "15000000"
+      LEAN_AGGREGATE_RSS_LIMIT_KB: "46000000"
+      MEM_AVAILABLE_FLOOR_KB: "8000000"
+      LEAN_ELAPSED_LIMIT_SECONDS: "295"
+      DISK_AVAILABLE_FLOOR_KB: "1000000"
+      MQG_VM_SEED: ${{ vars.LEAN_VM_SEED }}
     steps:
       - uses: actions/checkout@v4
-      - name: Restore Lean dependencies
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.elan
-            lake-manifest.json
-            .lake/packages
-          key: mqg-lean-v3-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
-      - name: Install elan
+      - name: Prepare VM-local logs and temporary directory
         run: |
-          if [ ! -x "$HOME/.elan/bin/elan" ]; then
-            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
-          fi
+          mkdir -p "$GITHUB_WORKSPACE/.ci-logs" "$GITHUB_WORKSPACE/.ci-tmp"
+          echo "TMPDIR=$GITHUB_WORKSPACE/.ci-tmp" >> "$GITHUB_ENV"
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Resolve dependencies
+          test -x "$HOME/.elan/bin/lake"
+      - name: Test supervisor and source/axiom gates
         run: |
-          if [ ! -f lake-manifest.json ]; then lake update; fi
-          lake exe cache get
-      - name: Attach exact VM proof build
+          python3 scripts/ci/test_guarded_run.py
+          python3 scripts/ci/test_audit_trust.py
+          python3 scripts/ci/test_cache_config.py
+          python3 -c 'import sys; sys.path.insert(0,"scripts/ci"); from audit_trust import check_sources; check_sources()'
+          python3 research/candidate129/test_compact_star.py
+          python3 research/candidate129/generate_lean_replay.py --check-sources
+          python3 research/candidate129/test_lean_replay_generator.py
+      - name: Prepare pinned dependencies and source-matched warm cache
         run: |
-          verified=/mnt/lean/monochromatic-quantum-graphs
-          test -d "$verified/.lake/build"
-          git -C "$verified" diff --quiet --
-          while IFS= read -r -d '' path; do
-            test -f "$verified/$path"
-            cmp "$GITHUB_WORKSPACE/$path" "$verified/$path"
-          done < <(
-            git ls-files -z \
-              MonochromaticQuantumGraphs.lean \
-              'MonochromaticQuantumGraphs/**' \
-              lakefile.toml \
-              lean-toolchain
-          )
-          mkdir -p .lake
-          test ! -e .lake/build
-          ln -s "$verified/.lake/build" .lake/build
-      - name: Build general research library
-        id: lean
+          if [ -n "$MQG_VM_SEED" ]; then
+            python3 scripts/ci/guarded_run.py "$GITHUB_WORKSPACE" .ci-logs/cache-seed.log -- \
+              python3 scripts/ci/prepare_vm_cache.py "$GITHUB_WORKSPACE" "$MQG_VM_SEED"
+          fi
+          if [ ! -f lake-manifest.json ]; then
+            python3 scripts/ci/guarded_run.py "$GITHUB_WORKSPACE" .ci-logs/dependencies.log -- lake update
+          fi
+          if [ ! -d .lake/packages/mathlib/.lake/build ]; then
+            python3 scripts/ci/guarded_run.py "$GITHUB_WORKSPACE" .ci-logs/dependencies.log -- lake exe cache get
+          fi
+      - name: Build BOTH complete root libraries
+        run: bash scripts/ci/guarded_lake_build.sh "$GITHUB_WORKSPACE" .ci-logs/build.log
+      - name: Audit exact theorem dependencies under the same resource limits
         run: |
-          set +e
-          bash scripts/ci/guarded_lake_build.sh \
-            "$GITHUB_WORKSPACE" \
-            /tmp/general-build.log \
-            MonochromaticQuantumGraphs
-          status=$?
-          echo "status=$status" >> "$GITHUB_OUTPUT"
+          bash scripts/ci/guarded_lake_build.sh "$GITHUB_WORKSPACE" .ci-logs/axiom-reporter-build.log axiom_report
+          python3 scripts/ci/run_axiom_audits.py "$GITHUB_WORKSPACE" ".ci-logs/axioms-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.log"
+          git diff --check
+      - name: Publish build summary
+        if: always()
+        run: |
           {
-            echo '<!-- general-research-diagnostics -->'
-            if [ "$status" -eq 0 ]; then
-              echo '## General research build: passing'
-            else
-              echo '## General research build: compiler diagnostics'
-            fi
-            echo
-            echo '```text'
-            grep -n -E 'error:|unsolved goals|unknown identifier|application type mismatch|type mismatch|invalid field|declaration uses' /tmp/general-build.log | tail -n 160 || true
-            echo '--- final context ---'
-            tail -n 160 /tmp/general-build.log
-            echo '```'
-          } > /tmp/general-comment.md
-          exit "$status"
-      - name: Audit new theorem axioms
-        if: steps.lean.outputs.status == '0'
-        run: |
-          bash scripts/ci/guarded_lake_build.sh \
-            "$GITHUB_WORKSPACE" \
-            /tmp/general-axioms.log \
-            MonochromaticQuantumGraphs.GeneralAxiomAudit
-          if grep -E 'sorryAx|Lean\.ofReduceBool' /tmp/general-axioms.log; then
-            exit 1
-          fi
-          if rg -n --glob '*.lean' '\b(sorry|admit)\b|^[[:space:]]*(axiom|unsafe)[[:space:]]' \
-            MonochromaticQuantumGraphs MonochromaticQuantumGraphs.lean; then
-            echo 'Forbidden proof source detected.' >&2
-            exit 1
-          fi
-      - name: Upload general research diagnostics
+            echo '## Trusted Lean validation'
+            echo "Commit: $GITHUB_SHA"
+            echo 'An overall success requires both root libraries and the exact axiom allowlist.'
+            for log in .ci-logs/*.log; do
+              test -f "$log" || continue
+              echo
+              echo "### $log"
+              echo '```text'
+              tail -80 "$log"
+              echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve compiler diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: general-research-${{ github.run_id }}
-          path: |
-            /tmp/general-build.log
-            /tmp/general-axioms.log
-            /tmp/general-comment.md
-          if-no-files-found: ignore
-          retention-days: 14
-      - name: Publish sticky diagnostics
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          existing=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments --paginate --jq '.[] | select(.body | startswith("<!-- general-research-diagnostics -->")) | .id' | head -n1)
-          body=$(cat /tmp/general-comment.md 2>/dev/null || printf '%s\n' '<!-- general-research-diagnostics -->' 'No compiler diagnostic was produced.')
-          if [ -n "$existing" ]; then
-            gh api --method PATCH repos/${{ github.repository }}/issues/comments/$existing -f body="$body" >/dev/null
-          else
-            gh api --method POST repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments -f body="$body" >/dev/null
-          fi
-      - name: Fail if Lean failed
-        if: steps.lean.outputs.status != '0'
-        run: exit 1
+          name: trusted-lean-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .ci-logs/
+          # upload-artifact excludes dot-directories unless explicitly enabled.
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: error

@@ -1,0 +1,46 @@
+name: Candidate 129 fatal edges
+
+on:
+  pull_request:
+    branches:
+      - research/general-reduction-n8-d3
+    paths:
+      - "research/candidate129/identify_candidate129_fatal_edges.py"
+      - ".github/workflows/candidate129-fatal-edges.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate129-fatal-edges-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  fatal-edges:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact integer-lattice dependency
+        run: python -m pip install --disable-pip-version-check sympy==1.14.0
+      - name: Extract fatal quotient edges and root witnesses
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v python research/candidate129/identify_candidate129_fatal_edges.py \
+            research/candidate129/candidate129_support.txt \
+            research/candidate129/candidate129_fatal_edges.json \
+            2>&1 | tee research/candidate129/candidate129_fatal_edges.log
+      - name: Upload fatal-edge audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate129-fatal-edges-${{ github.run_id }}
+          path: |
+            research/candidate129/candidate129_fatal_edges.json
+            research/candidate129/candidate129_fatal_edges.log
+          if-no-files-found: warn
+          retention-days: 30

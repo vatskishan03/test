@@ -47,18 +47,26 @@ The proof has four layers:
 
 See [`docs/proofs/n6-d4-v1.md`](docs/proofs/n6-d4-v1.md) for the detailed statement and audit record.
 
+## Kernel-certified N8 exact-support exclusion
+
+[`Candidate129`](research/candidate129/README.md) has a separate exact-support nonexistence proof for its frozen 143 edge-color coordinates. Every declared coordinate must be nonzero and every other canonical coordinate zero. The theorem is connected to the original `EqSystemN 8 3` equations through all 105 perfect matchings.
+
+Its 145-node Laurent derivation, eleven factor products, twelve character implications, and two final amplitude cancellations are checked by ordinary Lean kernel proofs. Both final endpoints have axiom closure `[propext, Classical.choice, Quot.sound]`. Proper sub-supports and other N8 supports are not covered.
+
 ## Scope
 
-The repository currently proves only the six-vertex, four-color slice. It does **not** yet prove the unrestricted conjecture for every even `N ≥ 6` and every `D ≥ 3`, and it does not contain a `d = 4` counterexample.
+The unrestricted certified nonexistence result is the six-vertex, four-color slice. Candidate129 adds one exact N8 support exclusion. The repository also contains the general color-restriction theorem, the official N8 perfect-matching expansion, target-matching extraction, and explicit coverage of the 31 target-triple orbits. None supplies an unrestricted N8 impossibility theorem.
+
+Neither `(6,3)` nor `(8,3)` is settled by the accepted proof chain here. The unrestricted conjecture for every even `N ≥ 6` and every `D ≥ 3` remains unresolved by this repository. There is no `d = 4` counterexample.
 
 ## Current research program
 
-The next development is intentionally separated from the certified release:
+New research remains separated from the immutable certified release:
 
-1. formalize color restriction from arbitrary `D ≥ 3` to three selected colors;
-2. formalize the quadratic-power encoding of the perfect-matching tensor;
-3. attack the next finite frontier `(N,D) = (8,3)` with symmetry certificates, structural reductions, and proof-producing exact search;
-4. extract an `N`-uniform obstruction or find an exact counterexample.
+1. reuse the checked color restriction and N8 matching/orbit foundation;
+2. reuse the completed Candidate129 exact-support Laurent certificate pipeline for further verified exclusions;
+3. maintain explicit zero/nonzero case coverage while extending support exclusions to an unrestricted finite result;
+4. find a valid `N`-uniform obstruction or an exact counterexample; color restriction alone does not reduce `N`.
 
 New work should branch from `main`; the release branch must remain unchanged.
 
